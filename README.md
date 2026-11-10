@@ -3,6 +3,18 @@
 Proyecto académico (UPN · Diseño y Arquitectura de Software · 2026-2). Todos los datos son ficticios.
 Arquitectura de tres capas: **vista** (SPA en JavaScript) → **API REST** (Node.js) → **SQL Server**.
 
+## ▶ Ejecutar en GitHub (enlace para visualizar)
+[![Abrir en GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/angelonavarroxd23-lab/desarrollo-de-software?quickstart=1)
+
+1. Pulse el botón (requiere iniciar sesión en GitHub). Se crea un entorno con Node.js 22 y **SQL Server 2022** en contenedor.
+2. Espere a que la terminal muestre `FarmaControl API en http://localhost:3000 (base de datos: mssql)` (la primera vez tarda unos minutos).
+3. Se abre el navegador con la aplicación; si no, pestaña **PORTS** → puerto **3000** → icono del globo. Ese es el enlace (`https://…-3000.app.github.dev`).
+4. Para compartirlo con otra persona: clic derecho en el puerto 3000 → *Port Visibility* → *Public*.
+
+El script `scripts/codespace-start.sh` genera un `.env` con contraseñas aleatorias (no se suben al repositorio), inicia SQL Server, ejecuta
+`db:setup` y `db:check` y arranca la aplicación. Usuarios de demostración en la sección 7. Detenga el Codespace al terminar para no consumir horas gratuitas.
+GitHub Pages **no** sirve: solo publica archivos estáticos y FarmaControl necesita el servidor Node.js y SQL Server.
+
 > **Estado de verificación (léase antes de evaluar el proyecto)**
 > | Componente | Estado | Evidencia |
 > |---|---|---|

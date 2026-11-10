@@ -1,0 +1,14 @@
+{
+  "name": "FarmaControl (Node.js 22 + SQL Server 2022)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "hostRequirements": { "cpus": 2, "memory": "8gb" },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "FarmaControl", "onAutoForward": "openBrowser" }
+  },
+  "postCreateCommand": "npm install --no-audit --no-fund",
+  "postAttachCommand": "bash scripts/codespace-start.sh"
+}

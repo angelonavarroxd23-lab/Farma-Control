@@ -72,3 +72,24 @@ jobs:
           DB_ENCRYPT: "true"
           DB_TRUST_SERVER_CERT: "true"
         run: npm run test:sqlserver
+
+  arranque-codespaces:
+    name: Arranque completo (script de Codespaces) + SQL Server + verificación HTTP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Preparar base con el mismo script que usa Codespaces
+        run: FC_NO_START=1 bash scripts/codespace-start.sh
+      - name: Iniciar FarmaControl y comprobar que responde conectado a SQL Server
+        run: |
+          npm start > servidor.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:3000/api/health && break; sleep 2; done
+          echo
+          curl -sf http://localhost:3000/api/health | grep '"driver":"mssql"'
+          curl -sf http://localhost:3000/ | grep -q '<title>FarmaControl'
+          curl -sf -X POST http://localhost:3000/api/auth/login -H 'Content-Type: application/json' -d '{"correo":"admin@farmacontrol.local","contrasena":"Admin#2026Fc"}' | grep -q '"token"'
+          echo "Salud, pantalla de inicio e inicio de sesión: OK"
+          cat servidor.log
