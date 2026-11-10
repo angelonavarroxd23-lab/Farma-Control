@@ -1,0 +1,23 @@
+Recorrido UI contra la demo — 2026-11-10T00:30:27.228Z
+Navegador: Chromium (Playwright)
+
+OK    login con contraseña incorrecta muestra error
+OK    login como administrador
+OK    cliente guardado en la demo — DNI 70565821
+OK    medicamento guardado en la demo — UI-MW9YD96L
+OK    lote guardado con stock 0 — L-MW9YD96L
+OK    compra incrementa el stock en la demo (0 → 40) — stock=40
+OK    movimiento ENTRADA_COMPRA guardado
+OK    el carrito rechaza más unidades que el stock
+OK    venta descuenta el stock en la demo (40 → 34) — stock=34
+OK    venta CONFIRMADA con total correcto (6 × 12.50 = 75.00) — {"cliente_id":4,"usuario_id":1,"receta_id":null,"fecha":"2026-11-09 19:30:13","tipo_comprobante":"BOLETA","numero_comprobante":"B001-000004","estado":"CONFIRMADA","total":75,"fecha_anulacion":null,"usuario_anulacion_id":null,"motivo_anulacion":null,"venta_id":4,"cliente":"Cliente UI MW9YD96L","usuario":"Ana Administradora"}
+OK    anulación restituye el stock una sola vez (34 → 40) — stock=40
+OK    un único REVERSO_VENTA registrado
+OK    la venta queda ANULADA
+OK    movimientos muestra el reverso
+OK    auditoría muestra la venta anulada
+OK    el menú del cajero no incluye Usuarios, Auditoría ni Reportes
+OK    API: el cajero recibe 403 en /api/usuarios — HTTP 403
+OK    sin errores de consola inesperados — []
+
+Resultado: 18 OK, 0 FALLO

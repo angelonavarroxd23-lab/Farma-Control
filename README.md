@@ -3,6 +3,15 @@
 Proyecto académico (UPN · Diseño y Arquitectura de Software · 2026-2). Todos los datos son ficticios.
 Arquitectura de tres capas: **vista** (SPA en JavaScript) → **API REST** (Node.js) → **SQL Server**.
 
+## 🌐 Demostración en línea (GitHub Pages)
+**https://angelonavarroxd23-lab.github.io/desarrollo-de-software/** — usuario `admin@farmacontrol.local`, contraseña `Admin#2026Fc`.
+
+GitHub Pages solo publica archivos estáticos, así que esta demostración ejecuta **en el navegador** la misma aplicación del servidor
+(`app.js`, rutas, controladores y modelos, empaquetados por `scripts/build-pages.js`) con datos de ejemplo en memoria. **No usa SQL Server**:
+los cambios se pierden al recargar y las contraseñas usan una derivación HMAC-SHA256 de demostración en lugar de scrypt.
+Se publica automáticamente con `.github/workflows/pages.yml` (rama `gh-pages`). Recorrido verificado: `docs/evidencias/recorrido_github_pages.txt`.
+La versión completa con SQL Server se ejecuta en su PC (secciones 4–6) o en Codespaces (abajo).
+
 ## ▶ Ejecutar en GitHub (enlace para visualizar)
 [![Abrir en GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/angelonavarroxd23-lab/desarrollo-de-software?quickstart=1)
 
