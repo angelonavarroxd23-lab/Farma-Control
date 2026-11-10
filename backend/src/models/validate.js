@@ -1,7 +1,7 @@
 'use strict';
 // Validación de entradas en el servidor, guiada por el esquema (tipos, longitudes, enumeraciones).
-const { TABLES } = require('../db/schema');
-const { validation } = require('../db/errors');
+const { TABLES } = require('./schema');
+const { validation } = require('./errors');
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const isRealDate = (s) => { if (!DATE_RE.test(s)) return false; const d = new Date(`${s}T00:00:00Z`); return !isNaN(d) && d.toISOString().slice(0, 10) === s; };

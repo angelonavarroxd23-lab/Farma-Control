@@ -5,13 +5,13 @@ const { createApp } = require('./app');
 
 async function createStore(cfg) {
   if (cfg.driver === 'memory') {
-    const { MemoryStore } = require('./db/memory');
-    const { seedMemory } = require('./db/seed');
+    const { MemoryStore } = require('./models/memory');
+    const { seedMemory } = require('./models/seed');
     const store = new MemoryStore();
     await seedMemory(store);
     return store;
   }
-  const { MssqlStore } = require('./db/mssql');
+  const { MssqlStore } = require('./models/mssql');
   return new MssqlStore(cfg.db).connect();
 }
 

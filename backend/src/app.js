@@ -1,7 +1,7 @@
 'use strict';
 const { buildRouter } = require('./routes');
 const { json, send, readBody, serveStatic } = require('./http/helpers');
-const { AppError } = require('./db/errors');
+const { AppError } = require('./models/errors');
 const { verify, sign } = require('./auth/token');
 const { can } = require('./auth/permissions');
 

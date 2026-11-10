@@ -11,6 +11,8 @@ Arquitectura de tres capas: **frontend** (SPA en JavaScript) → **API REST** (N
 > | Interfaz web conectada a SQL Server | Recorrido automatizado con Edge: 18/18 pasos, contrastados con consultas a la base | `docs/evidencias/recorrido_ui_sqlserver.txt`, `docs/capturas_sqlserver/` |
 > | Controlador en memoria (solo pruebas/vista previa) | 51 aprobadas, 11 de integración omitidas | `docs/evidencias/pruebas_automatizadas_memoria.txt` |
 >
+> **Conversión a MVC (9-nov-2026):** posterior a la verificación en SQL Server de la tabla anterior. Tras la conversión se comprobaron 51 pruebas en memoria; la ejecución contra SQL Server la hace el workflow de *Actions* (`pruebas-sqlserver`) y, en su PC, `npm run test:sqlserver`.
+>
 > **Reservas honestas:** la instancia usada es SQL Server 2022 **Evaluation** (caduca a los ~180 días; recomendable pasar a Developer);
 > las pruebas se ejecutaron con una cuenta administradora (Autenticación de Windows). El script de cuenta de mínimo privilegio y
 > `DB_AUTH=sql` **no se han ejecutado**. Pendientes del equipo: aprobación con usuarios, pruebas de usabilidad con participantes,
@@ -30,8 +32,9 @@ frontend en HTML + CSS + JavaScript ES modules sin framework. Hash de contraseñ
 ```
 FarmaControl/
 ├── backend/            API REST (src/), pruebas (tests/), package.json, .env.example
-│   └── src/ auth/ db/ services/ http/ routes.js app.js server.js config.js
-├── frontend/           SPA (index.html, css/, js/, js/pages/) y serve.js opcional
+│   └── src/ controllers/ models/ auth/ http/ routes.js app.js server.js config.js   (patrón MVC: docs/ARQUITECTURA_MVC.md)
+├── .github/workflows/  CI: pruebas en memoria y contra SQL Server 2022 (GitHub Actions)
+├── frontend/           SPA (la Vista del MVC) (index.html, css/, js/, js/pages/) y serve.js opcional
 ├── database/           FarmaControl_Database.sql · _UsuarioAplicacion.sql · _Reset.sql
 ├── docs/               evidencias/, capturas/, diagramas/, documentos del proyecto
 └── original/           Recursos de la entrega anterior, conservados sin modificar

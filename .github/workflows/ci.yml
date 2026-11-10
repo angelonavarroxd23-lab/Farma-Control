@@ -1,0 +1,79 @@
+name: CI FarmaControl
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pruebas-memoria:
+    name: Pruebas de API (controlador en memoria)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+        working-directory: backend
+      - name: 51 pruebas (11 de integración se omiten sin SQL Server)
+        run: npm test
+        working-directory: backend
+        env:
+          JWT_SECRET: ci-secreto-solo-para-pruebas-0123456789abcdef
+
+  pruebas-sqlserver:
+    name: Pruebas contra SQL Server 2022 (contenedor)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generar contraseñas efímeras (no se guardan en el repositorio)
+        run: |
+          SA="Aa1!$(openssl rand -hex 12)"
+          echo "::add-mask::$SA"
+          echo "SA_PASSWORD=$SA" >> "$GITHUB_ENV"
+          JWT="$(openssl rand -base64 48 | tr -d '\n')"
+          echo "::add-mask::$JWT"
+          echo "JWT_SECRET=$JWT" >> "$GITHUB_ENV"
+      - name: Iniciar SQL Server 2022
+        run: |
+          docker run -d --name sql -p 1433:1433 -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD="$SA_PASSWORD" mcr.microsoft.com/mssql/server:2022-latest
+          for i in $(seq 1 40); do
+            docker exec sql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" >/dev/null 2>&1 && echo "SQL Server listo" && exit 0
+            sleep 3
+          done
+          docker logs sql | tail -30; exit 1
+      - run: npm install --no-audit --no-fund
+        working-directory: backend
+      - name: Crear la base (script FarmaControl_Database.sql) y verificarla
+        working-directory: backend
+        env:
+          DB_DRIVER: mssql
+          DB_AUTH: sql
+          DB_SERVER: localhost
+          DB_PORT: "1433"
+          DB_NAME: FarmaControlBD
+          DB_USER: sa
+          DB_PASSWORD: ${{ env.SA_PASSWORD }}
+          DB_ENCRYPT: "true"
+          DB_TRUST_SERVER_CERT: "true"
+        run: |
+          npm run db:setup
+          npm run db:check
+      - name: 62 pruebas contra SQL Server
+        working-directory: backend
+        env:
+          DB_DRIVER: mssql
+          DB_AUTH: sql
+          DB_SERVER: localhost
+          DB_PORT: "1433"
+          DB_NAME: FarmaControlBD
+          DB_USER: sa
+          DB_PASSWORD: ${{ env.SA_PASSWORD }}
+          DB_ENCRYPT: "true"
+          DB_TRUST_SERVER_CERT: "true"
+        run: npm run test:sqlserver
