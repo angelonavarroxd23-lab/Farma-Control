@@ -1,8 +1,8 @@
 'use strict';
 // Utilidades de prueba. Con DB_DRIVER=memory (valor por defecto de "npm test") se usa el controlador
 // en memoria; con DB_DRIVER=mssql las MISMAS pruebas se ejecutan contra SQL Server (vea README).
-const { start } = require('../src/server');
-const { config } = require('../src/config');
+const { start } = require('../server');
+const { config } = require('../config/config');
 
 const USERS = {
   admin: ['admin@farmacontrol.local', 'Admin#2026Fc'], cajero: ['cajero@farmacontrol.local', 'Cajero#2026Fc'],

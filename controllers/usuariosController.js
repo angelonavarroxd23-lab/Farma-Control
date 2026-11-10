@@ -1,6 +1,6 @@
 'use strict';
 const { validation, business, notFound } = require('../models/errors');
-const { hashPassword, passwordPolicyError } = require('../auth/password');
+const { hashPassword, passwordPolicyError } = require('../lib/auth/password');
 const V = require('../models/validate');
 const { pub } = require('./presenters');
 

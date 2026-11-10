@@ -1,7 +1,7 @@
 'use strict';
 // Utilidades compartidas por db:check y db:setup (usan la misma configuración que la API).
-const { config } = require('../src/config');
-const { MssqlStore } = require('../src/models/mssql');
+const { config } = require('../config/config');
+const { MssqlStore } = require('../models/mssql');
 
 async function conectar(database) {
   const c = { ...config.db, database: database || config.db.database };

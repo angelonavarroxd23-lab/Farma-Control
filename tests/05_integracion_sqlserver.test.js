@@ -99,7 +99,7 @@ test('SQL-10 vistas de reporte responden con datos reales', { skip }, async () =
   assert.ok((await q('SELECT COUNT(*) c FROM dbo.vw_Kardex'))[0].c > 0);
 });
 test('SQL-11 sin conmutación silenciosa: si SQL Server no está disponible, el servidor no arranca', { skip }, async () => {
-  const { start } = require('../src/server'); const { config } = require('../src/config');
+  const { start } = require('../server'); const { config } = require('../config/config');
   const cfg = { ...config, driver: 'mssql', port: 0, serveFrontend: false, jwtSecret: 'x'.repeat(40), db: { ...config.db, database: 'BaseQueNoExiste_FC' } };
   await assert.rejects(start(cfg), /No se pudo conectar a SQL Server[\s\S]*NO cambia a otro almacenamiento/);
 });

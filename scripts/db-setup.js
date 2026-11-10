@@ -5,7 +5,7 @@ const fs = require('node:fs'); const path = require('node:path');
 const { conectar } = require('./db-lib');
 
 (async () => {
-  const file = path.join(__dirname, '..', '..', 'database', 'FarmaControl_Database.sql');
+  const file = path.join(__dirname, '..', 'database', 'FarmaControl_Database.sql');
   const batches = fs.readFileSync(file, 'utf8').split(/^\s*GO\s*(?:--.*)?$/im).map((b) => b.trim()).filter(Boolean);
   const { pool } = await conectar('master');
   let n = 0;

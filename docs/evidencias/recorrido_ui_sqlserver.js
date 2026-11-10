@@ -1,10 +1,10 @@
 'use strict';
 // Recorrido de la interfaz REAL (navegador Edge/Chrome automatizado) contra la aplicación conectada a SQL Server.
 // Cada paso se verifica además con consultas directas a las tablas. Uso (con el servidor iniciado con "npm start"):
-//   cd backend && npm i --no-save playwright-core && node ../docs/evidencias/recorrido_ui_sqlserver.js
+//   npm i --no-save playwright-core && node ../docs/evidencias/recorrido_ui_sqlserver.js
 const path = require('node:path'); const fs = require('node:fs');
-const { chromium } = require(path.join(__dirname, '..', '..', 'backend', 'node_modules', 'playwright-core'));
-const { conectar } = require('../../backend/scripts/db-lib');
+const { chromium } = require(path.join(__dirname, '..', '..', 'node_modules', 'playwright-core'));
+const { conectar } = require('../../scripts/db-lib');
 const OUT = path.join(__dirname, '..', 'capturas_sqlserver'); fs.mkdirSync(OUT, { recursive: true });
 const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const EDGE = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Google/Chrome/Application/chrome.exe'].find((f) => fs.existsSync(f));

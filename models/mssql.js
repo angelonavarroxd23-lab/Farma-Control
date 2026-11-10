@@ -48,14 +48,14 @@ class MssqlStore {
     let sql;
     const win = this.cfg.auth === 'windows';
     try { sql = win ? require('mssql/msnodesqlv8') : require('mssql'); } catch {
-      throw new Error(win ? 'Falta "msnodesqlv8" (autenticación de Windows). Ejecute "npm install" en backend.' : 'Falta la dependencia "mssql". Ejecute "npm install" en la carpeta backend.');
+      throw new Error(win ? 'Falta "msnodesqlv8" (autenticación de Windows). Ejecute "npm install" en la carpeta del proyecto.' : 'Falta la dependencia "mssql". Ejecute "npm install" en la carpeta backend.');
     }
     this.sql = sql;
     try {
       this.pool = await new sql.ConnectionPool(MssqlStore.poolConfig(this.cfg)).connect();
     } catch (e) {
       throw new Error(`No se pudo conectar a SQL Server (${this.cfg.server}, base ${this.cfg.database}, auth ${this.cfg.auth}): ${e.message}. ` +
-        'El sistema NO cambia a otro almacenamiento. Revise backend/.env, que el servicio MSSQLSERVER esté iniciado y que haya ejecutado "npm run db:setup".');
+        'El sistema NO cambia a otro almacenamiento. Revise .env, que el servicio MSSQLSERVER esté iniciado y que haya ejecutado "npm run db:setup".');
     }
     return this;
   }

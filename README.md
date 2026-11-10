@@ -1,7 +1,7 @@
 # FarmaControl 2.0 — Sistema de gestión de ventas de farmacia
 
 Proyecto académico (UPN · Diseño y Arquitectura de Software · 2026-2). Todos los datos son ficticios.
-Arquitectura de tres capas: **frontend** (SPA en JavaScript) → **API REST** (Node.js) → **SQL Server**.
+Arquitectura de tres capas: **vista** (SPA en JavaScript) → **API REST** (Node.js) → **SQL Server**.
 
 > **Estado de verificación (léase antes de evaluar el proyecto)**
 > | Componente | Estado | Evidencia |
@@ -28,20 +28,29 @@ Arquitectura de tres capas: **frontend** (SPA en JavaScript) → **API REST** (N
 Node.js (módulos `http`, `crypto`, `node:test`), `mssql` (tedious; `msnodesqlv8` opcional para Autenticación de Windows), SQL Server (T-SQL),
 frontend en HTML + CSS + JavaScript ES modules sin framework. Hash de contraseñas con scrypt, tokens JWT HS256.
 
-## 3. Estructura de carpetas
+## 3. Estructura de carpetas (patrón MVC)
 ```
 FarmaControl/
-├── backend/            API REST (src/), pruebas (tests/), package.json, .env.example
-│   └── src/ controllers/ models/ auth/ http/ routes.js app.js server.js config.js   (patrón MVC: docs/ARQUITECTURA_MVC.md)
-├── .github/workflows/  CI: pruebas en memoria y contra SQL Server 2022 (GitHub Actions)
-├── frontend/           SPA (la Vista del MVC) (index.html, css/, js/, js/pages/) y serve.js opcional
+├── models/             MODELO: reglas de negocio y acceso a datos
+│                       (schema, validate, inventario, reportes, util, errors, mssql = SQL Server, memory = pruebas, seed)
+├── views/              VISTA: SPA (index.html, css/, js/, js/pages/) y serve.js opcional
+├── controllers/        CONTROLADOR: auth, usuarios, clientes, proveedores, catalogo, recetas, compras,
+│                       ventas, inventario, reportes, auditoria (+ presenters.js)
+├── routes/index.js     Tabla de rutas: método + URL + permiso → método del controlador
+├── config/config.js    Lectura de .env y validación de la configuración
+├── lib/                Servicios transversales: auth/ (scrypt, JWT, permisos) y http/ (enrutador, utilidades)
+├── app.js · server.js  Aplicación HTTP (autenticación, permisos, auditoría) y punto de entrada
+├── scripts/            db:setup, db:check, db:reset, lanzador de pruebas, modo memoria
+├── tests/              62 pruebas automatizadas (51 de API + 11 de integración con SQL Server)
 ├── database/           FarmaControl_Database.sql · _UsuarioAplicacion.sql · _Reset.sql
-├── docs/               evidencias/, capturas/, diagramas/, documentos del proyecto
-└── original/           Recursos de la entrega anterior, conservados sin modificar
+├── docs/               Informe, manual, arquitectura (incl. ARQUITECTURA_MVC.md), evidencias, capturas, diagramas
+├── original/           Recursos de la entrega anterior, conservados sin modificar
+├── .github/workflows/  CI: pruebas en memoria y contra SQL Server 2022 (GitHub Actions)
+└── package.json · .env.example
 ```
 
 ## 4. Base de datos
-Desde `backend/` (usa `.env`; con `DB_AUTH=windows` no hay contraseñas):
+Desde la carpeta del proyecto (usa `.env`; con `DB_AUTH=windows` no hay contraseñas):
 ```
 npm run db:setup            # ejecuta database/FarmaControl_Database.sql (crea FarmaControlBD, 14 tablas, procedimientos, vistas y datos). Re-ejecutable
 npm run db:check            # verifica tablas, FK, CHECK, procedimientos, vistas, índices, 0 disparadores, usuarios y coherencia de stock
@@ -52,25 +61,24 @@ Cuenta de aplicación con privilegios mínimos (recomendada, **no ejecutada en e
 
 **Modelo:** 13 tablas del informe original + `AuditoriaOperacion` (RF-18). Cambios justificados en el encabezado del script.
 
-## 5. Configuración del backend
+## 5. Configuración
 ```
-cd backend
+cd FarmaControl
 npm install
 copy .env.example .env      # Linux/macOS: cp .env.example .env
 ```
 Edite `.env`: `DB_DRIVER=mssql`, `DB_AUTH` (`windows` o `sql`), `DB_SERVER` (p. ej. `DESKTOP-0L15125` o `localhost`), `DB_NAME=FarmaControlBD`,
 `DB_USER`/`DB_PASSWORD` solo si `DB_AUTH=sql`, y `JWT_SECRET` (genere uno con
 `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`).
-**Las credenciales viven solo en `backend/.env`** (excluido del control de versiones y de la entrega); el navegador nunca las recibe.
+**Las credenciales viven solo en `.env` (raíz del proyecto)** (excluido del control de versiones y de la entrega); el navegador nunca las recibe.
 **No hay respaldo silencioso:** si SQL Server no responde, `npm start` termina con un error claro y no cambia a memoria.
 
 ## 6. Ejecución
 ```
-cd backend
 npm start                   # http://localhost:3000  (sirve API y frontend)
 ```
-Abra `http://localhost:3000`. Frontend por separado (opcional): `node frontend/serve.js` (puerto 5173), definir
-`CORS_ORIGIN=http://localhost:5173` en `.env` y definir `window.FARMACONTROL_API` en `frontend/js/config.js`.
+Abra `http://localhost:3000`. Frontend por separado (opcional): `node views/serve.js` (puerto 5173), definir
+`CORS_ORIGIN=http://localhost:5173` en `.env` y definir `window.FARMACONTROL_API` en `views/js/config.js`.
 Vista previa **sin SQL Server** (solo demostración, datos volátiles, opt-in explícito): `npm run start:memory`.
 Comprobación: `http://localhost:3000/api/health` debe mostrar `"driver":"mssql"`.
 
@@ -86,7 +94,6 @@ En la base solo se guardan hashes scrypt. **Cambie estas contraseñas antes de c
 
 ## 8. Pruebas
 ```
-cd backend
 npm run test:sqlserver      # 62 pruebas contra SQL Server (51 de API + 11 de integración SQL-01…SQL-11), en serie
 npm test                    # 51 pruebas con el controlador en memoria (11 de integración omitidas)
 ```

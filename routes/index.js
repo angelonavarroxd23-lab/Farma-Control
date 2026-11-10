@@ -1,17 +1,17 @@
 'use strict';
 // Tabla de rutas: asocia método + URL + permiso con un método de controlador.
-const { Router } = require('./http/router');
-const auditoria = require('./controllers/auditoriaController');
-const auth = require('./controllers/authController');
-const catalogo = require('./controllers/catalogoController');
-const clientes = require('./controllers/clientesController');
-const compras = require('./controllers/comprasController');
-const inventario = require('./controllers/inventarioController');
-const proveedores = require('./controllers/proveedoresController');
-const recetas = require('./controllers/recetasController');
-const reportes = require('./controllers/reportesController');
-const usuarios = require('./controllers/usuariosController');
-const ventas = require('./controllers/ventasController');
+const { Router } = require('../lib/http/router');
+const auditoria = require('../controllers/auditoriaController');
+const auth = require('../controllers/authController');
+const catalogo = require('../controllers/catalogoController');
+const clientes = require('../controllers/clientesController');
+const compras = require('../controllers/comprasController');
+const inventario = require('../controllers/inventarioController');
+const proveedores = require('../controllers/proveedoresController');
+const recetas = require('../controllers/recetasController');
+const reportes = require('../controllers/reportesController');
+const usuarios = require('../controllers/usuariosController');
+const ventas = require('../controllers/ventasController');
 
 function buildRouter() {
   const r = new Router();

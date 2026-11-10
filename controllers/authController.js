@@ -1,6 +1,6 @@
 'use strict';
 const { AppError, validation } = require('../models/errors');
-const { hashPassword, verifyPassword, passwordPolicyError } = require('../auth/password');
+const { hashPassword, verifyPassword, passwordPolicyError } = require('../lib/auth/password');
 const { pub } = require('./presenters');
 
 /** Controlador auth: recibe la petición ya autenticada, usa los modelos y devuelve la respuesta. */

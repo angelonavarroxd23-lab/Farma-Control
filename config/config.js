@@ -30,7 +30,7 @@ const config = {
   tokenTtlMinutes: Number(e.TOKEN_TTL_MINUTES || 480),
   serveFrontend: bool(e.SERVE_FRONTEND, true),
   corsOrigin: e.CORS_ORIGIN || '',
-  frontendDir: path.join(__dirname, '..', '..', 'frontend'),
+  frontendDir: path.join(__dirname, '..', 'views'),
 };
 
 function validateConfig(c = config) {
@@ -40,7 +40,7 @@ function validateConfig(c = config) {
   if (c.driver === 'mssql') {
     if (!['sql', 'windows'].includes(c.db.auth)) errs.push('DB_AUTH debe ser "sql" o "windows".');
     else if (c.db.auth === 'sql' && (!c.db.user || !c.db.password || String(c.db.password).startsWith('<')))
-      errs.push('DB_USER y DB_PASSWORD deben configurarse en backend/.env (no se incluyen credenciales en el código), o use DB_AUTH=windows.');
+      errs.push('DB_USER y DB_PASSWORD deben configurarse en .env (no se incluyen credenciales en el código), o use DB_AUTH=windows.');
   } else if (c.driver !== 'memory') errs.push('DB_DRIVER debe ser "mssql" o "memory".');
   return errs;
 }

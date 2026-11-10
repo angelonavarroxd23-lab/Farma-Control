@@ -1,6 +1,6 @@
 'use strict';
 const http = require('node:http');
-const { config, validateConfig } = require('./config');
+const { config, validateConfig } = require('./config/config');
 const { createApp } = require('./app');
 
 async function createStore(cfg) {
@@ -17,7 +17,7 @@ async function createStore(cfg) {
 
 async function start(cfg = config) {
   const errs = validateConfig(cfg);
-  if (errs.length) { errs.forEach((m) => console.error('Configuración: ' + m)); throw new Error('Configuración incompleta. Revise backend/.env (vea .env.example).'); }
+  if (errs.length) { errs.forEach((m) => console.error('Configuración: ' + m)); throw new Error('Configuración incompleta. Revise .env (vea .env.example).'); }
   const store = await createStore(cfg);
   const server = http.createServer(createApp(store, cfg));
   await new Promise((resolve) => server.listen(cfg.port, resolve));

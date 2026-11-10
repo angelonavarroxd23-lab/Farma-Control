@@ -157,10 +157,10 @@ test('TRZ-01 el stock de cada lote coincide con entradas + reversos − salidas 
 });
 test('PER-01 los datos son visibles desde una segunda instancia del servidor sobre la misma base (persistencia)', async () => {
   const c = await t.crearCliente();
-  const { start } = require('../src/server');
-  const cfg = { ...require('../src/config').config, driver: t.driver, port: 0, serveFrontend: false, corsOrigin: '', jwtSecret: process.env.JWT_SECRET || 'secreto-solo-para-pruebas-0123456789abcdef', tokenTtlMinutes: 5 };
+  const { start } = require('../server');
+  const cfg = { ...require('../config/config').config, driver: t.driver, port: 0, serveFrontend: false, corsOrigin: '', jwtSecret: process.env.JWT_SECRET || 'secreto-solo-para-pruebas-0123456789abcdef', tokenTtlMinutes: 5 };
   if (t.driver === 'memory') { // en memoria se comparte el almacén; con SQL Server se abre una conexión nueva
-    const { createApp } = require('../src/app'); const http = require('node:http');
+    const { createApp } = require('../app'); const http = require('node:http');
     const srv2 = http.createServer(createApp(t.srv.store, cfg)); await new Promise((r) => srv2.listen(0, r));
     const tk = await (await fetch(`http://127.0.0.1:${srv2.address().port}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ correo: t.USERS.cajero[0], contrasena: t.USERS.cajero[1] }) })).json();
     const lista = await (await fetch(`http://127.0.0.1:${srv2.address().port}/api/clientes?q=${c.numero_documento}`, { headers: { Authorization: `Bearer ${tk.token}` } })).json();

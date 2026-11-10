@@ -1,7 +1,7 @@
 'use strict';
 // Datos de demostración del controlador en memoria: equivalentes a la sección 08 del script SQL
 // (mismas credenciales de PRUEBA, medicamentos, lotes, recetas y operaciones de ejemplo).
-const { hashPassword } = require('../auth/password');
+const { hashPassword } = require('../lib/auth/password');
 const { todayStr, addDays } = require('./inventario');
 
 const DEMO_USERS = [

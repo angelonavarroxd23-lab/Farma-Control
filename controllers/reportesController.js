@@ -1,6 +1,6 @@
 'use strict';
 const inv = require('../models/inventario');
-const { toCsv } = require('../http/helpers');
+const { toCsv } = require('../lib/http/helpers');
 const { round2 } = require('../models/util');
 const { kardex, reporteVentas } = require('../models/reportes');
 

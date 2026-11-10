@@ -1,28 +1,31 @@
 # FarmaControl — Organización MVC
 
 La arquitectura de despliegue sigue siendo de **tres capas** (navegador → API REST en Node.js → SQL Server, decisiones AD-01…AD-08).
-MVC organiza el código **dentro** de esas capas:
+El código se organiza con el patrón **Modelo–Vista–Controlador**, visible desde la raíz del repositorio:
 
-| Capa MVC | Dónde está | Responsabilidad |
+| Capa MVC | Carpeta | Responsabilidad |
 |---|---|---|
-| **Vista** | `frontend/` (HTML, CSS y módulos JS en `frontend/js/pages/`) | Pantallas que ve el usuario; solo llama a la API, nunca a la base. |
-| **Controlador** | `backend/src/controllers/*Controller.js` + `backend/src/routes.js` | `routes.js` asocia método + URL + permiso con un método del controlador; cada controlador valida la entrada, aplica el caso de uso y devuelve la respuesta. |
-| **Modelo** | `backend/src/models/` | Reglas de negocio y acceso a datos: `schema`, `validate`, `inventario`, `reportes`, `util`, `errors`, y los almacenes `mssql` (producción) y `memory` (pruebas). |
+| **Modelo** | `models/` | Reglas de negocio y acceso a datos: `schema`, `validate`, `inventario`, `reportes`, `util`, `errors`, `seed`, y los almacenes `mssql.js` (SQL Server, producción) y `memory.js` (solo pruebas). |
+| **Vista** | `views/` | SPA en HTML, CSS y módulos JavaScript (`views/js/pages/`). Solo llama a la API; nunca conoce credenciales de la base. |
+| **Controlador** | `controllers/` + `routes/index.js` | `routes/index.js` asocia método + URL + permiso con un método de controlador; cada controlador valida la entrada, invoca a los modelos y devuelve la respuesta. |
 
-Servicios transversales: `backend/src/auth/` (contraseñas scrypt, JWT, permisos) y `backend/src/http/` (enrutador, utilidades HTTP).
+Soporte: `config/` (configuración desde `.env`), `lib/auth/` (scrypt, JWT, permisos), `lib/http/` (enrutador y utilidades), `app.js` (autenticación,
+autorización y auditoría de accesos denegados) y `server.js` (punto de entrada).
 
-```
-backend/src/
-├── routes.js              tabla de rutas  → controladores
-├── controllers/           auth, usuarios, clientes, proveedores, catalogo, recetas,
-│                          compras, ventas, inventario, reportes, auditoria (+ presenters.js)
-├── models/                schema, validate, inventario, reportes, util, errors, mssql, memory, seed
-├── auth/  http/           servicios transversales
-├── app.js  server.js  config.js
-```
+Flujo de una petición: **Vista** (`fetch`) → `app.js` → `routes/index.js` → **Controlador** → **Modelo** (`mssql.js`) → SQL Server
+(procedimientos `sp_RegistrarCompra`, `sp_RegistrarVenta`, `sp_AnularVenta`).
 
-Flujo de una petición: `Vista (fetch)` → `app.js` (autenticación, permisos, auditoría de accesos denegados) → `routes.js` → `Controlador` → `Modelo/Store` → SQL Server.
+| Controlador | Rutas |
+|---|---|
+| authController | `/api/health`, `/api/auth/*` |
+| usuariosController | `/api/roles`, `/api/usuarios` |
+| clientesController · proveedoresController · recetasController | `/api/clientes`, `/api/proveedores`, `/api/recetas` |
+| catalogoController | `/api/categorias`, `/api/medicamentos`, `/api/lotes` |
+| comprasController · ventasController | `/api/compras`, `/api/ventas` (incl. anulación) |
+| inventarioController | `/api/movimientos`, `/api/alertas` |
+| reportesController | `/api/resumen`, `/api/reportes/*` (incl. CSV) |
+| auditoriaController | `/api/auditoria` |
 
-**Alcance honesto de la conversión:** es una reorganización del código; la API (44 rutas), las reglas de negocio y el script SQL no cambiaron.
-La conversión se verificó con el controlador en memoria (51 pruebas aprobadas, 11 de integración omitidas). La ejecución contra SQL Server
-tras la conversión la realiza el workflow de GitHub Actions `pruebas-sqlserver` (ver `.github/workflows/ci.yml`); su resultado figura en la pestaña *Actions* del repositorio.
+**Alcance de la conversión:** reorganización del código; la API (44 rutas), las reglas de negocio y el script SQL no cambiaron.
+Verificación: 51 pruebas aprobadas con el controlador en memoria tras la conversión; la ejecución contra SQL Server 2022 la realiza
+el workflow `.github/workflows/ci.yml` (trabajo `pruebas-sqlserver`), visible en la pestaña *Actions*.
