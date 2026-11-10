@@ -1,0 +1,33 @@
+digraph G {
+graph [bgcolor="white",pad="0.33",nodesep="0.38",ranksep="0.88",splines=polyline,fontname="Arial"];
+node [fontname="Arial",fontsize=11,style="filled",fillcolor="#ECFDF5",color="#14946C",penwidth=1.5];
+edge [fontname="Arial",fontsize=10,color="#475569",penwidth=1.2];
+rankdir=LR;
+node [shape=plaintext,style="",fontcolor="#23374D",fontsize=11];
+cajero [label="«actor»\nCajero"];
+quimico [label="«actor»\nQuímico farmacéutico"];
+alm [label="«actor»\nAlmacenero"];
+admin [label="«actor»\nAdministrador"];
+subgraph cluster_app { label="FARMACONTROL | SISTEMA";fontname="Arial";fontsize=16;fontcolor="#0B6956";color="#84CCB0";style=rounded;margin=20;
+node [shape=ellipse,style=filled,fillcolor="#F2FBF7",color="#14946C",fontsize=10];
+u1 [label="US-01\nIniciar sesión"];
+u2 [label="US-02\nGestionar clientes"];
+u3 [label="US-03\nConsultar medicamentos"];
+u4 [label="US-04\nRegistrar / validar receta"];
+u5 [label="US-05\nRegistrar venta"];
+u6 [label="US-06\nGenerar comprobante simulado"];
+u7 [label="US-07\nRegistrar compra"];
+u8 [label="US-08\nGestionar medicamentos y lotes"];
+u9 [label="US-09\nConsultar alertas"];
+u10 [label="US-10\nGenerar reportes"];
+u11 [label="US-11\nAdministrar usuarios"];
+u12 [label="US-12\nAnular venta"];
+}
+cajero -> u1 [dir=none];cajero -> u2 [dir=none];cajero -> u3 [dir=none];cajero -> u5 [dir=none];cajero -> u6 [dir=none];
+quimico -> u4 [dir=none];quimico -> u3 [dir=none];quimico -> u9 [dir=none];
+alm -> u7 [dir=none];alm -> u8 [dir=none];alm -> u9 [dir=none];
+admin -> u10 [dir=none];admin -> u11 [dir=none];admin -> u12 [dir=none];
+u5 -> u3 [style=dashed,arrowhead=open,label="«include»",constraint=false];
+u5 -> u6 [style=dashed,arrowhead=open,label="«include»",constraint=false];
+u4 -> u5 [style=dashed,arrowhead=open,label="«extend»*",constraint=false];
+}

@@ -1,0 +1,7 @@
+stateDiagram-v2
+direction LR
+state "Venta" as V {
+[*] --> CONFIRMADA: registrar venta
+CONFIRMADA --> ANULADA: anular (Administrador, con motivo)
+ANULADA --> [*]
+}

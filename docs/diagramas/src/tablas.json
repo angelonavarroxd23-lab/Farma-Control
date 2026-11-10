@@ -1,0 +1,699 @@
+{
+ "Rol": {
+  "cols": [
+   [
+    "rol_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "nombre",
+    "NVARCHAR(40)",
+    "NOT NULL"
+   ],
+   [
+    "descripcion",
+    "NVARCHAR(180)",
+    "NULL"
+   ]
+  ],
+  "pk": [
+   "rol_id"
+  ],
+  "fks": [],
+  "uq": [
+   "nombre"
+  ]
+ },
+ "Usuario": {
+  "cols": [
+   [
+    "usuario_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "rol_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "nombres",
+    "NVARCHAR(120)",
+    "NOT NULL"
+   ],
+   [
+    "correo",
+    "NVARCHAR(160)",
+    "NOT NULL"
+   ],
+   [
+    "hash_contrasena",
+    "NVARCHAR(255)",
+    "NOT NULL"
+   ],
+   [
+    "activo",
+    "BIT",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "usuario_id"
+  ],
+  "fks": [
+   [
+    "rol_id",
+    "Rol"
+   ]
+  ],
+  "uq": [
+   "correo"
+  ]
+ },
+ "Cliente": {
+  "cols": [
+   [
+    "cliente_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "tipo_documento",
+    "VARCHAR(3)",
+    "NOT NULL"
+   ],
+   [
+    "numero_documento",
+    "VARCHAR(15)",
+    "NOT NULL"
+   ],
+   [
+    "nombre_razon_social",
+    "NVARCHAR(160)",
+    "NOT NULL"
+   ],
+   [
+    "telefono",
+    "VARCHAR(20)",
+    "NULL"
+   ]
+  ],
+  "pk": [
+   "cliente_id"
+  ],
+  "fks": [],
+  "uq": [
+   "tipo_documento",
+   "numero_documento"
+  ]
+ },
+ "Proveedor": {
+  "cols": [
+   [
+    "proveedor_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "ruc",
+    "CHAR(11)",
+    "NOT NULL"
+   ],
+   [
+    "razon_social",
+    "NVARCHAR(180)",
+    "NOT NULL"
+   ],
+   [
+    "contacto",
+    "NVARCHAR(120)",
+    "NULL"
+   ],
+   [
+    "telefono",
+    "VARCHAR(20)",
+    "NULL"
+   ],
+   [
+    "activo",
+    "BIT",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "proveedor_id"
+  ],
+  "fks": [],
+  "uq": [
+   "ruc"
+  ]
+ },
+ "Categoria": {
+  "cols": [
+   [
+    "categoria_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "nombre",
+    "NVARCHAR(90)",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "categoria_id"
+  ],
+  "fks": [],
+  "uq": [
+   "nombre"
+  ]
+ },
+ "Medicamento": {
+  "cols": [
+   [
+    "medicamento_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "categoria_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "sku",
+    "VARCHAR(30)",
+    "NOT NULL"
+   ],
+   [
+    "nombre",
+    "NVARCHAR(160)",
+    "NOT NULL"
+   ],
+   [
+    "principio_activo",
+    "NVARCHAR(160)",
+    "NULL"
+   ],
+   [
+    "presentacion",
+    "NVARCHAR(90)",
+    "NOT NULL"
+   ],
+   [
+    "precio_venta",
+    "DECIMAL(12,2)",
+    "NOT NULL"
+   ],
+   [
+    "requiere_receta",
+    "BIT",
+    "NOT NULL"
+   ],
+   [
+    "activo",
+    "BIT",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "medicamento_id"
+  ],
+  "fks": [
+   [
+    "categoria_id",
+    "Categoria"
+   ]
+  ],
+  "uq": [
+   "sku"
+  ]
+ },
+ "Receta": {
+  "cols": [
+   [
+    "receta_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "cliente_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "numero_receta",
+    "VARCHAR(50)",
+    "NOT NULL"
+   ],
+   [
+    "nombre_prescriptor",
+    "NVARCHAR(160)",
+    "NOT NULL"
+   ],
+   [
+    "fecha_emision",
+    "DATE",
+    "NOT NULL"
+   ],
+   [
+    "fecha_vencimiento",
+    "DATE",
+    "NOT NULL"
+   ],
+   [
+    "estado",
+    "VARCHAR(12)",
+    "NOT NULL"
+   ],
+   [
+    "observacion",
+    "NVARCHAR(250)",
+    "NULL"
+   ]
+  ],
+  "pk": [
+   "receta_id"
+  ],
+  "fks": [
+   [
+    "cliente_id",
+    "Cliente"
+   ]
+  ],
+  "uq": [
+   "numero_receta"
+  ]
+ },
+ "Lote": {
+  "cols": [
+   [
+    "lote_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "medicamento_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "codigo_lote",
+    "NVARCHAR(60)",
+    "NOT NULL"
+   ],
+   [
+    "fecha_vencimiento",
+    "DATE",
+    "NOT NULL"
+   ],
+   [
+    "stock_actual",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "stock_minimo",
+    "INT",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "lote_id"
+  ],
+  "fks": [
+   [
+    "medicamento_id",
+    "Medicamento"
+   ]
+  ],
+  "uq": [
+   "medicamento_id",
+   "codigo_lote"
+  ]
+ },
+ "Compra": {
+  "cols": [
+   [
+    "compra_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "proveedor_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "usuario_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "fecha",
+    "DATETIME",
+    "NOT NULL"
+   ],
+   [
+    "numero_documento",
+    "VARCHAR(40)",
+    "NOT NULL"
+   ],
+   [
+    "total",
+    "DECIMAL(14,2)",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "compra_id"
+  ],
+  "fks": [
+   [
+    "proveedor_id",
+    "Proveedor"
+   ],
+   [
+    "usuario_id",
+    "Usuario"
+   ]
+  ],
+  "uq": [
+   "proveedor_id",
+   "numero_documento"
+  ]
+ },
+ "DetalleCompra": {
+  "cols": [
+   [
+    "detalle_compra_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "compra_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "lote_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "cantidad",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "costo_unitario",
+    "DECIMAL(12,2)",
+    "NOT NULL"
+   ],
+   [
+    "subtotal",
+    "AS",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "detalle_compra_id"
+  ],
+  "fks": [
+   [
+    "compra_id",
+    "Compra"
+   ],
+   [
+    "lote_id",
+    "Lote"
+   ]
+  ],
+  "uq": [
+   "compra_id",
+   "lote_id"
+  ]
+ },
+ "Venta": {
+  "cols": [
+   [
+    "venta_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "cliente_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "usuario_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "receta_id",
+    "INT",
+    "NULL"
+   ],
+   [
+    "fecha",
+    "DATETIME",
+    "NOT NULL"
+   ],
+   [
+    "tipo_comprobante",
+    "VARCHAR(10)",
+    "NOT NULL"
+   ],
+   [
+    "numero_comprobante",
+    "VARCHAR(30)",
+    "NOT NULL"
+   ],
+   [
+    "estado",
+    "VARCHAR(12)",
+    "NOT NULL"
+   ],
+   [
+    "total",
+    "DECIMAL(14,2)",
+    "NOT NULL"
+   ],
+   [
+    "fecha_anulacion",
+    "DATETIME",
+    "NULL"
+   ],
+   [
+    "usuario_anulacion_id",
+    "INT",
+    "NULL"
+   ],
+   [
+    "motivo_anulacion",
+    "NVARCHAR(250)",
+    "NULL"
+   ]
+  ],
+  "pk": [
+   "venta_id"
+  ],
+  "fks": [
+   [
+    "cliente_id",
+    "Cliente"
+   ],
+   [
+    "usuario_id",
+    "Usuario"
+   ],
+   [
+    "receta_id",
+    "Receta"
+   ],
+   [
+    "usuario_anulacion_id",
+    "Usuario"
+   ]
+  ],
+  "uq": [
+   "tipo_comprobante",
+   "numero_comprobante"
+  ]
+ },
+ "DetalleVenta": {
+  "cols": [
+   [
+    "detalle_venta_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "venta_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "lote_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "cantidad",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "precio_unitario",
+    "DECIMAL(12,2)",
+    "NOT NULL"
+   ],
+   [
+    "subtotal",
+    "AS",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "detalle_venta_id"
+  ],
+  "fks": [
+   [
+    "venta_id",
+    "Venta"
+   ],
+   [
+    "lote_id",
+    "Lote"
+   ]
+  ],
+  "uq": [
+   "venta_id",
+   "lote_id"
+  ]
+ },
+ "MovimientoStock": {
+  "cols": [
+   [
+    "movimiento_id",
+    "BIGINT",
+    "NOT NULL"
+   ],
+   [
+    "lote_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "usuario_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "compra_id",
+    "INT",
+    "NULL"
+   ],
+   [
+    "venta_id",
+    "INT",
+    "NULL"
+   ],
+   [
+    "tipo",
+    "VARCHAR(18)",
+    "NOT NULL"
+   ],
+   [
+    "cantidad",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "fecha",
+    "DATETIME",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "movimiento_id"
+  ],
+  "fks": [
+   [
+    "lote_id",
+    "Lote"
+   ],
+   [
+    "usuario_id",
+    "Usuario"
+   ],
+   [
+    "compra_id",
+    "Compra"
+   ],
+   [
+    "venta_id",
+    "Venta"
+   ]
+  ],
+  "uq": []
+ },
+ "AuditoriaOperacion": {
+  "cols": [
+   [
+    "auditoria_id",
+    "BIGINT",
+    "NOT NULL"
+   ],
+   [
+    "usuario_id",
+    "INT",
+    "NULL"
+   ],
+   [
+    "accion",
+    "VARCHAR(40)",
+    "NOT NULL"
+   ],
+   [
+    "entidad",
+    "VARCHAR(40)",
+    "NOT NULL"
+   ],
+   [
+    "entidad_id",
+    "INT",
+    "NULL"
+   ],
+   [
+    "detalle",
+    "NVARCHAR(500)",
+    "NULL"
+   ],
+   [
+    "ip",
+    "VARCHAR(45)",
+    "NULL"
+   ],
+   [
+    "fecha",
+    "DATETIME",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "auditoria_id"
+  ],
+  "fks": [
+   [
+    "usuario_id",
+    "Usuario"
+   ]
+  ],
+  "uq": []
+ }
+}

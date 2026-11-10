@@ -1,0 +1,21 @@
+flowchart TD
+A([Inicio]) --> B[Iniciar sesión]
+B --> C[Seleccionar cliente y tipo de comprobante]
+C --> D[Buscar producto y elegir lote]
+D --> E{¿Lote vencido o sin stock suficiente?}
+E -- Sí --> F[Rechazar línea y mostrar motivo] --> D
+E -- No --> G[Agregar línea al carrito]
+G --> H{¿Más productos?}
+H -- Sí --> D
+H -- No --> I{¿Hay medicamento con receta?}
+I -- Sí --> J{¿Receta registrada, válida, vigente y del cliente?}
+J -- No --> K[Rechazar venta] --> Z([Fin])
+J -- Sí --> L
+I -- No --> L{¿Factura?}
+L -- Sí --> M{¿Cliente con RUC?}
+M -- No --> K
+M -- Sí --> N
+L -- No --> N[Confirmar venta: transacción en SQL Server]
+N --> O[Descontar stock y registrar SALIDA_VENTA]
+O --> P[Registrar auditoría y emitir constancia]
+P --> Z

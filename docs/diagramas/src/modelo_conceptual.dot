@@ -1,0 +1,37 @@
+graph G {
+layout=neato; overlap=false; splines=true; sep="+18"; bgcolor="white";
+node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.18,0.1"]; edge [fontname="Helvetica", fontsize=9, color="#555555"];
+Rol [fillcolor="#E8F1FB"];
+Usuario [fillcolor="#E8F1FB"];
+Cliente [fillcolor="#E6F6EE"];
+Proveedor [fillcolor="#E6F6EE"];
+Categoria [fillcolor="#FFF4DC"];
+Medicamento [fillcolor="#FFF4DC"];
+Receta [fillcolor="#E6F6EE"];
+Lote [fillcolor="#FFF4DC"];
+Compra [fillcolor="#FBE9E7"];
+DetalleCompra [fillcolor="#FBE9E7"];
+Venta [fillcolor="#FBE9E7"];
+DetalleVenta [fillcolor="#FBE9E7"];
+MovimientoStock [fillcolor="#FFF4DC"];
+AuditoriaOperacion [fillcolor="#E8F1FB"];
+Rol -- Usuario [label="agrupa a", taillabel="1", headlabel="N"];
+Usuario -- Venta [label="registra", taillabel="1", headlabel="N"];
+Usuario -- Compra [label="recepciona", taillabel="1", headlabel="N"];
+Usuario -- Venta [label="anula", taillabel="1", headlabel="N"];
+Usuario -- AuditoriaOperacion [label="genera", taillabel="1", headlabel="N"];
+Cliente -- Venta [label="realiza", taillabel="1", headlabel="N"];
+Cliente -- Receta [label="es titular de", taillabel="1", headlabel="N"];
+Receta -- Venta [label="respalda", taillabel="1", headlabel="N"];
+Proveedor -- Compra [label="abastece", taillabel="1", headlabel="N"];
+Categoria -- Medicamento [label="clasifica", taillabel="1", headlabel="N"];
+Medicamento -- Lote [label="se divide en", taillabel="1", headlabel="N"];
+Compra -- DetalleCompra [label="contiene", taillabel="1", headlabel="N"];
+Lote -- DetalleCompra [label="ingresa por", taillabel="1", headlabel="N"];
+Venta -- DetalleVenta [label="contiene", taillabel="1", headlabel="N"];
+Lote -- DetalleVenta [label="sale por", taillabel="1", headlabel="N"];
+Lote -- MovimientoStock [label="registra", taillabel="1", headlabel="N"];
+Usuario -- MovimientoStock [label="ejecuta", taillabel="1", headlabel="N"];
+Compra -- MovimientoStock [label="origina entradas", taillabel="1", headlabel="N"];
+Venta -- MovimientoStock [label="origina salidas y reversos", taillabel="1", headlabel="N"];
+}

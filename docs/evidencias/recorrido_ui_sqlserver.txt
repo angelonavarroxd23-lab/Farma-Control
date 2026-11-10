@@ -1,0 +1,23 @@
+Recorrido UI contra SQL Server — 2026-11-09T21:58:24.753Z
+Navegador: C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe
+
+OK    login con contraseña incorrecta muestra error
+OK    login como administrador
+OK    cliente guardado en SQL Server — DNI 61441993
+OK    medicamento guardado en SQL Server — UI-MW9SXP6X
+OK    lote guardado con stock 0 — L-MW9SXP6X
+OK    compra incrementa el stock en SQL Server (0 → 40) — stock=40
+OK    movimiento ENTRADA_COMPRA guardado
+OK    el carrito rechaza más unidades que el stock
+OK    venta descuenta el stock en SQL Server (40 → 34) — stock=34
+OK    venta CONFIRMADA con total correcto (6 × 12.50 = 75.00) — {"venta_id":4,"estado":"CONFIRMADA","total":75}
+OK    anulación restituye el stock una sola vez (34 → 40) — stock=40
+OK    un único REVERSO_VENTA registrado
+OK    el botón Anular ya no está disponible para la venta anulada
+OK    movimientos muestra el reverso
+OK    auditoría muestra la venta anulada
+OK    el menú del cajero no incluye Usuarios, Auditoría ni Reportes
+OK    API: el cajero recibe 403 en /api/usuarios — HTTP 403
+OK    sin errores de consola inesperados — []
+
+Resultado: 18 OK, 0 FALLO

@@ -1,0 +1,8 @@
+stateDiagram-v2
+direction LR
+[*] --> VALIDA_vigente: registrar receta
+VALIDA_vigente --> VALIDA_vencida: pasa la fecha de vencimiento (derivado)
+VALIDA_vigente --> ANULADA: anular receta
+VALIDA_vencida --> ANULADA: anular receta
+ANULADA --> [*]
+note right of VALIDA_vigente: Solo una receta VALIDA y vigente, del mismo cliente, permite vender

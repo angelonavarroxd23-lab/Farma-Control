@@ -1,0 +1,35 @@
+digraph G {
+graph [bgcolor="white",pad="0.4",rankdir=LR,nodesep="0.35",ranksep="1.25",splines=polyline,fontname="Arial",label="MODELO FÍSICO | SQL SERVER",labelloc=t,fontsize=21,fontcolor="#0B6956"];
+node [shape=record,fontname="Arial",fontsize=11,style=filled,fillcolor="#EDF7FF",color="#3979A7",penwidth=1.6,margin="0.12,0.08"];
+edge [color="#8695A8",arrowsize=0.6,penwidth=1.0];
+Rol [label="{Rol|rol_id INT IDENTITY PK\lnombre NVARCHAR\(40\) UQ\ldescripcion NVARCHAR\(180\) NULL\l}"];
+Usuario [label="{Usuario|usuario_id INT IDENTITY PK\lrol_id INT FK\lnombres NVARCHAR\(120\)\lcorreo NVARCHAR\(160\) UQ\lhash_contrasena NVARCHAR\(255\)\lactivo BIT\l}"];
+Cliente [label="{Cliente|cliente_id INT IDENTITY PK\ltipo_documento VARCHAR\(3\)\lnumero_documento VARCHAR\(15\)\lnombre_razon_social NVARCHAR\(160\)\ltelefono VARCHAR\(20\) NULL\l}"];
+Proveedor [label="{Proveedor|proveedor_id INT IDENTITY PK\lruc CHAR\(11\) UQ\lrazon_social NVARCHAR\(180\)\lcontacto NVARCHAR\(120\) NULL\lactivo BIT\l}"];
+Categoria [label="{Categoria|categoria_id INT IDENTITY PK\lnombre NVARCHAR\(90\) UQ\l}"];
+Medicamento [label="{Medicamento|medicamento_id INT IDENTITY PK\lcategoria_id INT FK\lsku VARCHAR\(30\) UQ\lnombre NVARCHAR\(160\)\lprecio_venta DECIMAL\(12,2\)\lrequiere_receta BIT\lactivo BIT\l}"];
+Receta [label="{Receta|receta_id INT IDENTITY PK\lcliente_id INT FK\lnumero_receta VARCHAR\(50\) UQ\lfecha_emision DATE\lfecha_vencimiento DATE\lestado VARCHAR\(12\)\l}"];
+Lote [label="{Lote|lote_id INT IDENTITY PK\lmedicamento_id INT FK\lcodigo_lote NVARCHAR\(60\)\lfecha_vencimiento DATE\lstock_actual INT\lstock_minimo INT\l}"];
+Compra [label="{Compra|compra_id INT IDENTITY PK\lproveedor_id INT FK\lusuario_id INT FK\lfecha DATETIME2\lnumero_documento VARCHAR\(40\)\ltotal DECIMAL\(14,2\)\l}"];
+DetalleCompra [label="{DetalleCompra|detalle_compra_id INT IDENTITY PK\lcompra_id INT FK\llote_id INT FK\lcantidad INT\lcosto_unitario DECIMAL\(12,2\)\lsubtotal DECIMAL\(14,2\)*\l}"];
+Venta [label="{Venta|venta_id INT IDENTITY PK\lcliente_id INT FK\lusuario_id INT FK\lreceta_id INT FK NULL\lfecha DATETIME2\ltipo_comprobante VARCHAR\(10\)\lnumero_comprobante VARCHAR\(30\)\lestado VARCHAR\(12\)\ltotal DECIMAL\(14,2\)\l}"];
+DetalleVenta [label="{DetalleVenta|detalle_venta_id INT IDENTITY PK\lventa_id INT FK\llote_id INT FK\lcantidad INT\lprecio_unitario DECIMAL\(12,2\)\lsubtotal DECIMAL\(14,2\)*\l}"];
+MovimientoStock [label="{MovimientoStock|movimiento_id BIGINT IDENTITY PK\llote_id INT FK\lusuario_id INT FK\lcompra_id INT FK NULL\lventa_id INT FK NULL\ltipo VARCHAR\(18\)\lcantidad INT\lfecha DATETIME2\l}"];
+Usuario -> Rol [];
+Medicamento -> Categoria [];
+Receta -> Cliente [];
+Lote -> Medicamento [];
+Compra -> Proveedor [];
+Compra -> Usuario [];
+DetalleCompra -> Compra [];
+DetalleCompra -> Lote [];
+Venta -> Cliente [];
+Venta -> Usuario [];
+Venta -> Receta [];
+DetalleVenta -> Venta [];
+DetalleVenta -> Lote [];
+MovimientoStock -> Lote [];
+MovimientoStock -> Usuario [];
+MovimientoStock -> Compra [];
+MovimientoStock -> Venta [];
+}

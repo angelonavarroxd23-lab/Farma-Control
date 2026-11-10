@@ -1,0 +1,25 @@
+digraph G {
+graph [bgcolor="white",pad="0.33",nodesep="0.38",ranksep="0.88",splines=polyline,fontname="Arial"];
+node [fontname="Arial",fontsize=11,style="filled",fillcolor="#ECFDF5",color="#14946C",penwidth=1.5];
+edge [fontname="Arial",fontsize=10,color="#475569",penwidth=1.2];
+rankdir=LR;
+node [shape=plaintext,style="",fontcolor="#23374D",fontsize=12];
+cliente [label="«actor de negocio»\nCliente"];
+proveedor [label="«actor de negocio»\nProveedor"];
+adm [label="«trabajador del negocio»\nAdministrador"];
+subgraph cluster_farmacia { label="PROCESOS DEL NEGOCIO | FARMACIA VIDA SANA";fontname="Arial";fontsize=15;fontcolor="#0B6956";color="#84CCB0";style="rounded";margin=18;
+node [shape=ellipse,style=filled,fillcolor="#F2FBF7",color="#14946C",fontsize=11];
+b1 [label="BN-01\nAtender solicitud\nde compra"];
+b2 [label="BN-02\nVerificar receta\nmédica"];
+b3 [label="BN-03\nEfectuar venta y\nentregar productos"];
+b4 [label="BN-04\nSolicitar reposición\na proveedor"];
+b5 [label="BN-05\nRecibir mercadería\ny registrar lotes"];
+b6 [label="BN-06\nControlar vencimientos\ny stock"];
+b7 [label="BN-07\nSupervisar ventas\ne inventario"];
+}
+cliente -> b1 [dir=none];cliente -> b3 [dir=none];cliente -> b2 [dir=none];
+proveedor -> b4 [dir=none];proveedor -> b5 [dir=none];
+adm -> b4 [dir=none];adm -> b6 [dir=none];adm -> b7 [dir=none];
+b1 -> b2 [style=dashed,arrowhead=vee,label="cuando aplica",constraint=false];
+b1 -> b3 [style=dashed,arrowhead=vee,label="continúa",constraint=false];
+}

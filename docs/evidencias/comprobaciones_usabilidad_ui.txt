@@ -1,0 +1,6 @@
+móvil 375 px: 13 pantallas revisadas, 0 con desbordamiento horizontal del documento 
+escritorio 1440 px: 13 pantallas revisadas, 0 con desbordamiento horizontal del documento 
+etiquetas: 28 controles de formulario en listados/filtros, 0 sin etiqueta accesible 
+teclado: 10 de 12 pulsaciones de Tab con indicador de foco visible
+diálogo: abierto=1, tras Esc=0
+lang=es; title=FarmaControl · Sistema de gestión de ventas de farmacia

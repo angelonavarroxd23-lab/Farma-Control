@@ -1,0 +1,35 @@
+digraph G {
+graph [bgcolor="white",pad="0.4",rankdir=LR,nodesep="0.3",ranksep="1.2",splines=polyline,fontname="Arial",label="MODELO LÓGICO | CLAVES PRIMARIAS Y FORÁNEAS",labelloc=t,fontsize=19,fontcolor="#0B6956"];
+node [shape=record,fontname="Arial",fontsize=11,style=filled,fillcolor="#ECFDF5",color="#14946C",penwidth=1.6,margin="0.12,0.08"];
+edge [color="#6B7E91",arrowsize=0.6,penwidth=1.1];
+Rol [label="{Rol|PK rol_id\lUQ nombre\ldescripcion\l}"];
+Usuario [label="{Usuario|PK usuario_id\lFK rol_id\lnombres\lUQ correo\lhash_contrasena\lactivo\l}"];
+Cliente [label="{Cliente|PK cliente_id\ltipo_documento\lnumero_documento\lnombre_razon_social\ltelefono\l}"];
+Proveedor [label="{Proveedor|PK proveedor_id\lUQ ruc\lrazon_social\lcontacto\ltelefono\l}"];
+Categoria [label="{Categoria|PK categoria_id\lUQ nombre\l}"];
+Medicamento [label="{Medicamento|PK medicamento_id\lFK categoria_id\lUQ sku\lnombre\lpresentacion\lprecio_venta\lrequiere_receta\l}"];
+Receta [label="{Receta|PK receta_id\lFK cliente_id\lnumero_receta\lfecha_emision\lfecha_vencimiento\lestado\l}"];
+Lote [label="{Lote|PK lote_id\lFK medicamento_id\lcodigo_lote\lfecha_vencimiento\lstock_actual\lstock_minimo\l}"];
+Compra [label="{Compra|PK compra_id\lFK proveedor_id\lFK usuario_id\lnumero_documento\lfecha\ltotal\l}"];
+DetalleCompra [label="{DetalleCompra|PK detalle_compra_id\lFK compra_id\lFK lote_id\lcantidad\lcosto_unitario\lsubtotal*\l}"];
+Venta [label="{Venta|PK venta_id\lFK cliente_id\lFK usuario_id\lFK receta_id?\lnumero_comprobante\lfecha\lestado\ltotal\l}"];
+DetalleVenta [label="{DetalleVenta|PK detalle_venta_id\lFK venta_id\lFK lote_id\lcantidad\lprecio_unitario\lsubtotal*\l}"];
+MovimientoStock [label="{MovimientoStock|PK movimiento_id\lFK lote_id\lFK usuario_id\lFK compra_id?\lFK venta_id?\ltipo\lcantidad\lfecha\l}"];
+Usuario -> Rol [label="N:1"];
+Medicamento -> Categoria [label="N:1"];
+Receta -> Cliente [label="N:1"];
+Lote -> Medicamento [label="N:1"];
+Compra -> Proveedor [label="N:1"];
+Compra -> Usuario [label="N:1"];
+DetalleCompra -> Compra [label="N:1"];
+DetalleCompra -> Lote [label="N:1"];
+Venta -> Cliente [label="N:1"];
+Venta -> Usuario [label="N:1"];
+Venta -> Receta [label="N:1"];
+DetalleVenta -> Venta [label="N:1"];
+DetalleVenta -> Lote [label="N:1"];
+MovimientoStock -> Lote [label="N:1"];
+MovimientoStock -> Usuario [label="N:1"];
+MovimientoStock -> Compra [label="N:1"];
+MovimientoStock -> Venta [label="N:1"];
+}

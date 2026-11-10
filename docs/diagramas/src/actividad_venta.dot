@@ -1,0 +1,10 @@
+digraph A { bgcolor=white; nodesep=0.35; ranksep=0.35; node [fontname=Helvetica, fontsize=11, style=filled, fillcolor="#F4F9F7", shape=box, style="rounded,filled"]; edge [fontname=Helvetica, fontsize=9];
+ini [shape=circle, label="", width=0.25, fillcolor=black, style=filled]; fin [shape=doublecircle, label="", width=0.25, fillcolor=black, style=filled];
+a [label="Iniciar sesión (Cajero o Administrador)"]; b [label="Seleccionar cliente y tipo de comprobante"]; c [label="Buscar producto y elegir lote"];
+d [shape=diamond, style=filled, fillcolor="#FFF4DC", label="¿Lote vencido o\nstock insuficiente?"]; e [label="Rechazar línea y\nmostrar motivo", fillcolor="#FBE9E7"]; f [label="Agregar línea al carrito"];
+g [shape=diamond, style=filled, fillcolor="#FFF4DC", label="¿Más\nproductos?"]; h [shape=diamond, style=filled, fillcolor="#FFF4DC", label="¿Medicamento\ncon receta?"]; i [shape=diamond, style=filled, fillcolor="#FFF4DC", label="¿Receta válida, vigente\ny del cliente?"];
+j [shape=diamond, style=filled, fillcolor="#FFF4DC", label="¿Factura sin\ncliente con RUC?"]; k [label="Rechazar venta", fillcolor="#FBE9E7"];
+l [label="Transacción en SQL Server:\ndescontar stock y registrar SALIDA_VENTA", fillcolor="#E6F6EE"]; m [label="Registrar auditoría y emitir constancia", fillcolor="#E6F6EE"];
+ini->a->b->c->d; d->e [label="Sí"]; e->c; d->f [label="No"]; f->g; g->c [label="Sí"]; g->h [label="No"]; h->i [label="Sí"]; h->j [label="No"]; i->k [label="No"]; i->j [label="Sí"]; j->k [label="Sí"]; j->l [label="No"]; k->fin; l->m->fin;
+{rank=same; d; e} {rank=same; i; k}
+}

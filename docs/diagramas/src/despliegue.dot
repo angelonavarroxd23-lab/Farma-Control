@@ -1,0 +1,6 @@
+digraph D { rankdir=LR; bgcolor=white; compound=true; nodesep=0.5; ranksep=1.0;
+node [shape=box3d, style=filled, fillcolor="#F4F9F7", fontname=Helvetica, fontsize=11]; edge [fontname=Helvetica, fontsize=9];
+subgraph cluster_pc { label="Equipo cliente"; style="rounded,filled"; fillcolor="#E8F1FB"; fontname=Helvetica; nav [label="Navegador web\n(Chrome / Edge / Firefox)\nSPA FarmaControl"]; }
+subgraph cluster_app { label="Servidor de aplicación (equipo local del equipo/aula)"; style="rounded,filled"; fillcolor="#E6F6EE"; fontname=Helvetica; node1 [label="Node.js ≥ 20\nbackend/src/server.js\nPuerto 3000\n(API REST + archivos estáticos)"]; env [label="backend/.env\n(credenciales, JWT_SECRET)", shape=note, fillcolor="#FFFFFF"]; }
+subgraph cluster_db { label="Servidor de base de datos"; style="rounded,filled"; fillcolor="#FFF4DC"; fontname=Helvetica; sql [label="SQL Server 2019+\nBD FarmaControlBD\nPuerto 1433\nCuenta farmacontrol_app (mínimos privilegios)", shape=cylinder]; }
+nav -> node1 [label="HTTP :3000\nJSON + Bearer JWT"]; env -> node1 [style=dashed, label="lee al iniciar"]; node1 -> sql [label="TCP 1433 (TDS, cifrado)\nSQL parametrizado + SP"]; }

@@ -1,0 +1,5 @@
+$ curl http://localhost:3000/api/health
+{"status":"ok","driver":"memory","hora_servidor":"2026-11-09T21:02:55.259Z"}
+$ node --version
+v22.23.4
+FarmaControl API en http://localhost:3000 (base de datos: memory)

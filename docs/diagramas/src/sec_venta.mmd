@@ -1,0 +1,25 @@
+sequenceDiagram
+autonumber
+actor C as Cajero
+participant UI as Frontend (SPA)
+participant API as API REST (Node.js)
+participant SP as sp_RegistrarVenta
+participant DB as SQL Server
+C->>UI: Selecciona cliente, lotes y cantidades
+UI->>API: POST /api/ventas (JWT)
+API->>API: Verifica token, usuario activo y permiso ventas:create
+API->>API: Valida datos (cantidades, lotes repetidos, tipo de comprobante)
+API->>SP: EXEC con tabla TDetalleVenta
+SP->>DB: BEGIN TRAN, lee lotes con UPDLOCK, HOLDLOCK
+alt Lote vencido, stock insuficiente, receta inválida o factura sin RUC
+SP-->>API: THROW (código de negocio), ROLLBACK
+API-->>UI: 422 con mensaje, auditoría del rechazo
+UI-->>C: Muestra el motivo
+else Datos correctos
+SP->>DB: INSERT Venta y DetalleVenta, UPDATE Lote.stock_actual
+SP->>DB: INSERT MovimientoStock (SALIDA_VENTA), INSERT AuditoriaOperacion
+SP->>DB: COMMIT
+SP-->>API: venta_id y numero_comprobante
+API-->>UI: 201 Created
+UI-->>C: Abre la constancia para imprimir
+end

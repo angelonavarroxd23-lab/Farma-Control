@@ -1,0 +1,14 @@
+stateDiagram-v2
+direction LR
+[*] --> Agotado: crear lote (stock 0)
+Agotado --> Disponible: compra (stock > mínimo)
+Agotado --> StockBajo: compra (stock <= mínimo)
+Disponible --> StockBajo: venta (stock <= mínimo)
+StockBajo --> Disponible: compra
+StockBajo --> Agotado: venta (stock = 0)
+Disponible --> PorVencer: faltan 30 días o menos
+StockBajo --> PorVencer: faltan 30 días o menos
+PorVencer --> Vencido: pasa la fecha de vencimiento
+Disponible --> Vencido: pasa la fecha
+StockBajo --> Vencido: pasa la fecha
+Vencido --> [*]: no vendible

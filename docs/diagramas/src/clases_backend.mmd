@@ -1,0 +1,77 @@
+classDiagram
+direction TB
+class Router {
+  +add(metodo, patron, opciones, manejador)
+  +match(metodo, ruta)
+}
+class App {
+  +createApp(store, config)
+  +manejarPeticion()
+}
+class Routes {
+  +buildRouter()
+}
+class Permissions {
+  +PERMISSIONS
+  +can(rol, permiso) bool
+}
+class Token {
+  +sign(payload)
+  +verify(token)
+}
+class Password {
+  +hashPassword()
+  +verifyPassword()
+  +passwordPolicyError()
+}
+class Validate {
+  +checkCliente()
+  +checkMedicamento()
+  +checkReceta()
+  +positiveInt()
+}
+class Inventario {
+  +estadoLote()
+  +alertas()
+  +enriquecerLotes()
+  +resumenMedicamentos()
+}
+class AppError {
+  +status
+  +code
+  +message
+}
+class Store {
+<<interface>>
++list(tabla, filtro)
++get(tabla, id)
++insert(tabla, datos)
++update(tabla, id, datos)
++remove(tabla, id)
++registrarCompra()
++registrarVenta()
++anularVenta()
+}
+class MssqlStore {
+  -pool: ConnectionPool
+  +connect()
+  -_bind()
+  -_tvp()
+}
+class MemoryStore {
+  -data
+  +seed()
+}
+App --> Router
+App --> Routes
+Routes ..> Permissions
+Routes ..> Token
+Routes ..> Password
+Routes ..> Validate
+Routes ..> Inventario
+Routes --> Store
+Store <|.. MssqlStore
+Store <|.. MemoryStore
+Routes ..> AppError
+MssqlStore ..> AppError
+MemoryStore ..> AppError

@@ -1,0 +1,1 @@
+{"status":"ok","driver":"mssql","hora_servidor":"2026-11-09T21:57:20.297Z"}

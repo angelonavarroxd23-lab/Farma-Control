@@ -1,0 +1,16 @@
+digraph G {
+graph [bgcolor="white",pad="0.35",rankdir=LR,nodesep="0.65",ranksep="1.0",splines=polyline,fontname="Arial",label="MODELO CONCEPTUAL | ENTIDADES Y RELACIONES",labelloc=t,fontsize=20,fontcolor="#0B6956"];
+node [shape=box,style="rounded,filled",color="#14946C",penwidth=2,fillcolor="#E8F8F1",fontname="Arial",fontsize=15,margin="0.20,0.13"];
+edge [fontname="Arial",fontsize=12,color="#64748B",penwidth=1.6,dir=none];
+Cliente;Venta;Medicamento;Lote;Proveedor;Compra;Usuario;Receta;Categoria;
+Cliente -> Venta [label="1   realiza   N"];
+Usuario -> Venta [label="1   atiende   N"];
+Venta -> Lote [label="N   incluye   N*"];
+Medicamento -> Lote [label="1   agrupa   N"];
+Categoria -> Medicamento [label="1   clasifica   N"];
+Proveedor -> Compra [label="1   suministra   N"];
+Usuario -> Compra [label="1   registra   N"];
+Compra -> Lote [label="N   recibe   N*"];
+Cliente -> Receta [label="1   posee   N"];
+Receta -> Venta [label="1   respalda   0..N"];
+}

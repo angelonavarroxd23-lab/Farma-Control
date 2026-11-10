@@ -1,0 +1,23 @@
+sequenceDiagram
+autonumber
+actor A as Administrador
+participant UI as Frontend (SPA)
+participant API as API REST
+participant SP as sp_AnularVenta
+participant DB as SQL Server
+A->>UI: Anular venta e indicar el motivo
+UI->>API: POST /api/ventas/{id}/anular
+API->>API: Verifica permiso ventas:anular (solo Administrador)
+API->>SP: EXEC (venta, usuario, motivo)
+SP->>DB: BEGIN TRAN, bloquea la venta (UPDLOCK)
+alt La venta ya está ANULADA o no existe
+SP-->>API: THROW, ROLLBACK
+API-->>UI: 422 La venta ya fue anulada
+else Venta CONFIRMADA
+SP->>DB: UPDATE Venta (estado, fecha, usuario y motivo)
+SP->>DB: UPDATE Lote (+cantidad por cada detalle)
+SP->>DB: INSERT MovimientoStock REVERSO_VENTA (índice único filtrado)
+SP->>DB: INSERT AuditoriaOperacion, COMMIT
+API-->>UI: 200 OK
+UI-->>A: Venta anulada y existencias repuestas
+end

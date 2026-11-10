@@ -1,0 +1,11 @@
+> cerrar
+> anular
+> motivo
+OK    login incorrecto muestra error
+OK    login correcto
+carrito: Paracetamol 500 mg | Lote P-2401 · 1 × S/ 8.50 | S/ 8.50 | Quitar
+OK    venta confirmada con N° comprobante
+OK    venta anulada
+OK    hay reverso en movimientos
+OK    cliente creado
+ERRORES ["Failed to load resource: the server responded with a status of 401 (Unauthorized)"]

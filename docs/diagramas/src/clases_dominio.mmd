@@ -1,0 +1,111 @@
+classDiagram
+direction TB
+class Rol {
+  +rol_id: int
+  +nombre: string
+  +descripcion: string
+}
+class Usuario {
+  +usuario_id: int
+  +nombres: string
+  +correo: string
+  -hash_contrasena: string
+  +activo: bool
+}
+class Cliente {
+  +cliente_id: int
+  +tipo_documento: DNI|CE|RUC|OTR
+  +numero_documento: string
+  +nombre_razon_social: string
+  +telefono: string
+}
+class Proveedor {
+  +proveedor_id: int
+  +ruc: string
+  +razon_social: string
+  +activo: bool
+}
+class Categoria {
+  +categoria_id: int
+  +nombre: string
+}
+class Medicamento {
+  +medicamento_id: int
+  +sku: string
+  +nombre: string
+  +presentacion: string
+  +precio_venta: decimal
+  +requiere_receta: bool
+  +activo: bool
+}
+class Lote {
+  +lote_id: int
+  +codigo_lote: string
+  +fecha_vencimiento: date
+  +stock_actual: int
+  +stock_minimo: int
+}
+class Receta {
+  +receta_id: int
+  +numero_receta: string
+  +nombre_prescriptor: string
+  +fecha_emision: date
+  +fecha_vencimiento: date
+  +estado: VALIDA|ANULADA
+}
+class Compra {
+  +compra_id: int
+  +fecha: datetime
+  +numero_documento: string
+  +total: decimal
+}
+class DetalleCompra {
+  +cantidad: int
+  +costo_unitario: decimal
+  +subtotal: decimal
+}
+class Venta {
+  +venta_id: int
+  +fecha: datetime
+  +tipo_comprobante: BOLETA|FACTURA
+  +numero_comprobante: string
+  +estado: CONFIRMADA|ANULADA
+  +total: decimal
+  +motivo_anulacion: string
+}
+class DetalleVenta {
+  +cantidad: int
+  +precio_unitario: decimal
+  +subtotal: decimal
+}
+class MovimientoStock {
+  +movimiento_id: long
+  +tipo: ENTRADA_COMPRA|SALIDA_VENTA|REVERSO_VENTA
+  +cantidad: int
+  +fecha: datetime
+}
+class AuditoriaOperacion {
+  +auditoria_id: long
+  +accion: string
+  +entidad: string
+  +detalle: string
+  +ip: string
+  +fecha: datetime
+}
+Rol "1" --> "*" Usuario
+Usuario "1" --> "*" Venta : registra
+Usuario "1" --> "*" Compra : recepciona
+Usuario "1" --> "*" AuditoriaOperacion : genera
+Cliente "1" --> "*" Venta : realiza
+Cliente "1" --> "*" Receta : titular
+Receta "0..1" <-- "*" Venta : respalda
+Proveedor "1" --> "*" Compra : abastece
+Categoria "1" --> "*" Medicamento : clasifica
+Medicamento "1" *-- "*" Lote
+Compra "1" *-- "1..*" DetalleCompra
+Venta "1" *-- "1..*" DetalleVenta
+Lote "1" <-- "*" DetalleCompra
+Lote "1" <-- "*" DetalleVenta
+Lote "1" --> "*" MovimientoStock : trazabilidad
+Compra "0..1" --> "*" MovimientoStock : origina
+Venta "0..1" --> "*" MovimientoStock : origina

@@ -1,0 +1,45 @@
+FARMACONTROL | SISTEMA DE GESTION DE VENTAS DE FARMACIA
+========================================================
+
+PROYECTO ACADEMICO COMPLETO: 7 ENTREGABLES
+
+1. FarmaControl_Informe.docx
+   Informe editable con casos de uso de negocio y sistema,
+   especificaciones, tres modelos de datos, instrucciones SQL
+   y prototipos ilustrados.
+
+2. FarmaControl_Informe.pdf
+   Version para imprimir o enviar al docente.
+
+3. FarmaControl_SQLServer.sql
+   Script para Microsoft SQL Server 2019 o posterior.
+   Requiere permiso de creacion de base de datos.
+   Abrir en SQL Server Management Studio (SSMS) y ejecutar
+   una sola vez en una base de datos nueva y de pruebas.
+
+4. FarmaControl_Prototipo.html
+   Abrir con doble clic en Chrome, Edge o Firefox.
+   Ingresar con cualquier perfil demo. Navegar entre pantallas.
+   Las simulaciones no se guardan al recargar el archivo.
+
+5. diagramas/01...05:
+   Diagramas de negocio, sistema, conceptual, logico y fisico
+   en PNG, SVG y DOT (fuente editable con Graphviz).
+
+6. diagramas/06...11:
+   Capturas PNG del prototipo: ingreso, panel, venta,
+   inventario, compra y reportes.
+
+LIMITACIONES IMPORTANTES
+- Organizacion, personas, datos y comprobantes ficticios.
+- El HTML NO se conecta a SQL Server ni implementa permisos reales.
+- Los comprobantes son SIMULADOS, no validos ante SUNAT.
+- El SQL es de creacion, no de actualizacion sobre datos existentes.
+- La seguridad debe completarse en la aplicacion: hashes de password,
+  validacion de roles, HTTPS, backups y auditoria.
+- La receta requiere validacion humana competente. El SQL verifica
+  registro, vigencia y vinculacion al cliente, no pertinencia clinica.
+- Ejecutar las pruebas propuestas en SQL Server antes de entregar
+  evidencia de funcionamiento de la base de datos.
+
+EQUIPO: completar portada con nombres de estudiantes, docente y fecha.

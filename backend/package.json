@@ -1,0 +1,27 @@
+{
+  "name": "farmacontrol-backend",
+  "version": "1.0.0",
+  "description": "API REST de FarmaControl (Node.js + SQL Server). Proyecto académico, datos ficticios.",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:memory": "node scripts/start-memory.js",
+    "db:setup": "node scripts/db-setup.js",
+    "db:check": "node scripts/db-check.js",
+    "db:reset": "node scripts/db-reset.js",
+    "test": "node scripts/run-tests.js memory",
+    "test:memory": "node scripts/run-tests.js memory",
+    "test:sqlserver": "node scripts/run-tests.js mssql"
+  },
+  "dependencies": {
+    "mssql": "^11.0.1"
+  },
+  "optionalDependencies": {
+    "msnodesqlv8": "^6.2.2"
+  }
+}

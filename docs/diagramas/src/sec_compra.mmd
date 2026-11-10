@@ -1,0 +1,17 @@
+sequenceDiagram
+autonumber
+actor W as Almacenero
+participant UI as Frontend (SPA)
+participant API as API REST
+participant SP as sp_RegistrarCompra
+participant DB as SQL Server
+W->>UI: Elige proveedor, documento y lotes con cantidad y costo
+UI->>API: POST /api/compras
+API->>API: Verifica permiso compras:create y valida datos
+API->>SP: EXEC con tabla TDetalleCompra
+SP->>DB: BEGIN TRAN, valida proveedor activo y documento no repetido
+SP->>DB: INSERT Compra y DetalleCompra, UPDATE Lote (+cantidad)
+SP->>DB: INSERT MovimientoStock ENTRADA_COMPRA, INSERT AuditoriaOperacion, COMMIT
+SP-->>API: compra_id
+API-->>UI: 201 Created
+UI-->>W: Stock actualizado en Medicamentos y lotes

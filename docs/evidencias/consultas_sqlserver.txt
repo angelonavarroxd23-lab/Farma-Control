@@ -1,0 +1,67 @@
+== Servidor y base ==
+servidor base edicion version
+-------- ---- ------- -------
+DESKTOP-0L15125 FarmaControlBD Enterprise Evaluation Edition (64-bit) 16.0.1000.6
+== Filas por tabla (14 tablas) ==
+tabla filas
+----- -----
+AuditoriaOperacion 16
+Categoria 4
+Cliente 4
+Compra 2
+DetalleCompra 9
+DetalleVenta 5
+Lote 10
+Medicamento 9
+MovimientoStock 16
+Proveedor 2
+Receta 2
+Rol 4
+Usuario 4
+Venta 4
+== Claves foraneas (cantidad) ==
+claves_foraneas
+---------------
+19
+== Procedimientos y vistas ==
+name type_desc
+---- ---------
+sp_AnularVenta SQL_STORED_PROCEDURE
+sp_RegistrarCompra SQL_STORED_PROCEDURE
+sp_RegistrarVenta SQL_STORED_PROCEDURE
+vw_AlertasLote VIEW
+vw_Kardex VIEW
+vw_StockMedicamento VIEW
+vw_VentaDetalle VIEW
+vw_VentasDiarias VIEW
+== Ultimas ventas ==
+venta_id numero_comprobante estado total motivo_anulacion
+-------- ------------------ ------ ----- ----------------
+4 B001-000004 ANULADA 75.00 Error de digitación del cliente (recorrido UI)
+3 B001-000003 ANULADA 33.00 Anulacion de demostracion
+2 B001-000002 CONFIRMADA 43.00 NULL
+1 B001-000001 CONFIRMADA 68.60 NULL
+== Kardex del lote del recorrido UI ==
+movimiento_id fecha tipo cantidad lote_id codigo_lote sku medicamento compra_id venta_id usuario
+------------- ----- ---- -------- ------- ----------- --- ----------- --------- -------- -------
+16 2026-11-09 16:58:13 REVERSO_VENTA 6 10 L-MW9SXP6X UI-MW9SXP6X Medicamento UI MW9SXP6X NULL 4 Ana Administradora
+15 2026-11-09 16:58:10 SALIDA_VENTA 6 10 L-MW9SXP6X UI-MW9SXP6X Medicamento UI MW9SXP6X NULL 4 Ana Administradora
+14 2026-11-09 16:58:03 ENTRADA_COMPRA 40 10 L-MW9SXP6X UI-MW9SXP6X Medicamento UI MW9SXP6X 2 NULL Ana Administradora
+13 2026-11-09 16:57:16 REVERSO_VENTA 3 7 IB-310 MED-006 Ibuprofeno 400 mg NULL 3 Ana Administradora
+12 2026-11-09 16:57:16 SALIDA_VENTA 3 7 IB-310 MED-006 Ibuprofeno 400 mg NULL 3 Carlos Cajero
+11 2026-11-09 16:57:16 SALIDA_VENTA 2 5 AM-705 MED-004 Amoxicilina 500 mg NULL 2 Carlos Cajero
+10 2026-11-09 16:57:16 SALIDA_VENTA 4 3 C-1822 MED-002 Cetirizina 10 mg NULL 1 Carlos Cajero
+9 2026-11-09 16:57:16 SALIDA_VENTA 2 1 P-2401 MED-001 Paracetamol 500 mg NULL 1 Carlos Cajero
+8 2026-11-09 16:57:16 ENTRADA_COMPRA 8 9 AZ-220 MED-008 Azitromicina 500 mg 1 NULL Alicia Almacenera
+7 2026-11-09 16:57:16 ENTRADA_COMPRA 50 7 IB-310 MED-006 Ibuprofeno 400 mg 1 NULL Alicia Almacenera
+== Auditoria reciente ==
+accion entidad entidad_id fecha
+------ ------- ---------- -----
+ACCESO_DENEGADO API NULL 2026-11-09 16:58:25
+LOGIN_OK Usuario 2 2026-11-09 16:58:25
+LOGIN_OK Usuario 2 2026-11-09 16:58:24
+VENTA_ANULADA Venta 4 2026-11-09 16:58:13
+VENTA_REGISTRADA Venta 4 2026-11-09 16:58:10
+COMPRA_REGISTRADA Compra 2 2026-11-09 16:58:03
+LOTE_CREADO Lote 10 2026-11-09 16:57:31
+MEDICAMENTO_CREADO Medicamento 9 2026-11-09 16:57:28

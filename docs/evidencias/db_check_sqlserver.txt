@@ -1,0 +1,18 @@
+
+> farmacontrol-backend@1.0.0 db:check
+> node scripts/db-check.js
+
+Conectado a DESKTOP-0L15125 · base FarmaControlBD · usuario DESKTOP-0L15125\angelo · Enterprise Evaluation Edition (64-bit) 16.0.1000.6 · auth windows
+
+  OK   Tablas — 14/14 esperadas, 14 existentes
+  OK   Claves foráneas — 19/19
+  OK   Restricciones CHECK — 19
+  OK   Procedimientos almacenados — sp_RegistrarCompra, sp_RegistrarVenta, sp_AnularVenta
+  OK   Vistas — 5/5
+  OK   Índices únicos filtrados (sin movimientos duplicados)
+  OK   Sin triggers (decisión AD-06) — 0
+  OK   Usuarios de demostración activos — 4
+  OK   Medicamentos cargados — 8
+  OK   Stock de cada lote = suma de sus movimientos — 0 diferencias
+
+Todas las verificaciones pasaron.

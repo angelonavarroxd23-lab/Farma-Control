@@ -1,0 +1,19 @@
+﻿ID,Requisito,Prioridad,Estado,Necesidad,CU,Componente,Pruebas,Verificado en SQL Server 2022 (9-nov-2026)
+RF-01,Autenticar usuarios y aplicar autorización en un servidor.,Alta,Implementado,N-06,CU-01,"auth/*, routes.js (/api/auth), main.js",AUT-01 a AUT-13,Sí
+RF-02,"Registrar, buscar y modificar clientes con documento único.",Alta,Implementado,N-04,CU-02,"routes.js (/api/clientes), validate.js, maestros.js",CLI-01 a CLI-05,Sí
+RF-03,"Consultar medicamentos por nombre, código, categoría o lote.",Alta,Implementado,N-01,CU-03,"routes.js (/api/medicamentos, /api/lotes), catalogo.js",MED-02,Sí
+RF-04,Registrar y modificar el catálogo de medicamentos (incluye categorías y presentaciones).,Alta,Implementado,N-01,CU-08,"routes.js, validate.js, catalogo.js","MED-01, MED-03",Sí
+RF-05,"Crear lotes por medicamento, código, vencimiento y stock mínimo.",Alta,Implementado,N-02,CU-08,"routes.js (/api/lotes), catalogo.js","LOT-01, LOT-02",Sí
+RF-06,"Registrar compras con proveedor, documento y varios lotes (incluye gestión de proveedores).",Alta,Implementado,N-03,CU-07,"store.registrarCompra / sp_RegistrarCompra, compras.js, maestros.js",COM-01 a COM-05,Sí
+RF-07,Registrar ventas con cliente y detalle de productos por lote.,Alta,Implementado,N-04,CU-05,"store.registrarVenta / sp_RegistrarVenta, venta.js","VEN-01, VEN-03",Sí
+RF-08,Calcular subtotales y total con los precios del catálogo.,Alta,Implementado,N-04,CU-05,"sp_RegistrarVenta (precio tomado del catálogo), columnas calculadas",VEN-01,Sí
+RF-09,Rechazar ventas con stock insuficiente o lotes vencidos.,Alta,Implementado,N-02,CU-05,"registrarVenta / sp_RegistrarVenta, CHECK en Lote","VEN-02, VEN-04, CON-01",Sí
+RF-10,"Registrar recetas y comprobar cliente, estado y vigencia.",Alta,Implementado,N-05,CU-04,"routes.js (/api/recetas), registrarVenta, maestros.js","REC-01, VEN-07",Sí
+RF-11,Visualizar e imprimir la constancia interna de una venta.,Media,Implementado,N-04,CU-06,"ventas.js (openConstancia), regla CSS de impresión",Recorrido UI (captura de constancia); impresión no probada,Sí
+RF-12,Anular una venta una sola vez y reponer sus existencias.,Alta,Implementado,N-06,CU-12,"store.anularVenta / sp_AnularVenta, índice UX_Mov_Reverso","ANU-01, ANU-02, CON-02",Sí
+RF-13,"Mostrar alertas de stock bajo, agotados y vencimientos.",Alta,Implementado,N-02,CU-09,"services/inventario.js, inventario.js, vw_AlertasLote",ALE-01 a ALE-03,Sí
+RF-14,Filtrar reportes por periodo y exportar tablas a CSV.,Media,Implementado,N-06,CU-10,"routes.js (/api/reportes), reportes.js",REP-01 a REP-03,Sí
+RF-15,"Crear perfiles, asignar roles y activar o desactivar registros.",Media,Implementado,N-06,CU-11,"routes.js (/api/usuarios, /api/roles), admin.js",AUT-08 a AUT-11,Sí
+RF-16,"Conservar entradas, salidas y reversiones de cada lote.",Alta,Implementado,N-06,CU-05/07/12,"tabla MovimientoStock, índices únicos filtrados, inventario.js","TRZ-01, COM-01, ANU-01",Sí
+RF-17,Persistir y compartir las operaciones mediante SQL Server.,Alta,Implementado,N-03 / N-04,CU-05 / CU-07,"FarmaControl_Database.sql, db/mssql.js","PER-01, SQL-01 a SQL-11 (SQL Server)",Sí
+RF-18,Auditar accesos y operaciones en un servicio central.,Media,Implementado,N-06,CU-01 / CU-11,"tabla AuditoriaOperacion, routes.js, admin.js (/auditoria)","AUD-01, AUT-06",Sí

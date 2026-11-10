@@ -1,0 +1,63 @@
+﻿ID,Prueba,ms (SQL Server),Estado (memoria),Estado (SQL Server)
+AUT-01,inicio de sesión válido devuelve token y no expone el hash,149.3488,Aprobado,Aprobado
+AUT-02,contraseña incorrecta devuelve 401 con mensaje genérico,55.299,Aprobado,Aprobado
+AUT-03,usuario inexistente recibe el mismo mensaje que contraseña errónea,58.4964,Aprobado,Aprobado
+AUT-04,una ruta protegida sin token responde 401,2.4393,Aprobado,Aprobado
+AUT-05,un token manipulado es rechazado,56.2197,Aprobado,Aprobado
+AUT-06,tras cinco intentos fallidos se bloquea el acceso temporalmente (429),236.7067,Aprobado,Aprobado
+AUT-07,matriz de permisos: operaciones fuera del perfil devuelven 403,225.3021,Aprobado,Aprobado
+AUT-08,el administrador gestiona usuarios; la lista no expone hashes,10.9833,Aprobado,Aprobado
+AUT-09,"alta de usuario: política de contraseña, correo único y desactivación inmediata",241.3108,Aprobado,Aprobado
+AUT-10,no se puede desactivar el propio perfil ni al último administrador,21.6543,Aprobado,Aprobado
+AUT-11,cambio de contraseña propio exige la actual y la política,89.2255,Aprobado,Aprobado
+AUT-12,respuestas con cabeceras de seguridad y rutas inexistentes/métodos erróneos,7.3693,Aprobado,Aprobado
+AUT-13,cuerpos inválidos: JSON roto y tipo de contenido erróneo,12.6873,Aprobado,Aprobado
+CLI-01,registrar cliente con DNI válido y recuperarlo por búsqueda,176.4154,Aprobado,Aprobado
+CLI-02,"rechaza DNI de 7 dígitos, RUC de 10 y documentos con letras",21.4959,Aprobado,Aprobado
+CLI-03,rechaza documento duplicado (409) y permite el mismo número con otro tipo,34.2385,Aprobado,Aprobado
+CLI-04,modificar cliente conserva la validación,34.217,Aprobado,Aprobado
+CLI-05,las entradas con comillas e instrucciones SQL se tratan como texto (sin inyección),22.6372,Aprobado,Aprobado
+MED-01,crear categoría y medicamento; SKU único; precio no negativo,114.4015,Aprobado,Aprobado
+MED-02,"modificar medicamento, consultar por nombre/SKU/categoría y detalle con lotes",107.7094,Aprobado,Aprobado
+MED-03,una categoría con medicamentos no puede eliminarse (integridad referencial),30.8851,Aprobado,Aprobado
+LOT-01,un lote nuevo inicia en cero y no acepta fijar stock ni fechas vencidas,35.7087,Aprobado,Aprobado
+LOT-02,código de lote duplicado para el mismo medicamento → 409; stock no editable por PATCH,127.6984,Aprobado,Aprobado
+REC-01,registrar receta; fechas coherentes; número único; solo químico/administrador,100.058,Aprobado,Aprobado
+COM-01,"una compra incrementa el stock, calcula el total y registra ENTRADA_COMPRA con trazabilidad",347.3872,Aprobado,Aprobado
+COM-02,una compra con varios lotes actualiza cada uno,134.1322,Aprobado,Aprobado
+COM-03,documento repetido del mismo proveedor se rechaza sin alterar el stock,169.6685,Aprobado,Aprobado
+COM-04,"validaciones: cantidad cero, costo negativo, lotes repetidos o inexistentes, proveedor inactivo",136.7793,Aprobado,Aprobado
+COM-05,no se ingresa stock a un lote vencido,125.754,Aprobado,Aprobado
+VEN-01,"una venta descuenta stock, usa el precio del catálogo y numera la boleta",296.1869,Aprobado,Aprobado
+VEN-02,una venta no puede superar las existencias y no deja rastro (atomicidad),193.5861,Aprobado,Aprobado
+VEN-03,una venta con dos lotes donde uno falla revierte todo,200.6575,Aprobado,Aprobado
+VEN-04,no se venden lotes vencidos,160.5413,Aprobado,Aprobado
+VEN-05,"cantidades inválidas, lote repetido y lote inexistente",192.7256,Aprobado,Aprobado
+VEN-06,un medicamento inactivo no puede venderse,146.763,Aprobado,Aprobado
+VEN-07,"medicamentos con receta: exige receta vigente, válida y del mismo cliente",388.639,Aprobado,Aprobado
+VEN-08,la factura exige un cliente con RUC,218.2007,Aprobado,Aprobado
+ANU-01,anular repone el stock una sola vez y conserva el historial,330.5715,Aprobado,Aprobado
+ANU-02,la anulación exige motivo y la venta debe existir,33.8137,Aprobado,Aprobado
+CON-01,dos ventas simultáneas sobre las últimas unidades: solo una prospera y el stock nunca es negativo,225.2331,Aprobado,Aprobado
+CON-02,dos anulaciones simultáneas de la misma venta: se repone una sola vez,227.7432,Aprobado,Aprobado
+TRZ-01,el stock de cada lote coincide con entradas + reversos − salidas del historial,294.0909,Aprobado,Aprobado
+PER-01,los datos son visibles desde una segunda instancia del servidor sobre la misma base (persistencia),99.771,Aprobado,Aprobado
+ALE-01,"las alertas reflejan el estado real: agotado, stock bajo, por vencer y vencido",629.8705,Aprobado,Aprobado
+ALE-02,una venta que agota o baja el stock actualiza la alerta; una compra la retira,435.4399,Aprobado,Aprobado
+ALE-03,el conteo de alertas coincide con la lista,7.3582,Aprobado,Aprobado
+REP-01,el reporte excluye ventas anuladas y calcula ticket promedio y unidades,344.4014,Aprobado,Aprobado
+REP-02,un periodo invertido o mal formado se rechaza,13.3956,Aprobado,Aprobado
+REP-03,"exportación CSV: tipo de contenido, BOM y neutralización de fórmulas",220.9194,Aprobado,Aprobado
+AUD-01,la auditoría registra accesos y operaciones y solo la consulta el administrador,296.8483,Aprobado,Aprobado
+PAN-01,"el panel de resumen incluye alertas y, según el perfil, las ventas del día",31.1906,Aprobado,Aprobado
+SQL-01,"la API trabaja sobre SQL Server real (motor, base y usuario)",104.5889,Omitida,Aprobado
+SQL-02,"una compra deja Compra, DetalleCompra, MovimientoStock, Lote y Auditoría guardados en la base",201.8595,Omitida,Aprobado
+SQL-03,una venta descuenta el stock en la base y registra SALIDA_VENTA,238.3559,Omitida,Aprobado
+SQL-04,"la anulación repone el stock una sola vez y guarda motivo, usuario y reverso",282.2574,Omitida,Aprobado
+SQL-05,el índice único filtrado de la base impide duplicar un movimiento,180.5716,Omitida,Aprobado
+SQL-06,la restricción CHECK de la base impide stock negativo,114.2821,Omitida,Aprobado
+SQL-07,sp_AnularVenta invocado directamente rechaza la segunda anulación sin alterar el stock,168.6661,Omitida,Aprobado
+SQL-08,integridad global: stock = suma de movimientos y sin movimientos duplicados,14.3605,Omitida,Aprobado
+SQL-09,"contraseñas: solo hashes scrypt en la base, nunca texto plano",2.6528,Omitida,Aprobado
+SQL-10,vistas de reporte responden con datos reales,52.7682,Omitida,Aprobado
+SQL-11,"sin conmutación silenciosa: si SQL Server no está disponible, el servidor no arranca",9.0544,Omitida,Aprobado
