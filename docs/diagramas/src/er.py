@@ -1,5 +1,5 @@
 import re, subprocess, html
-sql = open('/home/claude/work/FarmaControl/database/FarmaControl_Database.sql', encoding='utf8').read()
+sql = open('../../../database/FarmaControl_Database.sql', encoding='utf8').read()
 tables = {}
 for m in re.finditer(r'CREATE TABLE dbo\.(\w+)\s*\((.*?)\n\);', sql, re.S):
     name, body = m.group(1), m.group(2)

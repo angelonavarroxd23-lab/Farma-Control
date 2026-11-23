@@ -1,15 +1,32 @@
 classDiagram
 direction TB
-class Router {
-  +add(metodo, patron, opciones, manejador)
-  +match(metodo, ruta)
+class Vista {
+<<views/ · SPA>>
++pages/venta, compras, reposicion
++pages/recetaForm
++api.js (cliente HTTP + token)
 }
 class App {
   +createApp(store, config)
   +manejarPeticion()
 }
-class Routes {
-  +buildRouter()
+class Router {
+  +add(metodo, patron, opciones, manejador)
+  +match(metodo, ruta)
+}
+class Rutas {
+<<routes/index.js>>
++buildRouter() 50 rutas
+}
+class Controladores {
+<<controllers/>>
++comprasController
++ventasController
++recetasController
++ordenesController
++catalogoController
++inventarioController
++reportesController
 }
 class Permissions {
   +PERMISSIONS
@@ -22,19 +39,21 @@ class Token {
 class Password {
   +hashPassword()
   +verifyPassword()
-  +passwordPolicyError()
 }
 class Validate {
-  +checkCliente()
-  +checkMedicamento()
+  +clean(tabla, datos)
   +checkReceta()
   +positiveInt()
 }
 class Inventario {
   +estadoLote()
+  +ordenarFefo()
+  +sugerenciasReposicion()
   +alertas()
-  +enriquecerLotes()
-  +resumenMedicamentos()
+}
+class Recetas {
+  +detalleConSaldo()
+  +verificarVentaContraReceta()
 }
 class AppError {
   +status
@@ -54,24 +73,25 @@ class Store {
 }
 class MssqlStore {
   -pool: ConnectionPool
-  +connect()
   -_bind()
   -_tvp()
 }
 class MemoryStore {
   -data
-  +seed()
 }
+Vista ..> App : HTTP + JSON
 App --> Router
-App --> Routes
-Routes ..> Permissions
-Routes ..> Token
-Routes ..> Password
-Routes ..> Validate
-Routes ..> Inventario
-Routes --> Store
+App --> Rutas
+Rutas --> Controladores
+Rutas ..> Permissions
+App ..> Token
+Controladores ..> Password
+Controladores ..> Validate
+Controladores ..> Inventario
+Controladores ..> Recetas
+Controladores --> Store
 Store <|.. MssqlStore
 Store <|.. MemoryStore
-Routes ..> AppError
+Controladores ..> AppError
 MssqlStore ..> AppError
 MemoryStore ..> AppError

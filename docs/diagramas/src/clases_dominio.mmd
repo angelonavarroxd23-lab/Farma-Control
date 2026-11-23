@@ -37,6 +37,7 @@ class Medicamento {
   +precio_venta: decimal
   +requiere_receta: bool
   +activo: bool
+  +proveedor_id: int (habitual)
 }
 class Lote {
   +lote_id: int
@@ -44,6 +45,7 @@ class Lote {
   +fecha_vencimiento: date
   +stock_actual: int
   +stock_minimo: int
+  +proveedor_id: int (entregó el lote)
 }
 class Receta {
   +receta_id: int
@@ -52,6 +54,19 @@ class Receta {
   +fecha_emision: date
   +fecha_vencimiento: date
   +estado: VALIDA|ANULADA
+}
+class DetalleReceta {
+  +cantidad: int
+  +indicaciones: string
+}
+class OrdenReposicion {
+  +orden_id: int
+  +fecha: datetime
+  +estado: PENDIENTE|RECIBIDA|ANULADA
+  +observacion: string
+}
+class DetalleOrdenReposicion {
+  +cantidad_solicitada: int
 }
 class Compra {
   +compra_id: int
@@ -96,12 +111,19 @@ Rol "1" --> "*" Usuario
 Usuario "1" --> "*" Venta : registra
 Usuario "1" --> "*" Compra : recepciona
 Usuario "1" --> "*" AuditoriaOperacion : genera
+Usuario "1" --> "*" OrdenReposicion : emite
 Cliente "1" --> "*" Venta : realiza
 Cliente "1" --> "*" Receta : titular
 Receta "0..1" <-- "*" Venta : respalda
+Receta "1" *-- "*" DetalleReceta : prescribe
 Proveedor "1" --> "*" Compra : abastece
+Proveedor "1" --> "*" OrdenReposicion : recibe
 Categoria "1" --> "*" Medicamento : clasifica
 Medicamento "1" *-- "*" Lote
+Medicamento "1" <-- "*" DetalleReceta
+Medicamento "1" <-- "*" DetalleOrdenReposicion
+Proveedor "0..1" --> "*" Lote : entrega
+Proveedor "0..1" --> "*" Medicamento : provee habitualmente
 Compra "1" *-- "1..*" DetalleCompra
 Venta "1" *-- "1..*" DetalleVenta
 Lote "1" <-- "*" DetalleCompra
@@ -109,3 +131,5 @@ Lote "1" <-- "*" DetalleVenta
 Lote "1" --> "*" MovimientoStock : trazabilidad
 Compra "0..1" --> "*" MovimientoStock : origina
 Venta "0..1" --> "*" MovimientoStock : origina
+OrdenReposicion "1" *-- "1..*" DetalleOrdenReposicion
+Compra "0..1" <-- "0..1" OrdenReposicion : cierra

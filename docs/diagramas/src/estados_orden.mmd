@@ -1,0 +1,8 @@
+stateDiagram-v2
+direction LR
+[*] --> PENDIENTE: generar orden de reposición
+PENDIENTE --> RECIBIDA: registrar la compra asociada (compra_id)
+PENDIENTE --> ANULADA: anular orden
+RECIBIDA --> [*]
+ANULADA --> [*]
+note right of PENDIENTE: Solo una orden PENDIENTE del mismo proveedor puede asociarse a una compra

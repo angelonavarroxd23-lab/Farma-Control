@@ -1,17 +1,31 @@
 sequenceDiagram
 autonumber
 actor W as Almacenero
-participant UI as Frontend (SPA)
-participant API as API REST
+participant UI as Vista (SPA)
+participant C as comprasController
+participant M as Modelo (Store)
 participant SP as sp_RegistrarCompra
 participant DB as SQL Server
-W->>UI: Elige proveedor, documento y lotes con cantidad y costo
-UI->>API: POST /api/compras
-API->>API: Verifica permiso compras:create y valida datos
-API->>SP: EXEC con tabla TDetalleCompra
+W->>UI: Elige proveedor, documento, orden de reposición (opcional) y lotes
+opt Lote nuevo
+W->>UI: Indica medicamento, código, vencimiento y mínimo del lote nuevo
+end
+UI->>C: POST /api/compras (JWT)
+C->>C: Verifica permiso compras:create, valida datos, orden PENDIENTE del mismo proveedor
+opt Hay lotes nuevos
+C->>M: insert Lote (stock 0, proveedor_id)
+end
+C->>M: registrarCompra(proveedor, documento, líneas)
+M->>SP: EXEC con tabla TDetalleCompra
 SP->>DB: BEGIN TRAN, valida proveedor activo y documento no repetido
-SP->>DB: INSERT Compra y DetalleCompra, UPDATE Lote (+cantidad)
-SP->>DB: INSERT MovimientoStock ENTRADA_COMPRA, INSERT AuditoriaOperacion, COMMIT
-SP-->>API: compra_id
-API-->>UI: 201 Created
+SP->>DB: INSERT Compra y DetalleCompra, UPDATE Lote (+cantidad), INSERT MovimientoStock, INSERT Auditoría, COMMIT
+alt La compra falla
+SP-->>C: THROW (código de negocio)
+C->>M: remove Lote (compensación de los lotes nuevos)
+C-->>UI: 422 con el motivo
+else La compra se registra
+SP-->>C: compra_id
+C->>M: update Lote y Medicamento (proveedor), update OrdenReposicion (RECIBIDA, compra_id)
+C-->>UI: 201 con compra_id, lotes creados y advertencias
 UI-->>W: Stock actualizado en Medicamentos y lotes
+end

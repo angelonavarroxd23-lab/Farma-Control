@@ -3,7 +3,8 @@ T = json.load(open('tablas.json'))
 FKSET = {n: {c for c, _ in t['fks']} for n, t in T.items()}
 COL = {'Rol':'#E8F1FB','Usuario':'#E8F1FB','AuditoriaOperacion':'#E8F1FB','Cliente':'#E6F6EE','Proveedor':'#E6F6EE','Receta':'#E6F6EE',
        'Categoria':'#FFF4DC','Medicamento':'#FFF4DC','Lote':'#FFF4DC','MovimientoStock':'#FFF4DC',
-       'Compra':'#FBE9E7','DetalleCompra':'#FBE9E7','Venta':'#FBE9E7','DetalleVenta':'#FBE9E7'}
+       'Compra':'#FBE9E7','DetalleCompra':'#FBE9E7','Venta':'#FBE9E7','DetalleVenta':'#FBE9E7',
+       'DetalleReceta':'#E6F6EE','OrdenReposicion':'#EFE7F7','DetalleOrdenReposicion':'#EFE7F7'}
 def table(n, physical):
     t = T[n]; rows = []
     for cn, ct, nl in t['cols']:
@@ -26,6 +27,8 @@ rel = [('Rol','Usuario','agrupa a','1','N'),('Usuario','Venta','registra','1','N
  ('Cliente','Venta','realiza','1','N'),('Cliente','Receta','es titular de','1','N'),('Receta','Venta','respalda','1','N'),('Proveedor','Compra','abastece','1','N'),
  ('Categoria','Medicamento','clasifica','1','N'),('Medicamento','Lote','se divide en','1','N'),('Compra','DetalleCompra','contiene','1','N'),('Lote','DetalleCompra','ingresa por','1','N'),
  ('Venta','DetalleVenta','contiene','1','N'),('Lote','DetalleVenta','sale por','1','N'),('Lote','MovimientoStock','registra','1','N'),('Usuario','MovimientoStock','ejecuta','1','N'),
+ ('Receta','DetalleReceta','prescribe','1','N'),('Medicamento','DetalleReceta','es prescrito en','1','N'),('Proveedor','OrdenReposicion','recibe','1','N'),('Usuario','OrdenReposicion','emite','1','N'),
+ ('OrdenReposicion','DetalleOrdenReposicion','solicita','1','N'),('Medicamento','DetalleOrdenReposicion','se pide en','1','N'),('Compra','OrdenReposicion','cierra','1','N'),('Proveedor','Lote','entrega','1','N'),('Proveedor','Medicamento','provee (habitual)','1','N'),
  ('Compra','MovimientoStock','origina entradas','1','N'),('Venta','MovimientoStock','origina salidas y reversos','1','N')]
 g = ['graph G {','layout=neato; overlap=false; splines=true; sep="+18"; bgcolor="white";','node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.18,0.1"]; edge [fontname="Helvetica", fontsize=9, color="#555555"];']
 for n in T: g.append(f'{n} [fillcolor="{COL[n]}"];')

@@ -1,11 +1,11 @@
 digraph C { rankdir=TB; bgcolor=white; compound=true; nodesep=0.4; ranksep=0.7;
 node [shape=component, style=filled, fillcolor="#F4F9F7", fontname=Helvetica, fontsize=11]; edge [fontname=Helvetica, fontsize=9];
-subgraph cluster_f { label="Frontend (navegador) · frontend/"; style="rounded,filled"; fillcolor="#E8F1FB"; fontname=Helvetica;
- main [label="main.js\n(router hash, sesión, menú)"]; pages [label="pages/*\n(venta, ventas, compras, catalogo,\nmaestros, inventario, reportes, admin)"]; api [label="api.js\n(cliente HTTP + token)"]; ui [label="ui.js\n(tablas, diálogos, formato)"]; }
-subgraph cluster_b { label="Backend (Node.js) · backend/src/"; style="rounded,filled"; fillcolor="#E6F6EE"; fontname=Helvetica;
- app [label="app.js / http/\n(cabeceras, CSP, CORS, límites)"]; routes [label="routes.js\n(API REST /api/*)"]; auth [label="auth/\n(password scrypt, token JWT,\npermissions)"]; val [label="services/validate.js"]; inv [label="services/inventario.js\n(estado de lote, alertas)"]; store [label="Store (contrato)\nMssqlStore | MemoryStore"]; }
+subgraph cluster_f { label="Vista MVC (navegador) · views/"; style="rounded,filled"; fillcolor="#E8F1FB"; fontname=Helvetica;
+ main [label="main.js\n(router hash, sesión, menú)"]; pages [label="pages/*\n(venta, ventas, compras, reposicion, catalogo,\nmaestros, recetaForm, inventario, reportes, admin)"]; api [label="api.js\n(cliente HTTP + token)"]; ui [label="ui.js\n(tablas, diálogos, formato)"]; }
+subgraph cluster_b { label="Controlador y Modelo (Node.js) · controllers/ models/ routes/ lib/"; style="rounded,filled"; fillcolor="#E6F6EE"; fontname=Helvetica;
+ app [label="app.js / lib/http/\n(cabeceras, CSP, CORS, límites)"]; routes [label="routes/index.js\n(API REST /api/*, 50 rutas)"]; ctrl [label="controllers/*Controller.js\n(compras, ventas, recetas, órdenes,\ncatálogo, inventario, reportes…)"]; auth [label="lib/auth/\n(password scrypt, token JWT,\npermissions)"]; mod [label="models/\n(validate, inventario, recetas, schema)"]; store [label="Store (contrato)\nMssqlStore | MemoryStore"]; }
 subgraph cluster_d { label="SQL Server · database/"; style="rounded,filled"; fillcolor="#FFF4DC"; fontname=Helvetica;
- tabs [label="14 tablas + índices + CHECK", shape=cylinder]; sps [label="sp_RegistrarCompra\nsp_RegistrarVenta\nsp_AnularVenta"]; views [label="Vistas vw_*\n(consulta/reportes DBA)"]; }
+ tabs [label="17 tablas + índices + CHECK", shape=cylinder]; sps [label="sp_RegistrarCompra\nsp_RegistrarVenta\nsp_AnularVenta"]; views [label="Vistas vw_*\n(consulta/reportes DBA)"]; }
 main -> pages; pages -> api; pages -> ui; api -> app [label="HTTPS/HTTP + JSON\n(Bearer JWT)", lhead=cluster_b];
-app -> routes; routes -> auth; routes -> val; routes -> inv; routes -> store;
+app -> routes; routes -> auth; routes -> ctrl; ctrl -> mod; ctrl -> store;
 store -> sps [label="TVP + EXEC\n(driver mssql)", lhead=cluster_d]; store -> tabs [label="SQL parametrizado"]; sps -> tabs; views -> tabs [style=dashed]; }

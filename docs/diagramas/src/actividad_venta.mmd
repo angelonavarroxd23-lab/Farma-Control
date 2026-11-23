@@ -1,21 +1,26 @@
-flowchart TD
-A([Inicio]) --> B[Iniciar sesión]
-B --> C[Seleccionar cliente y tipo de comprobante]
-C --> D[Buscar producto y elegir lote]
+%%{init: {'flowchart': {'nodeSpacing': 28, 'rankSpacing': 30}}}%%
+flowchart TB
+subgraph S1[1. Selección de productos]
+direction LR
+A([Inicio]) --> B[Iniciar sesión; elegir cliente y comprobante] --> D[Elegir producto y lote: se sugiere el que vence primero, FEFO]
 D --> E{¿Lote vencido o sin stock suficiente?}
-E -- Sí --> F[Rechazar línea y mostrar motivo] --> D
-E -- No --> G[Agregar línea al carrito]
-G --> H{¿Más productos?}
+E -- No --> G[Agregar al carrito] --> H{¿Más productos?}
+end
+subgraph S2[2. Receta]
+direction LR
+I{¿Hay medicamento con receta?} -- Sí --> R1[Elegir la receta registrada o registrarla en caja] --> J{¿Receta válida, vigente, del cliente y con saldo?}
+end
+subgraph S3[3. Comprobante y confirmación]
+direction LR
+L{¿Factura?} -- Sí --> M{¿Cliente con RUC?}
+M -- Sí --> N[Confirmar venta: transacción en SQL Server] --> O[Descontar stock y registrar movimiento y auditoría] --> P[Emitir constancia] --> Z([Fin])
+end
+E -- Sí: rechazar línea --> D
 H -- Sí --> D
-H -- No --> I{¿Hay medicamento con receta?}
-I -- Sí --> J{¿Receta registrada, válida, vigente y del cliente?}
-J -- No --> K[Rechazar venta] --> Z([Fin])
+H -- No --> I
+I -- No --> L
 J -- Sí --> L
-I -- No --> L{¿Factura?}
-L -- Sí --> M{¿Cliente con RUC?}
+J -- No --> K[Rechazar venta]
 M -- No --> K
-M -- Sí --> N
-L -- No --> N[Confirmar venta: transacción en SQL Server]
-N --> O[Descontar stock y registrar SALIDA_VENTA]
-O --> P[Registrar auditoría y emitir constancia]
-P --> Z
+L -- No --> N
+K --> Z

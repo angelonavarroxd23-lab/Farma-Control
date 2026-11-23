@@ -1,25 +1,34 @@
 sequenceDiagram
 autonumber
 actor C as Cajero
-participant UI as Frontend (SPA)
-participant API as API REST (Node.js)
+participant UI as Vista (SPA)
+participant V as ventasController
+participant R as Modelo recetas
 participant SP as sp_RegistrarVenta
 participant DB as SQL Server
-C->>UI: Selecciona cliente, lotes y cantidades
-UI->>API: POST /api/ventas (JWT)
-API->>API: Verifica token, usuario activo y permiso ventas:create
-API->>API: Valida datos (cantidades, lotes repetidos, tipo de comprobante)
-API->>SP: EXEC con tabla TDetalleVenta
+opt El cliente no tiene la receta registrada
+C->>UI: + Nueva receta (titular, prescriptor, fechas y medicamentos)
+UI->>V: POST /api/recetas (permiso recetas:create)
+V-->>UI: 201 con la receta y su detalle
+end
+C->>UI: Selecciona cliente, receta, lotes (sugerido FEFO) y cantidades
+UI->>V: POST /api/ventas (JWT)
+V->>V: Verifica token, usuario activo y permiso ventas:create
+V->>V: Valida datos (cantidades, lotes repetidos, tipo de comprobante)
+opt La venta lleva receta con detalle
+V->>R: verificarVentaContraReceta (prescrito y saldo pendiente)
+R-->>V: 422 si el medicamento no está prescrito o excede el saldo
+end
+V->>SP: EXEC con tabla TDetalleVenta
 SP->>DB: BEGIN TRAN, lee lotes con UPDLOCK, HOLDLOCK
 alt Lote vencido, stock insuficiente, receta inválida o factura sin RUC
-SP-->>API: THROW (código de negocio), ROLLBACK
-API-->>UI: 422 con mensaje, auditoría del rechazo
+SP-->>V: THROW (código de negocio), ROLLBACK
+V-->>UI: 422 con mensaje, auditoría del rechazo
 UI-->>C: Muestra el motivo
 else Datos correctos
 SP->>DB: INSERT Venta y DetalleVenta, UPDATE Lote.stock_actual
-SP->>DB: INSERT MovimientoStock (SALIDA_VENTA), INSERT AuditoriaOperacion
-SP->>DB: COMMIT
-SP-->>API: venta_id y numero_comprobante
-API-->>UI: 201 Created
+SP->>DB: INSERT MovimientoStock (SALIDA_VENTA), INSERT AuditoriaOperacion, COMMIT
+SP-->>V: venta_id y numero_comprobante
+V-->>UI: 201 Created
 UI-->>C: Abre la constancia para imprimir
 end

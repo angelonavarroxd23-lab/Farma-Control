@@ -216,6 +216,11 @@
     "activo",
     "BIT",
     "NOT NULL"
+   ],
+   [
+    "proveedor_id",
+    "INT",
+    "NULL"
    ]
   ],
   "pk": [
@@ -225,6 +230,10 @@
    [
     "categoria_id",
     "Categoria"
+   ],
+   [
+    "proveedor_id",
+    "Proveedor"
    ]
   ],
   "uq": [
@@ -318,6 +327,11 @@
     "stock_minimo",
     "INT",
     "NOT NULL"
+   ],
+   [
+    "proveedor_id",
+    "INT",
+    "NULL"
    ]
   ],
   "pk": [
@@ -327,11 +341,61 @@
    [
     "medicamento_id",
     "Medicamento"
+   ],
+   [
+    "proveedor_id",
+    "Proveedor"
    ]
   ],
   "uq": [
    "medicamento_id",
    "codigo_lote"
+  ]
+ },
+ "DetalleReceta": {
+  "cols": [
+   [
+    "detalle_receta_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "receta_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "medicamento_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "cantidad",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "indicaciones",
+    "NVARCHAR(250)",
+    "NULL"
+   ]
+  ],
+  "pk": [
+   "detalle_receta_id"
+  ],
+  "fks": [
+   [
+    "receta_id",
+    "Receta"
+   ],
+   [
+    "medicamento_id",
+    "Medicamento"
+   ]
+  ],
+  "uq": [
+   "receta_id",
+   "medicamento_id"
   ]
  },
  "Compra": {
@@ -434,6 +498,104 @@
   "uq": [
    "compra_id",
    "lote_id"
+  ]
+ },
+ "OrdenReposicion": {
+  "cols": [
+   [
+    "orden_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "proveedor_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "usuario_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "fecha",
+    "DATETIME",
+    "NOT NULL"
+   ],
+   [
+    "estado",
+    "VARCHAR(12)",
+    "NOT NULL"
+   ],
+   [
+    "compra_id",
+    "INT",
+    "NULL"
+   ],
+   [
+    "observacion",
+    "NVARCHAR(250)",
+    "NULL"
+   ]
+  ],
+  "pk": [
+   "orden_id"
+  ],
+  "fks": [
+   [
+    "proveedor_id",
+    "Proveedor"
+   ],
+   [
+    "usuario_id",
+    "Usuario"
+   ],
+   [
+    "compra_id",
+    "Compra"
+   ]
+  ],
+  "uq": []
+ },
+ "DetalleOrdenReposicion": {
+  "cols": [
+   [
+    "detalle_orden_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "orden_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "medicamento_id",
+    "INT",
+    "NOT NULL"
+   ],
+   [
+    "cantidad_solicitada",
+    "INT",
+    "NOT NULL"
+   ]
+  ],
+  "pk": [
+   "detalle_orden_id"
+  ],
+  "fks": [
+   [
+    "orden_id",
+    "OrdenReposicion"
+   ],
+   [
+    "medicamento_id",
+    "Medicamento"
+   ]
+  ],
+  "uq": [
+   "orden_id",
+   "medicamento_id"
   ]
  },
  "Venta": {
