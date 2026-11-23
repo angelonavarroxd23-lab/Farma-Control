@@ -11,8 +11,14 @@
    los datos de demostracion si la tabla dbo.Rol ya tiene filas.
    Para recrear desde cero use FarmaControl_Reset.sql (BORRA la base).
 
-   MODELO: 14 tablas = 13 del informe original + dbo.AuditoriaOperacion
-   (RF-18, auditoria centralizada). Cambios respecto al script original:
+   MODELO: 17 tablas = 13 del informe original + dbo.AuditoriaOperacion
+   (RF-18, auditoria centralizada) + DetalleReceta, OrdenReposicion y
+   DetalleOrdenReposicion (version 2.1). Si la base ya existia, este script
+   agrega las columnas nuevas (Lote.proveedor_id, Medicamento.proveedor_id) y
+   las tablas nuevas sin borrar datos; los datos de demostracion nuevos solo
+   se cargan en una base nueva. Cambios respecto al script original:
+     * Version 2.1: receta con detalle (medicamentos prescritos), proveedor
+       en lote y medicamento, y ordenes de reposicion a proveedor.
      * Venta: fecha_anulacion, usuario_anulacion_id y motivo_anulacion
        (trazabilidad de la anulacion, CU-12).
      * Cliente: CHECK de formato de documento (DNI 8, RUC 11 digitos).
@@ -97,8 +103,10 @@ CREATE TABLE dbo.Medicamento (
     precio_venta     DECIMAL(12,2) NOT NULL,
     requiere_receta  BIT NOT NULL CONSTRAINT DF_Medicamento_Receta DEFAULT (0),
     activo           BIT NOT NULL CONSTRAINT DF_Medicamento_Activo DEFAULT (1),
+    proveedor_id     INT NULL,   -- proveedor habitual (opcional)
     CONSTRAINT CK_Medicamento_Precio CHECK (precio_venta >= 0),
-    CONSTRAINT FK_Medicamento_Categoria FOREIGN KEY (categoria_id) REFERENCES dbo.Categoria(categoria_id)
+    CONSTRAINT FK_Medicamento_Categoria FOREIGN KEY (categoria_id) REFERENCES dbo.Categoria(categoria_id),
+    CONSTRAINT FK_Medicamento_Proveedor FOREIGN KEY (proveedor_id) REFERENCES dbo.Proveedor(proveedor_id)
 );
 GO
 
@@ -126,9 +134,32 @@ CREATE TABLE dbo.Lote (
     fecha_vencimiento DATE         NOT NULL,
     stock_actual      INT NOT NULL CONSTRAINT DF_Lote_Stock  DEFAULT (0),
     stock_minimo      INT NOT NULL CONSTRAINT DF_Lote_Minimo DEFAULT (5),
+    proveedor_id      INT NULL,  -- proveedor que entrego el lote (se actualiza al registrar la compra)
     CONSTRAINT FK_Lote_Medicamento FOREIGN KEY (medicamento_id) REFERENCES dbo.Medicamento(medicamento_id),
+    CONSTRAINT FK_Lote_Proveedor   FOREIGN KEY (proveedor_id)   REFERENCES dbo.Proveedor(proveedor_id),
     CONSTRAINT UQ_Lote_Codigo UNIQUE (medicamento_id, codigo_lote),
     CONSTRAINT CK_Lote_Stock CHECK (stock_actual >= 0 AND stock_minimo >= 0)
+);
+GO
+-- Migracion para bases creadas con la version anterior (sin borrar datos).
+IF COL_LENGTH(N'dbo.Medicamento', N'proveedor_id') IS NULL
+    ALTER TABLE dbo.Medicamento ADD proveedor_id INT NULL CONSTRAINT FK_Medicamento_Proveedor FOREIGN KEY REFERENCES dbo.Proveedor(proveedor_id);
+GO
+IF COL_LENGTH(N'dbo.Lote', N'proveedor_id') IS NULL
+    ALTER TABLE dbo.Lote ADD proveedor_id INT NULL CONSTRAINT FK_Lote_Proveedor FOREIGN KEY REFERENCES dbo.Proveedor(proveedor_id);
+GO
+-- Detalle de la receta: medicamentos prescritos y cantidad. El sistema descuenta lo ya dispensado.
+IF OBJECT_ID(N'dbo.DetalleReceta', N'U') IS NULL
+CREATE TABLE dbo.DetalleReceta (
+    detalle_receta_id INT IDENTITY(1,1) CONSTRAINT PK_DetalleReceta PRIMARY KEY,
+    receta_id         INT NOT NULL,
+    medicamento_id    INT NOT NULL,
+    cantidad          INT NOT NULL,
+    indicaciones      NVARCHAR(250) NULL,
+    CONSTRAINT FK_DetReceta_Receta      FOREIGN KEY (receta_id)      REFERENCES dbo.Receta(receta_id),
+    CONSTRAINT FK_DetReceta_Medicamento FOREIGN KEY (medicamento_id) REFERENCES dbo.Medicamento(medicamento_id),
+    CONSTRAINT UQ_DetReceta_Med UNIQUE (receta_id, medicamento_id),
+    CONSTRAINT CK_DetReceta_Cantidad CHECK (cantidad > 0)
 );
 GO
 IF OBJECT_ID(N'dbo.Compra', N'U') IS NULL
@@ -158,6 +189,35 @@ CREATE TABLE dbo.DetalleCompra (
     CONSTRAINT CK_DetCompra_Cantidad CHECK (cantidad > 0),
     CONSTRAINT CK_DetCompra_Costo    CHECK (costo_unitario >= 0),
     CONSTRAINT UQ_DetCompra_CompraLote UNIQUE (compra_id, lote_id)
+);
+GO
+-- Orden de reposicion: pedido de mercaderia a un proveedor (BN-04). Pasa a RECIBIDA al registrar la compra asociada.
+IF OBJECT_ID(N'dbo.OrdenReposicion', N'U') IS NULL
+CREATE TABLE dbo.OrdenReposicion (
+    orden_id     INT IDENTITY(1,1) CONSTRAINT PK_OrdenReposicion PRIMARY KEY,
+    proveedor_id INT NOT NULL,
+    usuario_id   INT NOT NULL,
+    fecha        DATETIME2(0) NOT NULL CONSTRAINT DF_Orden_Fecha DEFAULT (SYSDATETIME()),
+    estado       VARCHAR(12) NOT NULL CONSTRAINT DF_Orden_Estado DEFAULT ('PENDIENTE'),
+    compra_id    INT NULL,
+    observacion  NVARCHAR(250) NULL,
+    CONSTRAINT FK_Orden_Proveedor FOREIGN KEY (proveedor_id) REFERENCES dbo.Proveedor(proveedor_id),
+    CONSTRAINT FK_Orden_Usuario   FOREIGN KEY (usuario_id)   REFERENCES dbo.Usuario(usuario_id),
+    CONSTRAINT FK_Orden_Compra    FOREIGN KEY (compra_id)    REFERENCES dbo.Compra(compra_id),
+    CONSTRAINT CK_Orden_Estado CHECK (estado IN ('PENDIENTE','RECIBIDA','ANULADA')),
+    CONSTRAINT CK_Orden_Recibida CHECK (estado <> 'RECIBIDA' OR compra_id IS NOT NULL)
+);
+GO
+IF OBJECT_ID(N'dbo.DetalleOrdenReposicion', N'U') IS NULL
+CREATE TABLE dbo.DetalleOrdenReposicion (
+    detalle_orden_id    INT IDENTITY(1,1) CONSTRAINT PK_DetalleOrdenReposicion PRIMARY KEY,
+    orden_id            INT NOT NULL,
+    medicamento_id      INT NOT NULL,
+    cantidad_solicitada INT NOT NULL,
+    CONSTRAINT FK_DetOrden_Orden       FOREIGN KEY (orden_id)       REFERENCES dbo.OrdenReposicion(orden_id),
+    CONSTRAINT FK_DetOrden_Medicamento FOREIGN KEY (medicamento_id) REFERENCES dbo.Medicamento(medicamento_id),
+    CONSTRAINT UQ_DetOrden_Med UNIQUE (orden_id, medicamento_id),
+    CONSTRAINT CK_DetOrden_Cantidad CHECK (cantidad_solicitada > 0)
 );
 GO
 
@@ -254,6 +314,12 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Mov_LoteFecha' AND ob
     CREATE INDEX IX_Mov_LoteFecha ON dbo.MovimientoStock(lote_id, fecha);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Aud_Fecha' AND object_id = OBJECT_ID(N'dbo.AuditoriaOperacion'))
     CREATE INDEX IX_Aud_Fecha ON dbo.AuditoriaOperacion(fecha DESC);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_DetReceta_Receta' AND object_id = OBJECT_ID(N'dbo.DetalleReceta'))
+    CREATE INDEX IX_DetReceta_Receta ON dbo.DetalleReceta(receta_id);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Orden_Estado' AND object_id = OBJECT_ID(N'dbo.OrdenReposicion'))
+    CREATE INDEX IX_Orden_Estado ON dbo.OrdenReposicion(estado, proveedor_id);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Lote_Proveedor' AND object_id = OBJECT_ID(N'dbo.Lote'))
+    CREATE INDEX IX_Lote_Proveedor ON dbo.Lote(proveedor_id);
 -- Un movimiento por operacion y lote: la base impide duplicar salidas, entradas o reversos.
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UX_Mov_Salida' AND object_id = OBJECT_ID(N'dbo.MovimientoStock'))
     CREATE UNIQUE INDEX UX_Mov_Salida ON dbo.MovimientoStock(venta_id, lote_id) WHERE tipo = 'SALIDA_VENTA';
@@ -569,15 +635,20 @@ BEGIN
     INSERT dbo.Categoria (nombre) VALUES
         (N'Analgesicos'), (N'Antialergicos'), (N'Antibioticos'), (N'Cuidado personal');
 
-    INSERT dbo.Medicamento (categoria_id, sku, nombre, principio_activo, presentacion, precio_venta, requiere_receta) VALUES
-        (1, 'MED-001', N'Paracetamol 500 mg',      N'Paracetamol',  N'Caja x 20 tabletas',  8.50, 0),
-        (2, 'MED-002', N'Cetirizina 10 mg',        N'Cetirizina',   N'Caja x 10 tabletas', 12.90, 0),
-        (4, 'MED-003', N'Alcohol en gel 250 ml',   NULL,            N'Frasco 250 ml',       9.90, 0),
-        (3, 'MED-004', N'Amoxicilina 500 mg',      N'Amoxicilina',  N'Caja x 21 capsulas', 21.50, 1),
-        (4, 'MED-005', N'Suero fisiologico 500 ml',N'Cloruro de sodio', N'Bolsa 500 ml',    7.20, 0),
-        (1, 'MED-006', N'Ibuprofeno 400 mg',       N'Ibuprofeno',   N'Caja x 10 tabletas', 11.00, 0),
-        (2, 'MED-007', N'Loratadina 10 mg',        N'Loratadina',   N'Caja x 10 tabletas',  6.80, 0),
-        (3, 'MED-008', N'Azitromicina 500 mg',     N'Azitromicina', N'Caja x 3 tabletas',  24.90, 1);
+    -- Los proveedores se cargan antes que los medicamentos (proveedor habitual).
+    INSERT dbo.Proveedor (ruc, razon_social, contacto, telefono) VALUES
+        ('20600000001', N'Distribuidora Salud Peru SAC (ficticio)',   N'Area comercial', '014 100 100'),
+        ('20600000002', N'Logistica Medica Andina SAC (ficticio)',    N'Area comercial', '014 200 200');
+
+    INSERT dbo.Medicamento (categoria_id, sku, nombre, principio_activo, presentacion, precio_venta, requiere_receta, proveedor_id) VALUES
+        (1, 'MED-001', N'Paracetamol 500 mg',      N'Paracetamol',  N'Caja x 20 tabletas',  8.50, 0, 1),
+        (2, 'MED-002', N'Cetirizina 10 mg',        N'Cetirizina',   N'Caja x 10 tabletas', 12.90, 0, 1),
+        (4, 'MED-003', N'Alcohol en gel 250 ml',   NULL,            N'Frasco 250 ml',       9.90, 0, 1),
+        (3, 'MED-004', N'Amoxicilina 500 mg',      N'Amoxicilina',  N'Caja x 21 capsulas', 21.50, 1, 1),
+        (4, 'MED-005', N'Suero fisiologico 500 ml',N'Cloruro de sodio', N'Bolsa 500 ml',    7.20, 0, 1),
+        (1, 'MED-006', N'Ibuprofeno 400 mg',       N'Ibuprofeno',   N'Caja x 10 tabletas', 11.00, 0, 1),
+        (2, 'MED-007', N'Loratadina 10 mg',        N'Loratadina',   N'Caja x 10 tabletas',  6.80, 0, 2),
+        (3, 'MED-008', N'Azitromicina 500 mg',     N'Azitromicina', N'Caja x 3 tabletas',  24.90, 1, 2);
 
     INSERT dbo.Lote (medicamento_id, codigo_lote, fecha_vencimiento, stock_minimo) VALUES
         (1, N'P-2401',  DATEADD(DAY, 600, @Hoy), 15),
@@ -595,13 +666,14 @@ BEGIN
         ('DNI', '45678912',    N'Luis Paredes',                '988 333 444'),
         ('RUC', '20600000003', N'Clinica Los Andes SAC (ficticia)', '014 555 000');
 
-    INSERT dbo.Proveedor (ruc, razon_social, contacto, telefono) VALUES
-        ('20600000001', N'Distribuidora Salud Peru SAC (ficticio)',   N'Area comercial', '014 100 100'),
-        ('20600000002', N'Logistica Medica Andina SAC (ficticio)',    N'Area comercial', '014 200 200');
-
     INSERT dbo.Receta (cliente_id, numero_receta, nombre_prescriptor, fecha_emision, fecha_vencimiento, observacion) VALUES
         (1, 'REC-00041', N'Dr. Carlos Rios (ficticio)', DATEADD(DAY, -3, @Hoy),  DATEADD(DAY, 27, @Hoy),  N'Receta vigente de demostracion'),
         (2, 'REC-00012', N'Dra. Rosa Medina (ficticia)', DATEADD(DAY, -60, @Hoy), DATEADD(DAY, -30, @Hoy), N'Receta vencida de demostracion');
+
+    -- Detalle de recetas: REC-00041 prescribe 3 cajas de amoxicilina (se dispensan 2 mas abajo); REC-00012 azitromicina.
+    INSERT dbo.DetalleReceta (receta_id, medicamento_id, cantidad, indicaciones) VALUES
+        (1, 4, 3, N'1 capsula cada 8 horas por 7 dias'),
+        (2, 8, 1, N'1 tableta al dia por 3 dias');
 
     -- Stock inicial mediante compras reales (genera movimientos ENTRADA_COMPRA).
     DECLARE @c dbo.TDetalleCompra, @cid INT;
@@ -616,6 +688,14 @@ BEGIN
         SELECT lote_id,   8, 14.00 FROM dbo.Lote WHERE codigo_lote = N'AZ-220';
     EXEC dbo.sp_RegistrarCompra @ProveedorId = 1, @UsuarioId = 3, @NumeroDocumento = 'FAC-2026-0001',
          @Items = @c, @Ip = NULL, @CompraId = @cid OUTPUT;
+    -- La aplicacion (comprasController) registra el proveedor de cada lote recibido; la semilla replica ese efecto.
+    UPDATE l SET proveedor_id = 1 FROM dbo.Lote l JOIN dbo.DetalleCompra d ON d.lote_id = l.lote_id WHERE d.compra_id = @cid;
+
+    -- Orden de reposicion pendiente de demostracion (medicamentos con stock bajo).
+    DECLARE @oid INT;
+    INSERT dbo.OrdenReposicion (proveedor_id, usuario_id, observacion) VALUES (1, 3, N'Reposicion de demostracion');
+    SET @oid = SCOPE_IDENTITY();
+    INSERT dbo.DetalleOrdenReposicion (orden_id, medicamento_id, cantidad_solicitada) VALUES (@oid, 2, 40), (@oid, 5, 30);
 
     -- Ventas de demostracion mediante el procedimiento (stock y movimientos coherentes).
     DECLARE @v dbo.TDetalleVenta, @vid INT, @nro VARCHAR(30);
@@ -640,5 +720,5 @@ BEGIN
     UPDATE dbo.Lote SET fecha_vencimiento = DATEADD(DAY, -5, @Hoy) WHERE codigo_lote = N'SF-401';
 END;
 GO
-PRINT N'FarmaControlBD lista: 14 tablas, 3 procedimientos, 5 vistas y datos de demostracion.';
+PRINT N'FarmaControlBD lista: 17 tablas, 3 procedimientos, 5 vistas y datos de demostracion.';
 GO

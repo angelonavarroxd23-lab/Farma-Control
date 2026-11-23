@@ -28,8 +28,9 @@ const eliminarCategorias = async ({ store, params, user, audit }) => {
 };
 
 const listarMedicamentos = async ({ store, query }) => {
-  const [meds, cats, lotes] = await Promise.all([store.list('Medicamento'), store.list('Categoria'), store.list('Lote')]);
-  let rows = inv.resumenMedicamentos(meds, cats, lotes);
+  const [meds, cats, lotes, provs] = await Promise.all([store.list('Medicamento'), store.list('Categoria'), store.list('Lote'), store.list('Proveedor')]);
+  const P = new Map(provs.map((p) => [p.proveedor_id, p.razon_social]));
+  let rows = inv.resumenMedicamentos(meds, cats, lotes).map((m) => ({ ...m, proveedor: P.get(m.proveedor_id) || null }));
   if (query.q) rows = rows.filter((m) => includesCI(m.nombre, query.q) || includesCI(m.sku, query.q) || includesCI(m.principio_activo, query.q));
   if (query.categoria_id) rows = rows.filter((m) => m.categoria_id === Number(query.categoria_id));
   if (query.activo !== undefined) rows = rows.filter((m) => String(m.activo) === query.activo);
@@ -38,8 +39,9 @@ const listarMedicamentos = async ({ store, query }) => {
 
 const obtenerMedicamentos = async ({ store, params }) => {
   const id = V.positiveInt(params.id, 'id'); const m = await store.get('Medicamento', id); if (!m) throw notFound();
-  const lotes = inv.enriquecerLotes(await store.list('Lote', { medicamento_id: id }), [m]);
-  return { ...m, lotes };
+  const [ls, provs] = await Promise.all([store.list('Lote', { medicamento_id: id }), store.list('Proveedor')]);
+  const P = new Map(provs.map((p) => [p.proveedor_id, p.razon_social]));
+  return { ...m, proveedor: P.get(m.proveedor_id) || null, lotes: inv.enriquecerLotes(ls, [m]).map((l) => ({ ...l, proveedor: P.get(l.proveedor_id) || null })) };
 };
 
 const crearMedicamentos = async ({ store, body, user, audit }) => {
@@ -58,17 +60,22 @@ const actualizarMedicamentos = async ({ store, params, body, user, audit }) => {
 };
 
 const listarLotes = async ({ store, query }) => {
-  const [lotes, meds] = await Promise.all([store.list('Lote'), store.list('Medicamento')]);
-  let rows = inv.enriquecerLotes(lotes, meds);
+  const [lotes, meds, provs] = await Promise.all([store.list('Lote'), store.list('Medicamento'), store.list('Proveedor')]);
+  const P = new Map(provs.map((p) => [p.proveedor_id, p.razon_social]));
+  let rows = inv.enriquecerLotes(lotes, meds).map((l) => ({ ...l, proveedor: P.get(l.proveedor_id) || null }));
   if (query.medicamento_id) rows = rows.filter((l) => l.medicamento_id === Number(query.medicamento_id));
   if (query.alerta) rows = rows.filter((l) => l.alerta === query.alerta);
   if (query.q) rows = rows.filter((l) => includesCI(l.medicamento, query.q) || includesCI(l.sku, query.q) || includesCI(l.codigo_lote, query.q));
-  if (query.disponibles === 'true') rows = rows.filter((l) => l.stock_actual > 0 && !l.vencido && l.medicamento_activo);
+  if (query.disponibles === 'true') {
+    // FEFO (primero en vencer, primero en salir): los lotes vendibles se ordenan por medicamento y vencimiento,
+    // y el primero de cada medicamento se marca como sugerido. Es una sugerencia: el servidor no la impone.
+    rows = inv.ordenarFefo(rows.filter((l) => l.stock_actual > 0 && !l.vencido && l.medicamento_activo));
+  }
   return rows;
 };
 
 const crearLotes = async ({ store, body, user, audit }) => {
-  const d = V.clean('Lote', body, { allow: ['medicamento_id', 'codigo_lote', 'fecha_vencimiento', 'stock_minimo'] });
+  const d = V.clean('Lote', body, { allow: ['medicamento_id', 'codigo_lote', 'fecha_vencimiento', 'stock_minimo', 'proveedor_id'] });
   if (d.fecha_vencimiento < inv.todayStr()) throw validation('Datos no válidos.', ['fecha_vencimiento: un lote nuevo no puede estar vencido.']);
   if (d.stock_minimo != null && d.stock_minimo < 0) throw validation('Datos no válidos.', ['stock_minimo: no puede ser negativo.']);
   const row = await store.insert('Lote', { ...d, stock_actual: 0, stock_minimo: d.stock_minimo ?? 5 }); // el stock solo cambia por compras/ventas
@@ -78,7 +85,7 @@ const crearLotes = async ({ store, body, user, audit }) => {
 
 const actualizarLotes = async ({ store, params, body, user, audit }) => {
   const id = V.positiveInt(params.id, 'id'); if (!(await store.get('Lote', id))) throw notFound();
-  const d = V.clean('Lote', body, { partial: true, allow: ['stock_minimo', 'fecha_vencimiento'] });
+  const d = V.clean('Lote', body, { partial: true, allow: ['stock_minimo', 'fecha_vencimiento', 'proveedor_id'] });
   if (d.stock_minimo != null && d.stock_minimo < 0) throw validation('Datos no válidos.', ['stock_minimo: no puede ser negativo.']);
   const row = await store.update('Lote', id, d);
   await audit(user.usuario_id, 'LOTE_MODIFICADO', 'Lote', id, Object.keys(d).join(','));

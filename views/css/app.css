@@ -80,3 +80,8 @@ td{border-top:1px solid #edf2f0;padding:11px 12px;vertical-align:middle}tr:hover
 .main,.content{min-width:0}.tabs{max-width:100%}
 @media(max-width:480px){.topbar{gap:8px}.topbar h1{font-size:16px}.topmeta{gap:6px}.topmeta .btn{padding:6px 8px}}.topbar,.topmeta{min-width:0}.topbar h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .topleft{min-width:0;flex:1 1 auto}.topmeta{flex:0 0 auto}
+/* Versión 2.1: receta en caja, lote/proveedor en compra y reposición */
+.inlineRow{display:flex;gap:8px;align-items:center}.inlineRow .input{flex:1 1 auto;min-width:0}.inlineRow .btn{flex:0 0 auto;white-space:nowrap}
+.recetaBox{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 14px;background:#f8fbfa}
+.subTabs{display:flex;gap:6px;margin:6px 0 12px}.subTabs .btn.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}

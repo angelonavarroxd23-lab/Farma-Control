@@ -7,6 +7,7 @@ const catalogo = require('../controllers/catalogoController');
 const clientes = require('../controllers/clientesController');
 const compras = require('../controllers/comprasController');
 const inventario = require('../controllers/inventarioController');
+const ordenes = require('../controllers/ordenesController');
 const proveedores = require('../controllers/proveedoresController');
 const recetas = require('../controllers/recetasController');
 const reportes = require('../controllers/reportesController');
@@ -55,12 +56,19 @@ function buildRouter() {
   patch('/api/lotes/:id', 'catalogo:write', catalogo.actualizarLotes);
   // ---------------- Recetas ----------------
   get('/api/recetas', 'recetas:read', recetas.listarRecetas);
-  post('/api/recetas', 'recetas:write', recetas.crearRecetas);
+  get('/api/recetas/:id', 'recetas:read', recetas.obtenerRecetas);
+  post('/api/recetas', 'recetas:create', recetas.crearRecetas);
   patch('/api/recetas/:id', 'recetas:write', recetas.actualizarRecetas);
   // ---------------- Compras ----------------
   get('/api/compras', 'compras:read', compras.listarCompras);
   get('/api/compras/:id', 'compras:read', compras.obtenerCompras);
   post('/api/compras', 'compras:create', compras.crearCompras);
+  // ---------------- Reposición a proveedores ----------------
+  get('/api/reposicion/sugerencias', 'reposicion:read', ordenes.sugerencias);
+  get('/api/ordenes', 'reposicion:read', ordenes.listarOrdenes);
+  get('/api/ordenes/:id', 'reposicion:read', ordenes.obtenerOrdenes);
+  post('/api/ordenes', 'reposicion:write', ordenes.crearOrdenes);
+  post('/api/ordenes/:id/anular', 'reposicion:write', ordenes.anularOrdenes);
   // ---------------- Ventas ----------------
   get('/api/ventas', 'ventas:read', ventas.listarVentas);
   get('/api/ventas/:id', 'ventas:read', ventas.obtenerVentas);

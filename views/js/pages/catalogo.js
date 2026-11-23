@@ -10,22 +10,24 @@ export async function render(el, ctx) {
   const $ = (s) => el.querySelector(s);
   const view = () => $('#view');
 
-  const medFields = (cats, v = {}) => [
+  const medFields = (cats, provs = [], v = {}) => [
     { name: 'sku', label: 'SKU', req: true, max: 30 }, { name: 'nombre', label: 'Nombre comercial', req: true, max: 160 },
     { name: 'principio_activo', label: 'Principio activo', max: 160 }, { name: 'presentacion', label: 'Presentación', req: true, max: 90, hint: 'Ej.: Caja x 20 tabletas, Frasco 250 ml.' },
     { name: 'categoria_id', label: 'Categoría', type: 'select', req: true, placeholder: 'Seleccione…', options: cats.map((c) => ({ value: c.categoria_id, label: c.nombre })) },
     { name: 'precio_venta', label: 'Precio de venta (S/)', type: 'number', req: true, min: 0, step: '0.01' },
+    { name: 'proveedor_id', label: 'Proveedor habitual (opcional)', type: 'select', placeholder: '— Sin proveedor habitual —', options: provs.filter((p) => p.activo).map((p) => ({ value: p.proveedor_id, label: p.razon_social })), hint: 'Se usa para sugerir a quién reponer. Al registrar una compra se completa si estaba vacío.' },
     { name: 'requiere_receta', label: 'Requiere receta', type: 'checkbox' }, { name: 'activo', label: 'Activo (disponible para la venta)', type: 'checkbox' }];
 
   async function showMed() {
     view().innerHTML = `<div class="panel"><div class="actions"><div class="filters"><input class="input" id="q" placeholder="Buscar por nombre, SKU o principio activo…" aria-label="Buscar medicamento"><select class="input" id="cat" aria-label="Filtrar por categoría"></select></div>${canW ? '<button class="btn primary" id="new">+ Nuevo medicamento</button>' : ''}</div><div id="tbl"></div></div>`;
     const cats = await api.get('/api/categorias');
+    const provs = canW ? await api.get('/api/proveedores').catch(() => []) : [];
     $('#cat').innerHTML = '<option value="">Todas las categorías</option>' + cats.map((c) => `<option value="${c.categoria_id}">${h(c.nombre)}</option>`).join('');
     async function load() {
       const rows = await api.get('/api/medicamentos' + qs({ q: $('#q').value, categoria_id: $('#cat').value }));
       $('#tbl').innerHTML = table([
         { label: 'SKU', key: 'sku' }, { label: 'Medicamento', html: (m) => `<b>${h(m.nombre)}</b><br><span class="muted">${h(m.principio_activo || '')}</span>` },
-        { label: 'Presentación', key: 'presentacion' }, { label: 'Categoría', key: 'categoria' },
+        { label: 'Presentación', key: 'presentacion' }, { label: 'Categoría', key: 'categoria' }, { label: 'Proveedor habitual', html: (m) => (m.proveedor ? h(m.proveedor) : '<span class="muted">—</span>') },
         { label: 'Precio', num: true, html: (m) => money(m.precio_venta) },
         { label: 'Stock vendible', num: true, html: (m) => `<b>${m.stock_vendible}</b>${m.stock_vencido ? `<br><span class="badge error">${m.stock_vencido} vencidas</span>` : ''}` },
         { label: 'Estado', html: (m) => `${m.activo ? badge('Activo') : badge('Inactivo', 'muted')} ${m.requiere_receta ? badge('Con receta', 'alert') : ''}` },
@@ -33,11 +35,11 @@ export async function render(el, ctx) {
       view().__rows = rows;
     }
     $('#q').addEventListener('input', debounce(load)); $('#cat').addEventListener('change', load);
-    $('#new')?.addEventListener('click', () => formDialog({ title: 'Nuevo medicamento', fields: medFields(cats), values: { activo: true }, wide: true,
+    $('#new')?.addEventListener('click', () => formDialog({ title: 'Nuevo medicamento', fields: medFields(cats, provs), values: { activo: true }, wide: true,
       onSubmit: async (v) => { await api.post('/api/medicamentos', v); toast('Medicamento registrado.'); await load(); } }));
     view().onclick = (e) => {
       const ed = e.target.closest('[data-edit]'); const lo = e.target.closest('[data-lotes]');
-      if (ed) { const m = view().__rows.find((x) => x.medicamento_id === Number(ed.dataset.edit)); formDialog({ title: `Editar ${m.nombre}`, fields: medFields(cats), values: m, wide: true,
+      if (ed) { const m = view().__rows.find((x) => x.medicamento_id === Number(ed.dataset.edit)); formDialog({ title: `Editar ${m.nombre}`, fields: medFields(cats, provs), values: m, wide: true,
         onSubmit: async (v) => { await api.patch(`/api/medicamentos/${m.medicamento_id}`, v); toast('Medicamento actualizado.'); await load(); } }); }
       if (lo) lotesDeMedicamento(Number(lo.dataset.lotes), load);
     };
@@ -50,8 +52,8 @@ export async function render(el, ctx) {
 
   async function lotesDeMedicamento(id, after) {
     const m = await api.get(`/api/medicamentos/${id}`);
-    const body = () => `<p class="muted">${h(m.presentacion)} · ${m.requiere_receta ? 'requiere receta' : 'venta libre'}. El stock de un lote nuevo es 0: se incrementa registrando una compra.</p>${table([
-      { label: 'Lote', key: 'codigo_lote' }, { label: 'Vencimiento', val: (l) => fdate(l.fecha_vencimiento) }, { label: 'Stock', num: true, key: 'stock_actual' }, { label: 'Mínimo', num: true, key: 'stock_minimo' }, { label: 'Estado', html: estadoLote }], m.lotes, 'Este medicamento aún no tiene lotes.')}`;
+    const body = () => `<p class="muted">${h(m.presentacion)} · ${m.requiere_receta ? 'requiere receta' : 'venta libre'}. El stock de un lote nuevo es 0: se incrementa registrando una compra (el lote también puede crearse directamente desde la pantalla de compras).</p>${table([
+      { label: 'Lote', key: 'codigo_lote' }, { label: 'Vencimiento', val: (l) => fdate(l.fecha_vencimiento) }, { label: 'Stock', num: true, key: 'stock_actual' }, { label: 'Mínimo', num: true, key: 'stock_minimo' }, { label: 'Proveedor', html: (l) => (l.proveedor ? h(l.proveedor) : '<span class="muted">—</span>') }, { label: 'Estado', html: estadoLote }], m.lotes, 'Este medicamento aún no tiene lotes.')}`;
     const mm = modal({ title: m.nombre, wide: true, body: `<div id="lb">${body()}</div>`, footer: `<button class="btn" data-close>Cerrar</button>${canW ? '<button class="btn primary" data-newlot>+ Nuevo lote</button>' : ''}`, onClose: after });
     mm.el.querySelector('[data-newlot]')?.addEventListener('click', () => formDialog({ title: `Nuevo lote de ${m.nombre}`, fields: loteFields(), submitLabel: 'Crear lote',
       onSubmit: async (v) => { await api.post('/api/lotes', { ...v, medicamento_id: id }); toast('Lote creado con stock 0. Registre una compra para ingresar unidades.');
@@ -65,7 +67,7 @@ export async function render(el, ctx) {
       $('#tbl').innerHTML = table([
         { label: 'Medicamento', html: (l) => `<b>${h(l.medicamento)}</b><br><span class="muted">${h(l.sku)}</span>` }, { label: 'Lote', key: 'codigo_lote' },
         { label: 'Vencimiento', html: (l) => `${fdate(l.fecha_vencimiento)}<br><span class="muted">${l.vencido ? 'vencido' : `en ${l.dias_para_vencer} días`}</span>` },
-        { label: 'Stock', num: true, html: (l) => `<b>${l.stock_actual}</b>` }, { label: 'Mínimo', num: true, key: 'stock_minimo' }, { label: 'Estado', html: estadoLote },
+        { label: 'Stock', num: true, html: (l) => `<b>${l.stock_actual}</b>` }, { label: 'Mínimo', num: true, key: 'stock_minimo' }, { label: 'Proveedor', html: (l) => (l.proveedor ? h(l.proveedor) : '<span class="muted">—</span>') }, { label: 'Estado', html: estadoLote },
         { label: '', html: (l) => canW ? `<button class="btn small" data-edit="${l.lote_id}">Editar</button>` : '' }], rows, 'No hay lotes para el criterio indicado.');
       view().__rows = rows;
     }

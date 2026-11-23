@@ -3,6 +3,7 @@ const { validation, notFound } = require('../models/errors');
 const V = require('../models/validate');
 const inv = require('../models/inventario');
 const { byId, inRange, checkPeriodo } = require('../models/util');
+const { verificarVentaContraReceta } = require('../models/recetas');
 
 /** Controlador ventas: recibe la petición ya autenticada, usa los modelos y devuelve la respuesta. */
 const listarVentas = async ({ store, query }) => {
@@ -46,6 +47,10 @@ const crearVentas = async ({ store, body, user, ip }) => {
   }
   if (new Set(items.map((i) => i.lote_id)).size !== items.length) errs.push('items: un lote solo puede aparecer una vez por venta.');
   if (errs.length) throw validation('Datos no válidos.', errs);
+  if (recetaId !== null) { // regla del detalle de receta (solo si la receta pertenece al cliente y está registrada; lo demás lo valida el procedimiento)
+    const rec = await store.get('Receta', recetaId);
+    if (rec && rec.cliente_id === clienteId) await verificarVentaContraReceta(store, recetaId, items);
+  }
   const res = await store.registrarVenta({ clienteId, usuarioId: user.usuario_id, recetaId, tipoComprobante: tipo, items, ip });
   return { status: 201, data: res };
 };

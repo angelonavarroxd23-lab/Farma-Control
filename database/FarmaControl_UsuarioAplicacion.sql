@@ -26,6 +26,14 @@ GRANT INSERT, UPDATE ON dbo.Medicamento TO farmacontrol_app;
 GRANT INSERT, UPDATE ON dbo.Lote        TO farmacontrol_app;
 GRANT INSERT, UPDATE ON dbo.Receta      TO farmacontrol_app;
 GRANT INSERT         ON dbo.AuditoriaOperacion TO farmacontrol_app;
+-- Version 2.1: detalle de receta y ordenes de reposicion. DELETE solo sirve para la compensacion de operaciones
+-- que fallan a medias (por ejemplo, un lote creado en una compra que luego se rechaza); las claves foraneas
+-- impiden borrar filas que ya estan referenciadas.
+GRANT DELETE         ON dbo.Lote   TO farmacontrol_app;
+GRANT DELETE         ON dbo.Receta TO farmacontrol_app;
+GRANT INSERT, DELETE ON dbo.DetalleReceta TO farmacontrol_app;
+GRANT INSERT, UPDATE, DELETE ON dbo.OrdenReposicion TO farmacontrol_app;
+GRANT INSERT, DELETE ON dbo.DetalleOrdenReposicion TO farmacontrol_app;
 -- Las existencias solo cambian mediante los procedimientos transaccionales.
 DENY UPDATE ON OBJECT::dbo.Lote(stock_actual) TO farmacontrol_app;
 DENY INSERT, UPDATE, DELETE ON dbo.MovimientoStock TO farmacontrol_app;

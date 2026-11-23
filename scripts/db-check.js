@@ -1,7 +1,7 @@
 'use strict';
-// Verifica la conexión y la estructura esperada: 14 tablas, 19 FK, procedimientos, vistas, índices filtrados y datos iniciales.
+// Verifica la conexión y la estructura esperada: 17 tablas, 28 FK, procedimientos, vistas, índices filtrados y datos iniciales.
 const { conectar, config } = require('./db-lib');
-const TABLAS = ['Rol', 'Usuario', 'AuditoriaOperacion', 'Cliente', 'Proveedor', 'Categoria', 'Medicamento', 'Receta', 'Lote', 'Compra', 'DetalleCompra', 'Venta', 'DetalleVenta', 'MovimientoStock'];
+const TABLAS = ['Rol', 'Usuario', 'AuditoriaOperacion', 'Cliente', 'Proveedor', 'Categoria', 'Medicamento', 'Receta', 'Lote', 'Compra', 'DetalleCompra', 'Venta', 'DetalleVenta', 'MovimientoStock', 'DetalleReceta', 'OrdenReposicion', 'DetalleOrdenReposicion'];
 const SPS = ['sp_RegistrarCompra', 'sp_RegistrarVenta', 'sp_AnularVenta'];
 const VISTAS = ['vw_StockMedicamento', 'vw_AlertasLote', 'vw_VentasDiarias', 'vw_Kardex', 'vw_VentaDetalle'];
 const IDX = ['UX_Mov_Entrada', 'UX_Mov_Salida', 'UX_Mov_Reverso'];
@@ -14,8 +14,8 @@ const ok = (c, m, extra = '') => { console.log(`${c ? '  OK ' : 'FALLA'}  ${m}${
   const [info] = await q("SELECT @@SERVERNAME s, DB_NAME() d, SUSER_SNAME() u, CAST(SERVERPROPERTY('Edition') AS nvarchar(100)) e, CAST(SERVERPROPERTY('ProductVersion') AS nvarchar(50)) v");
   console.log(`Conectado a ${info.s} · base ${info.d} · usuario ${info.u} · ${info.e} ${info.v} · auth ${config.db.auth}\n`);
   const names = async (sql) => new Set((await q(sql)).map((r) => r.n));
-  const t = await names("SELECT name n FROM sys.tables"); ok(TABLAS.every((x) => t.has(x)) && t.size === 14, 'Tablas', `${TABLAS.filter((x) => t.has(x)).length}/14 esperadas, ${t.size} existentes`);
-  const [fk] = await q('SELECT COUNT(*) c FROM sys.foreign_keys'); ok(fk.c === 19, 'Claves foráneas', `${fk.c}/19`);
+  const t = await names("SELECT name n FROM sys.tables"); ok(TABLAS.every((x) => t.has(x)) && t.size === 17, 'Tablas', `${TABLAS.filter((x) => t.has(x)).length}/17 esperadas, ${t.size} existentes`);
+  const [fk] = await q('SELECT COUNT(*) c FROM sys.foreign_keys'); ok(fk.c === 28, 'Claves foráneas', `${fk.c}/28`);
   const [ck] = await q('SELECT COUNT(*) c FROM sys.check_constraints'); ok(ck.c > 0, 'Restricciones CHECK', String(ck.c));
   const p = await names("SELECT name n FROM sys.procedures"); ok(SPS.every((x) => p.has(x)), 'Procedimientos almacenados', SPS.filter((x) => p.has(x)).join(', '));
   const v = await names("SELECT name n FROM sys.views"); ok(VISTAS.every((x) => v.has(x)), 'Vistas', `${VISTAS.filter((x) => v.has(x)).length}/${VISTAS.length}`);

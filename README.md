@@ -27,10 +27,11 @@ GitHub Pages **no** sirve: solo publica archivos estáticos y FarmaControl neces
 > **Estado de verificación (léase antes de evaluar el proyecto)**
 > | Componente | Estado | Evidencia |
 > |---|---|---|
-> | API + reglas de negocio contra **SQL Server 2022** | Verificado: **62/62 pruebas aprobadas** (51 de API + 11 de integración que consultan las tablas) | `docs/evidencias/pruebas_automatizadas_sqlserver.txt` |
-> | Base de datos (14 tablas, 19 FK, 3 procedimientos, 5 vistas, 0 disparadores) | Verificada con `npm run db:check` | `docs/evidencias/db_check_sqlserver.txt` |
+> | **Versión 2.0** (antes de las mejoras 2.1): API + reglas contra **SQL Server 2022** | Verificado: **62/62 pruebas aprobadas** (51 de API + 11 de integración que consultan las tablas) | `docs/evidencias/pruebas_automatizadas_sqlserver.txt` |
+> | **Versión 2.0**: base de datos (14 tablas, 19 FK, 3 procedimientos, 5 vistas, 0 disparadores) | Verificada con `npm run db:check` | `docs/evidencias/db_check_sqlserver.txt` |
 > | Interfaz web conectada a SQL Server | Recorrido automatizado con Edge: 18/18 pasos, contrastados con consultas a la base | `docs/evidencias/recorrido_ui_sqlserver.txt`, `docs/capturas_sqlserver/` |
-> | Controlador en memoria (solo pruebas/vista previa) | 51 aprobadas, 11 de integración omitidas | `docs/evidencias/pruebas_automatizadas_memoria.txt` |
+> | **Versión 2.1** (mejoras de receta, lote, proveedor y reposición): controlador en memoria + demostración de GitHub Pages | **68 pruebas de API aprobadas**, 15 de integración SQL omitidas (no se ejecutaron); recorrido de interfaz automatizado en memoria y en la demo | `docs/evidencias/pruebas_automatizadas_memoria.txt` |
+> | **Versión 2.1** contra **SQL Server** (17 tablas, 28 FK, `SQL-12…SQL-15`) | **NO verificada todavía.** Se verifica con `npm run db:setup`, `npm run db:check` y `npm run test:sqlserver` (83 pruebas esperadas) o con el workflow de *Actions* | — |
 >
 > **Conversión a MVC (9-nov-2026):** posterior a la verificación en SQL Server de la tabla anterior. Tras la conversión se comprobaron 51 pruebas en memoria; la ejecución contra SQL Server la hace el workflow de *Actions* (`pruebas-sqlserver`) y, en su PC, `npm run test:sqlserver`.
 >
@@ -38,6 +39,17 @@ GitHub Pages **no** sirve: solo publica archivos estáticos y FarmaControl neces
 > las pruebas se ejecutaron con una cuenta administradora (Autenticación de Windows). El script de cuenta de mínimo privilegio y
 > `DB_AUTH=sql` **no se han ejecutado**. Pendientes del equipo: aprobación con usuarios, pruebas de usabilidad con participantes,
 > video, repositorio público y prueba de impresión física de la constancia.
+
+## Novedades de la versión 2.1 (23-nov-2026)
+Incorporan las observaciones recibidas del docente (recetas, lote, proveedor). Detalle y límites en `docs/MEJORAS_V2_1.md`.
+- **Receta en caja:** en *Nueva venta* el botón **+ Nueva receta** registra la receta del cliente (con los medicamentos prescritos) sin salir de la pantalla; la receta queda seleccionada y su saldo pendiente se carga al carrito. El cajero puede registrarla; anularla sigue siendo del químico o el administrador.
+- **Detalle de receta:** nueva tabla `DetalleReceta`. Si la receta tiene detalle, solo se venden los medicamentos prescritos y hasta la cantidad pendiente (lo ya dispensado se calcula desde las ventas confirmadas).
+- **Lote en la compra:** en *Compras* se puede crear el lote nuevo al registrar la compra (pestaña «Lote nuevo»); el lote se elimina si la compra falla.
+- **Proveedor:** el proveedor se puede crear desde la pantalla de compras; cada lote guarda su proveedor (`Lote.proveedor_id`) y cada medicamento su proveedor habitual (`Medicamento.proveedor_id`).
+- **Reposición:** nueva pantalla *Reposición* con sugerencias (existencias vendibles ≤ suma de mínimos) y **órdenes de reposición** a proveedor (`OrdenReposicion`, `DetalleOrdenReposicion`); la orden pasa a «Recibida» al registrar la compra asociada. Cubre el caso de negocio BN-04.
+- **FEFO:** la lista de venta ordena los lotes por vencimiento y marca el que vence primero (sugerencia; no se impone).
+
+**Actualizar una base existente (v2.0 → v2.1):** `npm run db:setup` es re-ejecutable y agrega las columnas y tablas nuevas sin borrar datos (los datos de demostración nuevos, p. ej. el detalle de las recetas de ejemplo, solo se cargan con `npm run db:reset -- --confirmar`). Si usa la cuenta de mínimo privilegio, vuelva a ejecutar `database/FarmaControl_UsuarioAplicacion.sql`.
 
 ## 1. Requisitos
 - **Node.js 20 o superior** (desarrollado con Node 22) y npm.
@@ -62,7 +74,7 @@ FarmaControl/
 ├── lib/                Servicios transversales: auth/ (scrypt, JWT, permisos) y http/ (enrutador, utilidades)
 ├── app.js · server.js  Aplicación HTTP (autenticación, permisos, auditoría) y punto de entrada
 ├── scripts/            db:setup, db:check, db:reset, lanzador de pruebas, modo memoria
-├── tests/              62 pruebas automatizadas (51 de API + 11 de integración con SQL Server)
+├── tests/              83 pruebas automatizadas (68 de API + 15 de integración con SQL Server)
 ├── database/           FarmaControl_Database.sql · _UsuarioAplicacion.sql · _Reset.sql
 ├── docs/               Informe, manual, arquitectura (incl. ARQUITECTURA_MVC.md), evidencias, capturas, diagramas
 ├── original/           Recursos de la entrega anterior, conservados sin modificar
@@ -115,17 +127,17 @@ En la base solo se guardan hashes scrypt. **Cambie estas contraseñas antes de c
 
 ## 8. Pruebas
 ```
-npm run test:sqlserver      # 62 pruebas contra SQL Server (51 de API + 11 de integración SQL-01…SQL-11), en serie
-npm test                    # 51 pruebas con el controlador en memoria (11 de integración omitidas)
+npm run test:sqlserver      # 83 pruebas contra SQL Server (68 de API + 15 de integración SQL-01…SQL-15), en serie
+npm test                    # 68 pruebas con el controlador en memoria (15 de integración omitidas)
 ```
 Se ejecutan en serie (`--test-concurrency=1`) porque comparten la base. `test:sqlserver` crea datos con códigos únicos y es repetible,
 pero **modifica la base configurada**; úselo solo en desarrollo. Resultado real (9-nov-2026, SQL Server 2022 Evaluation, Node v24.22.0):
-62 aprobadas, 0 fallidas, 0 omitidas (`docs/evidencias/pruebas_automatizadas_sqlserver.txt`).
+62 aprobadas, 0 fallidas, 0 omitidas en la versión 2.0 (`docs/evidencias/pruebas_automatizadas_sqlserver.txt`). La versión 2.1 agrega 21 pruebas y **no tiene aún un resultado contra SQL Server**.
 
 ## 9. Reglas de negocio garantizadas
 Venta ≤ stock disponible; no se venden lotes vencidos; compras suman y ventas restan; anulación repone el stock una sola vez
 (motivo obligatorio, solo Administrador); movimientos sin duplicar (índices únicos filtrados) y con origen, lote y responsable;
-receta vigente, válida y del mismo cliente para medicamentos con receta; alertas calculadas del estado real; compras, ventas y
+receta vigente, válida y del mismo cliente para medicamentos con receta (y, si la receta tiene detalle, solo los medicamentos prescritos y hasta el saldo pendiente; regla aplicada por la API, no por el procedimiento almacenado); alertas calculadas del estado real; compras, ventas y
 anulaciones transaccionales (procedimientos con `XACT_ABORT`, `UPDLOCK/HOLDLOCK`).
 Las constancias son comprobantes **simulados**, sin integración tributaria.
 

@@ -103,3 +103,38 @@ test('SQL-11 sin conmutación silenciosa: si SQL Server no está disponible, el 
   const cfg = { ...config, driver: 'mssql', port: 0, serveFrontend: false, jwtSecret: 'x'.repeat(40), db: { ...config.db, database: 'BaseQueNoExiste_FC' } };
   await assert.rejects(start(cfg), /No se pudo conectar a SQL Server[\s\S]*NO cambia a otro almacenamiento/);
 });
+
+// ---------- Versión 2.1: receta con detalle, lote/proveedor en compra y reposición (verificación directa en la base) ----------
+test('SQL-12 el detalle de la receta queda en dbo.DetalleReceta y la base impide duplicados y cantidades no positivas', { skip }, async () => {
+  const m = await t.crearMedicamento({ receta: true }); const cli = await t.crearCliente();
+  const r = await t.call('POST', '/api/recetas', { cliente_id: cli.cliente_id, numero_receta: t.uid('REC'), nombre_prescriptor: 'Dr. Prueba', fecha_emision: t.addDays(-1), fecha_vencimiento: t.addDays(10), items: [{ medicamento_id: m.medicamento_id, cantidad: 2, indicaciones: 'x' }] }, await t.login('cajero'));
+  assert.equal(r.status, 201);
+  const rows = await q('SELECT medicamento_id, cantidad FROM dbo.DetalleReceta WHERE receta_id=@i', { i: [sql.Int, r.data.receta_id] });
+  assert.equal(rows.length, 1); assert.equal(rows[0].cantidad, 2);
+  await assert.rejects(q('INSERT dbo.DetalleReceta (receta_id, medicamento_id, cantidad) VALUES (@r,@m,1)', { r: [sql.Int, r.data.receta_id], m: [sql.Int, m.medicamento_id] }), /UQ_DetReceta_Med/);
+  const m2 = await t.crearMedicamento();
+  await assert.rejects(q('INSERT dbo.DetalleReceta (receta_id, medicamento_id, cantidad) VALUES (@r,@m,0)', { r: [sql.Int, r.data.receta_id], m: [sql.Int, m2.medicamento_id] }), /CK_DetReceta_Cantidad/);
+});
+test('SQL-13 la compra con lote nuevo guarda el lote, su proveedor y el movimiento de entrada en la base', { skip }, async () => {
+  const m = await t.crearMedicamento(); const p = await t.proveedor(); const codigo = t.uid('NL');
+  const r = await t.call('POST', '/api/compras', { proveedor_id: p.proveedor_id, numero_documento: t.uid('F'), items: [{ nuevo_lote: { medicamento_id: m.medicamento_id, codigo_lote: codigo, fecha_vencimiento: t.addDays(120) }, cantidad: 9, costo_unitario: 2 }] }, await t.login('almacen'));
+  assert.equal(r.status, 201);
+  const [l] = await q('SELECT lote_id, stock_actual, proveedor_id FROM dbo.Lote WHERE medicamento_id=@m AND codigo_lote=@c', { m: [sql.Int, m.medicamento_id], c: [sql.NVarChar, codigo] });
+  assert.equal(l.stock_actual, 9); assert.equal(l.proveedor_id, p.proveedor_id);
+  assert.equal((await q("SELECT COUNT(*) c FROM dbo.MovimientoStock WHERE lote_id=@l AND tipo='ENTRADA_COMPRA' AND compra_id=@i", { l: [sql.Int, l.lote_id], i: [sql.Int, r.data.compra_id] }))[0].c, 1);
+  assert.equal((await q('SELECT proveedor_id p FROM dbo.Medicamento WHERE medicamento_id=@m', { m: [sql.Int, m.medicamento_id] }))[0].p, p.proveedor_id);
+});
+test('SQL-14 la orden de reposición se guarda, pasa a RECIBIDA con su compra y la base impide RECIBIDA sin compra', { skip }, async () => {
+  const m = await t.crearMedicamento(); const l = await t.crearLote(m); const p = await t.proveedor(); const tk = await t.login('almacen');
+  const o = (await t.call('POST', '/api/ordenes', { proveedor_id: p.proveedor_id, items: [{ medicamento_id: m.medicamento_id, cantidad: 6 }] }, tk)).data;
+  assert.equal((await q('SELECT cantidad_solicitada c FROM dbo.DetalleOrdenReposicion WHERE orden_id=@o', { o: [sql.Int, o.orden_id] }))[0].c, 6);
+  await assert.rejects(q("UPDATE dbo.OrdenReposicion SET estado='RECIBIDA' WHERE orden_id=@o", { o: [sql.Int, o.orden_id] }), /CK_Orden_Recibida/);
+  const c = await t.call('POST', '/api/compras', { proveedor_id: p.proveedor_id, numero_documento: t.uid('F'), orden_id: o.orden_id, items: [{ lote_id: l.lote_id, cantidad: 6, costo_unitario: 1 }] }, tk);
+  assert.equal(c.status, 201);
+  const [row] = await q('SELECT estado, compra_id FROM dbo.OrdenReposicion WHERE orden_id=@o', { o: [sql.Int, o.orden_id] });
+  assert.equal(row.estado, 'RECIBIDA'); assert.equal(row.compra_id, c.data.compra_id);
+});
+test('SQL-15 el modelo físico tiene 17 tablas y 28 claves foráneas', { skip }, async () => {
+  assert.equal((await q('SELECT COUNT(*) c FROM sys.tables'))[0].c, 17);
+  assert.equal((await q('SELECT COUNT(*) c FROM sys.foreign_keys'))[0].c, 28);
+});

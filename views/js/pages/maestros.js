@@ -1,5 +1,6 @@
 import { api, qs } from '../api.js';
-import { h, title, table, badge, formDialog, toast, debounce, fdate, today } from '../ui.js';
+import { h, title, table, badge, formDialog, modal, toast, debounce, fdate, today } from '../ui.js';
+import { nuevaReceta } from './recetaForm.js';
 
 // Fábrica de pantallas de mantenimiento (listado + búsqueda + alta/edición en diálogo).
 function maestro({ titulo, sub, endpoint, searchable, cols, fields, canWrite, newLabel, okNew, okEdit, extra, idKey }) {
@@ -41,20 +42,19 @@ export const proveedores = maestro({
 // CU-04 Registrar y validar referencia de receta
 export const recetas = {
   async render(el, ctx) {
-    const w = ctx.can('recetas:write');
-    el.innerHTML = title('Recetas', 'Referencias de recetas vinculadas al cliente. El sistema verifica registro, estado y vigencia; no evalúa el contenido clínico.') + `<div class="panel"><div class="actions"><span></span>${w ? '<button class="btn primary" id="new">+ Registrar receta</button>' : ''}</div><div id="tbl"></div></div>`;
+    const w = ctx.can('recetas:write'); const c = ctx.can('recetas:create');
+    el.innerHTML = title('Recetas', 'Referencias de recetas vinculadas al cliente. El sistema verifica registro, estado y vigencia; no evalúa el contenido clínico.') + `<div class="panel"><div class="actions"><span></span>${c ? '<button class="btn primary" id="new">+ Registrar receta</button>' : ''}</div><div id="tbl"></div></div>`;
     const $ = (s) => el.querySelector(s); let rows = [];
     const load = async () => { rows = await api.get('/api/recetas');
       $('#tbl').innerHTML = table([{ label: 'N.º receta', html: (r) => `<b>${h(r.numero_receta)}</b>` }, { label: 'Cliente', key: 'cliente' }, { label: 'Prescriptor', key: 'nombre_prescriptor' }, { label: 'Emisión', val: (r) => fdate(r.fecha_emision) }, { label: 'Vence', val: (r) => fdate(r.fecha_vencimiento) },
         { label: 'Estado', html: (r) => (r.estado === 'ANULADA' ? badge('Anulada', 'error') : r.vigente ? badge('Vigente') : badge('No vigente', 'alert')) },
-        ...(w ? [{ label: '', html: (r) => (r.estado === 'VALIDA' ? `<button class="btn small danger" data-anular="${r.receta_id}">Anular</button>` : '') }] : [])], rows, 'Aún no hay recetas registradas.'); };
-    $('#new')?.addEventListener('click', async () => { const cl = await api.get('/api/clientes');
-      formDialog({ title: 'Registrar receta', wide: true, values: { fecha_emision: today() }, fields: [
-        { name: 'cliente_id', label: 'Cliente (titular)', type: 'select', req: true, placeholder: 'Seleccione…', options: cl.map((c) => ({ value: c.cliente_id, label: `${c.nombre_razon_social} · ${c.numero_documento}` })) },
-        { name: 'numero_receta', label: 'Número de receta', req: true, max: 50 }, { name: 'nombre_prescriptor', label: 'Prescriptor', req: true, max: 160 },
-        { name: 'fecha_emision', label: 'Fecha de emisión', type: 'date', req: true }, { name: 'fecha_vencimiento', label: 'Vigente hasta', type: 'date', req: true }, { name: 'observacion', label: 'Observación', max: 250 }],
-        onSubmit: async (v) => { await api.post('/api/recetas', v); toast('Receta registrada.'); await load(); } }); });
-    $('#tbl').addEventListener('click', async (e) => { const b = e.target.closest('[data-anular]'); if (!b) return;
+        { label: '', html: (r) => `<div class="rowButtons"><button class="btn small" data-ver="${r.receta_id}">Detalle</button>${w && r.estado === 'VALIDA' ? `<button class="btn small danger" data-anular="${r.receta_id}">Anular</button>` : ''}</div>` }], rows, 'Aún no hay recetas registradas.'); };
+    $('#new')?.addEventListener('click', async () => nuevaReceta({ clientes: await api.get('/api/clientes'), onCreated: load }));
+    $('#tbl').addEventListener('click', async (e) => { const v = e.target.closest('[data-ver]');
+      if (v) { const r = await api.get(`/api/recetas/${v.dataset.ver}`);
+        return modal({ title: `Receta ${r.numero_receta}`, wide: true, body: `<p class="muted">${h(r.cliente)} · ${h(r.nombre_prescriptor)} · emitida ${fdate(r.fecha_emision)} · vence ${fdate(r.fecha_vencimiento)} · ${r.estado === 'ANULADA' ? 'anulada' : r.vigente ? 'vigente' : 'no vigente'}</p>${r.detalle.length ? table([
+          { label: 'Medicamento', html: (d) => `<b>${h(d.medicamento)}</b><br><span class="muted">${h(d.presentacion)}</span>` }, { label: 'Prescrito', num: true, key: 'cantidad' }, { label: 'Dispensado', num: true, key: 'dispensado' }, { label: 'Pendiente', num: true, html: (d) => `<b>${d.pendiente}</b>` }, { label: 'Indicaciones', key: 'indicaciones' }], r.detalle) : '<p class="empty">Receta registrada sin detalle de medicamentos.</p>'}` }); }
+      const b = e.target.closest('[data-anular]'); if (!b) return;
       try { await api.patch(`/api/recetas/${b.dataset.anular}`, { estado: 'ANULADA' }); toast('Receta anulada.'); await load(); } catch (x) { toast(x.message, 'error'); } });
     await load();
   },

@@ -19,13 +19,18 @@ Flujo de una petición: **Vista** (`fetch`) → `app.js` → `routes/index.js` �
 |---|---|
 | authController | `/api/health`, `/api/auth/*` |
 | usuariosController | `/api/roles`, `/api/usuarios` |
-| clientesController · proveedoresController · recetasController | `/api/clientes`, `/api/proveedores`, `/api/recetas` |
+| clientesController · proveedoresController · recetasController | `/api/clientes`, `/api/proveedores`, `/api/recetas` (incl. detalle y saldo) |
 | catalogoController | `/api/categorias`, `/api/medicamentos`, `/api/lotes` |
 | comprasController · ventasController | `/api/compras`, `/api/ventas` (incl. anulación) |
+| ordenesController | `/api/reposicion/sugerencias`, `/api/ordenes` (órdenes de reposición) |
 | inventarioController | `/api/movimientos`, `/api/alertas` |
 | reportesController | `/api/resumen`, `/api/reportes/*` (incl. CSV) |
 | auditoriaController | `/api/auditoria` |
 
-**Alcance de la conversión:** reorganización del código; la API (44 rutas), las reglas de negocio y el script SQL no cambiaron.
+**Alcance de la conversión (v2.0):** reorganización del código; la API (44 rutas), las reglas de negocio y el script SQL no cambiaron.
 Verificación: 51 pruebas aprobadas con el controlador en memoria tras la conversión; la ejecución contra SQL Server 2022 la realiza
 el workflow `.github/workflows/ci.yml` (trabajo `pruebas-sqlserver`), visible en la pestaña *Actions*.
+
+**Versión 2.1 (23-nov-2026):** la API pasa a **50 rutas** y el modelo a **17 tablas** (`DetalleReceta`, `OrdenReposicion`, `DetalleOrdenReposicion`; columnas `Lote.proveedor_id` y `Medicamento.proveedor_id`).
+Nuevos elementos MVC: `models/recetas.js` (saldo de receta y verificación de la venta), `controllers/ordenesController.js`, `views/js/pages/reposicion.js` y `views/js/pages/recetaForm.js`.
+Los procedimientos almacenados **no cambiaron**: la regla del detalle de receta, la creación del lote dentro de la compra y el cierre de la orden de reposición se aplican en la capa de controladores (con compensación si una operación falla a medias). Ver `docs/MEJORAS_V2_1.md`.

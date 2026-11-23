@@ -23,6 +23,9 @@ const CHECKS = {
   Medicamento: (r) => (r.precio_venta >= 0 ? null : 'El precio no puede ser negativo.'),
   Receta: (r) => (r.fecha_vencimiento >= r.fecha_emision ? null : 'La fecha de vencimiento no puede ser anterior a la emisión.'),
   Lote: (r) => (r.stock_actual >= 0 && r.stock_minimo >= 0 ? null : 'Las existencias no pueden ser negativas.'),
+  DetalleReceta: (r) => (r.cantidad > 0 ? null : 'La cantidad prescrita debe ser mayor que cero.'),
+  DetalleOrdenReposicion: (r) => (r.cantidad_solicitada > 0 ? null : 'La cantidad solicitada debe ser mayor que cero.'),
+  OrdenReposicion: (r) => (['PENDIENTE', 'RECIBIDA', 'ANULADA'].includes(r.estado) && (r.estado !== 'RECIBIDA' || r.compra_id != null) ? null : 'Estado de orden no válido (una orden recibida requiere su compra).'),
 };
 
 class MemoryStore {

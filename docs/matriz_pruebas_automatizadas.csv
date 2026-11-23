@@ -22,7 +22,7 @@ MED-02,"modificar medicamento, consultar por nombre/SKU/categoría y detalle con
 MED-03,una categoría con medicamentos no puede eliminarse (integridad referencial),30.8851,Aprobado,Aprobado
 LOT-01,un lote nuevo inicia en cero y no acepta fijar stock ni fechas vencidas,35.7087,Aprobado,Aprobado
 LOT-02,código de lote duplicado para el mismo medicamento → 409; stock no editable por PATCH,127.6984,Aprobado,Aprobado
-REC-01,registrar receta; fechas coherentes; número único; solo químico/administrador,100.058,Aprobado,Aprobado
+REC-01,"registrar receta; fechas coherentes; número único; almacenero sin permiso; cajero registra pero no modifica (modificada en 2.1)",,Aprobado,No ejecutada (la versión 2.0 aprobó en SQL Server)
 COM-01,"una compra incrementa el stock, calcula el total y registra ENTRADA_COMPRA con trazabilidad",347.3872,Aprobado,Aprobado
 COM-02,una compra con varios lotes actualiza cada uno,134.1322,Aprobado,Aprobado
 COM-03,documento repetido del mismo proveedor se rechaza sin alterar el stock,169.6685,Aprobado,Aprobado
@@ -61,3 +61,24 @@ SQL-08,integridad global: stock = suma de movimientos y sin movimientos duplicad
 SQL-09,"contraseñas: solo hashes scrypt en la base, nunca texto plano",2.6528,Omitida,Aprobado
 SQL-10,vistas de reporte responden con datos reales,52.7682,Omitida,Aprobado
 SQL-11,"sin conmutación silenciosa: si SQL Server no está disponible, el servidor no arranca",9.0544,Omitida,Aprobado
+REC-02,la receta se registra con su detalle y muestra saldo pendiente por medicamento,,Aprobado,No ejecutada
+REC-03,"detalle inválido: cantidad no positiva, medicamento inexistente o repetido → 400 y no se guarda la receta",,Aprobado,No ejecutada
+REC-04,una receta sin detalle (registro antiguo) sigue aceptándose,,Aprobado,No ejecutada
+VEN-R1,la venta respeta el detalle: medicamento no prescrito y exceso de saldo se rechazan sin tocar el stock,,Aprobado,No ejecutada
+VEN-R2,anular la venta devuelve el saldo a la receta; los productos sin receta no consumen saldo,,Aprobado,No ejecutada
+VEN-R3,"con receta de detalle, la receta de otro cliente o sin receta se sigue rechazando",,Aprobado,No ejecutada
+VEN-R4,una receta sin detalle conserva la regla anterior (basta que esté vigente y sea del cliente),,Aprobado,No ejecutada
+FEF-01,los lotes vendibles salen ordenados por vencimiento y se sugiere el que vence primero,,Aprobado,No ejecutada
+COM-04,"la compra crea el lote nuevo, le ingresa las unidades y registra su proveedor",,Aprobado,No ejecutada
+COM-05,una compra puede mezclar lotes existentes y nuevos; el proveedor del lote existente se actualiza,,Aprobado,No ejecutada
+COM-06,"lote nuevo inválido (vencido, repetido, medicamento inexistente) → rechazo y sin lotes huérfanos",,Aprobado,No ejecutada
+COM-07,si la compra falla (documento repetido) el lote nuevo creado en la operación se elimina,,Aprobado,No ejecutada
+COM-08,el proveedor se puede crear y asignar como habitual del medicamento,,Aprobado,No ejecutada
+ORD-01,sugerencias: aparecen los medicamentos agotados o bajo mínimo y no los abastecidos; proveedor habitual,,Aprobado,No ejecutada
+ORD-02,"crear, listar y consultar una orden; validaciones y permisos",,Aprobado,No ejecutada
+ORD-03,al registrar la compra asociada la orden pasa a RECIBIDA con su compra; no se reutiliza ni se anula,,Aprobado,No ejecutada
+ORD-04,anular una orden pendiente; una orden anulada no se puede recibir,,Aprobado,No ejecutada
+SQL-12,el detalle de la receta queda en dbo.DetalleReceta y la base impide duplicados y cantidades no positivas,,Omitida,No ejecutada
+SQL-13,"la compra con lote nuevo guarda el lote, su proveedor y el movimiento de entrada en la base",,Omitida,No ejecutada
+SQL-14,"la orden de reposición se guarda, pasa a RECIBIDA con su compra y la base impide RECIBIDA sin compra",,Omitida,No ejecutada
+SQL-15,el modelo físico tiene 17 tablas y 28 claves foráneas,,Omitida,No ejecutada

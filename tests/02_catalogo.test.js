@@ -77,11 +77,12 @@ test('LOT-02 código de lote duplicado para el mismo medicamento → 409; stock 
   await t.call('PATCH', `/api/lotes/${l.lote_id}`, { stock_actual: 500, stock_minimo: 9 }, tk);
   assert.equal(await t.stockDe(l), 0);
 });
-test('REC-01 registrar receta; fechas coherentes; número único; solo químico/administrador', async () => {
+test('REC-01 registrar receta; fechas coherentes; número único; almacenero sin permiso; cajero registra pero no modifica', async () => {
   const q = await t.login('quimico'), c = await t.login('cajero'); const cli = await t.crearCliente();
   const body = { cliente_id: cli.cliente_id, numero_receta: t.uid('REC'), nombre_prescriptor: 'Dr. Prueba', fecha_emision: t.addDays(-1), fecha_vencimiento: t.addDays(20) };
-  assert.equal((await t.call('POST', '/api/recetas', body, c)).status, 403);
-  assert.equal((await t.call('POST', '/api/recetas', body, q)).status, 201);
+  assert.equal((await t.call('POST', '/api/recetas', body, await t.login('almacen'))).status, 403); // el almacenero no registra recetas
+  const creada = await t.call('POST', '/api/recetas', body, c); assert.equal(creada.status, 201); // el cajero la registra en caja
+  assert.equal((await t.call('PATCH', `/api/recetas/${creada.data.receta_id}`, { estado: 'ANULADA' }, c)).status, 403); // anular/modificar: solo químico o administrador
   assert.equal((await t.call('POST', '/api/recetas', body, q)).status, 409);
   assert.equal((await t.call('POST', '/api/recetas', { ...body, numero_receta: t.uid('REC'), fecha_vencimiento: t.addDays(-5) }, q)).status, 400);
   const list = await t.call('GET', `/api/recetas?cliente_id=${cli.cliente_id}`, undefined, c);

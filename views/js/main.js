@@ -9,11 +9,12 @@ import * as maestros from './pages/maestros.js';
 import * as inventario from './pages/inventario.js';
 import * as reportes from './pages/reportes.js';
 import * as admin from './pages/admin.js';
+import * as reposicion from './pages/reposicion.js';
 
 // Permisos de la interfaz: solo controlan qué se muestra. La autorización real la aplica el servidor.
 const PERMS = {
   'clientes:write': ['Administrador', 'Cajero'], 'proveedores:read': ['Administrador', 'Almacenero'], 'catalogo:write': ['Administrador', 'Almacenero'],
-  'recetas:read': ['Administrador', 'Cajero', 'Quimico farmaceutico'], 'recetas:write': ['Administrador', 'Quimico farmaceutico'],
+  'recetas:read': ['Administrador', 'Cajero', 'Quimico farmaceutico'], 'recetas:create': ['Administrador', 'Cajero', 'Quimico farmaceutico'], 'recetas:write': ['Administrador', 'Quimico farmaceutico'], 'reposicion:read': ['Administrador', 'Almacenero'],
   'ventas:read': ['Administrador', 'Cajero', 'Quimico farmaceutico'], 'ventas:create': ['Administrador', 'Cajero'], 'ventas:anular': ['Administrador'],
   'compras:read': ['Administrador', 'Almacenero'], 'movimientos:read': ['Administrador', 'Almacenero', 'Quimico farmaceutico'],
   'reportes:read': ['Administrador'], 'usuarios:read': ['Administrador'], 'auditoria:read': ['Administrador'],
@@ -29,6 +30,7 @@ const PAGES = [
   ['Inventario'],
   { id: 'medicamentos', label: 'Medicamentos y lotes', icon: '▤', mod: catalogo },
   { id: 'alertas', label: 'Alertas', icon: '⚠', mod: inventario.alertas },
+  { id: 'reposicion', label: 'Reposición', icon: '⟳', perm: 'reposicion:read', mod: reposicion },
   { id: 'movimientos', label: 'Movimientos', icon: '⇄', perm: 'movimientos:read', mod: inventario.movimientos },
   ['Gestión'],
   { id: 'clientes', label: 'Clientes', icon: '♙', mod: maestros.clientes },
@@ -71,7 +73,7 @@ function startApp() {
     if (p.perm && !can(user, p.perm)) return '';
     return `<a class="nav" href="#/${p.id}" data-page="${p.id}"><span class="nicon" aria-hidden="true">${p.icon}</span><span>${h(p.label)}</span></a>`;
   }).join('').replace(/<div class="navGroup">[^<]*<\/div>(?=<div class="navGroup">|$)/g, '');
-  $('#sidebar').innerHTML = `<div class="logoBar"><div class="logoMark">✚</div><span>FarmaControl</span></div>${nav}<div class="sideNote">Versión académica 2.0<br><span id="driverNote">Verificando conexión…</span></div>`;
+  $('#sidebar').innerHTML = `<div class="logoBar"><div class="logoMark">✚</div><span>FarmaControl</span></div>${nav}<div class="sideNote">Versión académica 2.1<br><span id="driverNote">Verificando conexión…</span></div>`;
   api.get('/api/health').then((x) => { const n = document.getElementById('driverNote'); if (n) n.textContent = x.driver === 'mssql' ? 'Datos en SQL Server mediante API REST' : 'Modo demostración: datos en memoria (sin SQL Server)'; }).catch(() => {});
   route();
 }

@@ -1,5 +1,5 @@
 'use strict';
-// Metadatos del modelo físico (14 tablas). Se usan para: (1) validar entradas en el servidor,
+// Metadatos del modelo físico (17 tablas). Se usan para: (1) validar entradas en el servidor,
 // (2) construir sentencias SQL parametrizadas con identificadores de una lista cerrada
 // (nunca derivados de la entrada del usuario) y (3) emular restricciones en el controlador de memoria.
 // t: tipo | max: longitud | req: obligatorio | def: valor por defecto | auto: identidad
@@ -52,6 +52,7 @@ const TABLES = {
       sku: col('str', { max: 30, req: true, ascii: true }), nombre: col('str', { max: 160, req: true }),
       principio_activo: col('str', { max: 160 }), presentacion: col('str', { max: 90, req: true }),
       precio_venta: col('dec', { req: true }), requiere_receta: col('bit', { def: false }), activo: col('bit', { def: true }),
+      proveedor_id: col('int', { fk: 'Proveedor' }), // proveedor habitual (opcional)
     },
     unique: [{ name: 'UQ_Medicamento_Sku', cols: ['sku'], label: 'el SKU' }],
   },
@@ -65,12 +66,22 @@ const TABLES = {
     },
     unique: [{ name: 'UQ_Receta_Numero', cols: ['numero_receta'], label: 'el número de receta' }],
   },
+  DetalleReceta: {
+    pk: 'detalle_receta_id',
+    cols: {
+      detalle_receta_id: col('int', { auto: true }), receta_id: col('int', { req: true, fk: 'Receta' }),
+      medicamento_id: col('int', { req: true, fk: 'Medicamento' }), cantidad: col('int', { req: true }),
+      indicaciones: col('str', { max: 250 }),
+    },
+    unique: [{ name: 'UQ_DetReceta_Med', cols: ['receta_id', 'medicamento_id'], label: 'ese medicamento en la receta' }],
+  },
   Lote: {
     pk: 'lote_id',
     cols: {
       lote_id: col('int', { auto: true }), medicamento_id: col('int', { req: true, fk: 'Medicamento' }),
       codigo_lote: col('str', { max: 60, req: true }), fecha_vencimiento: col('date', { req: true }),
       stock_actual: col('int', { def: 0, ro: true }), stock_minimo: col('int', { def: 5 }),
+      proveedor_id: col('int', { fk: 'Proveedor' }), // proveedor que entregó el lote
     },
     unique: [{ name: 'UQ_Lote_Codigo', cols: ['medicamento_id', 'codigo_lote'], label: 'el código de lote para ese medicamento' }],
   },
@@ -89,6 +100,23 @@ const TABLES = {
       cantidad: col('int'), costo_unitario: col('dec'), subtotal: col('dec', { computed: true }),
     },
     unique: [],
+  },
+  OrdenReposicion: {
+    pk: 'orden_id',
+    cols: {
+      orden_id: col('int', { auto: true }), proveedor_id: col('int', { req: true, fk: 'Proveedor' }), usuario_id: col('int', { req: true, fk: 'Usuario' }),
+      fecha: col('dt', { auto: true }), estado: col('str', { max: 12, ascii: true, def: 'PENDIENTE', enum: ['PENDIENTE', 'RECIBIDA', 'ANULADA'] }),
+      compra_id: col('int', { fk: 'Compra' }), observacion: col('str', { max: 250 }),
+    },
+    unique: [],
+  },
+  DetalleOrdenReposicion: {
+    pk: 'detalle_orden_id',
+    cols: {
+      detalle_orden_id: col('int', { auto: true }), orden_id: col('int', { req: true, fk: 'OrdenReposicion' }),
+      medicamento_id: col('int', { req: true, fk: 'Medicamento' }), cantidad_solicitada: col('int', { req: true }),
+    },
+    unique: [{ name: 'UQ_DetOrden_Med', cols: ['orden_id', 'medicamento_id'], label: 'ese medicamento en la orden' }],
   },
   Venta: {
     pk: 'venta_id',
