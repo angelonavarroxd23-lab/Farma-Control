@@ -1,6 +1,6 @@
 ﻿ID,Requisito,Prioridad,Estado,Necesidad,CU,Componente,Pruebas,SQL Server (verificación)
 RF-01,Autenticar usuarios y aplicar autorización en un servidor.,Alta,Implementado,N-06,CU-01,"lib/auth/*, authController, routes/index.js (/api/auth), views/js/main.js",AUT-01 a AUT-13,Verificado v2.0
-RF-02,"Registrar, buscar y modificar clientes con documento único.",Alta,Implementado,N-04,CU-02,"clientesController, models/validate.js, maestros.js",CLI-01 a CLI-05,Verificado v2.0
+RF-02,"Registrar, buscar, modificar y eliminar clientes con documento único; solo se elimina un cliente sin ventas ni recetas (administrador).",Alta,Implementado,N-04,CU-02,"clientesController, models/validate.js, maestros.js",CLI-01 a CLI-07,Verificado v2.0; eliminación (v2.2) pendiente
 RF-03,"Consultar medicamentos por nombre, código, categoría o lote.",Alta,Implementado,N-01,CU-03,"catalogoController (/api/medicamentos, /api/lotes), catalogo.js",MED-02,Verificado v2.0
 RF-04,Registrar y modificar el catálogo de medicamentos (incluye categorías y presentaciones).,Alta,Implementado,N-01,CU-08,"catalogoController, models/schema.js, models/validate.js, catalogo.js","MED-01, MED-03",Verificado v2.0
 RF-05,"Crear lotes por medicamento, código, vencimiento y stock mínimo.",Alta,Implementado,N-02,CU-08,"catalogoController (/api/lotes), catalogo.js","LOT-01, LOT-02",Verificado v2.0
@@ -13,7 +13,7 @@ RF-11,Visualizar e imprimir la constancia interna de una venta.,Media,Implementa
 RF-12,Anular una venta una sola vez y reponer sus existencias.,Alta,Implementado,N-06,CU-12,"ventasController, sp_AnularVenta, índice UX_Mov_Reverso","ANU-01, ANU-02, CON-02",Verificado v2.0
 RF-13,"Mostrar alertas de stock bajo, agotados y vencimientos.",Alta,Implementado,N-02,CU-09,"models/inventario.js, inventarioController, inventario.js, vw_AlertasLote",ALE-01 a ALE-03,Verificado v2.0
 RF-14,Filtrar reportes por periodo y exportar tablas a CSV.,Media,Implementado,N-06,CU-10,"reportesController, models/reportes.js, reportes.js",REP-01 a REP-03,Verificado v2.0
-RF-15,"Crear perfiles, asignar roles y activar o desactivar registros.",Media,Implementado,N-06,CU-11,"usuariosController (/api/usuarios, /api/roles), admin.js",AUT-08 a AUT-11,Verificado v2.0
+RF-15,"Crear perfiles, asignar roles y activar o desactivar registros.",Media,Implementado,N-06,CU-11,"usuariosController (/api/usuarios, /api/roles), perfil.js y admin.js (sección Usuarios del sistema dentro de Perfil)",AUT-08 a AUT-11,Verificado v2.0
 RF-16,"Conservar entradas, salidas y reversiones de cada lote.",Alta,Implementado,N-06,CU-05/07/12,"tabla MovimientoStock, índices únicos filtrados, inventarioController","TRZ-01, COM-01, ANU-01",Verificado v2.0
 RF-17,Persistir y compartir las operaciones mediante SQL Server.,Alta,Implementado,N-03 / N-04,CU-05 / CU-07,"database/FarmaControl_Database.sql, models/mssql.js","PER-01, SQL-01 a SQL-11 (SQL Server, v2.0); SQL-12 a SQL-15 pendientes",Verificado v2.0; ampliación v2.1 pendiente
 RF-18,Auditar accesos y operaciones en un servicio central.,Media,Implementado,N-06,CU-01 / CU-11,"tabla AuditoriaOperacion, auditoriaController, admin.js (/auditoria)","AUD-01, AUT-06",Verificado v2.0

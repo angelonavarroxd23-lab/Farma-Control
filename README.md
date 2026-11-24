@@ -34,8 +34,8 @@ GitHub Pages **no** sirve: solo publica archivos estáticos y FarmaControl neces
 > | **Versión 2.0** (antes de las mejoras 2.1): API + reglas contra **SQL Server 2022** | Verificado: **62/62 pruebas aprobadas** (51 de API + 11 de integración que consultan las tablas) | `docs/evidencias/pruebas_automatizadas_sqlserver.txt` |
 > | **Versión 2.0**: base de datos (14 tablas, 19 FK, 3 procedimientos, 5 vistas, 0 disparadores) | Verificada con `npm run db:check` | `docs/evidencias/db_check_sqlserver.txt` |
 > | Interfaz web conectada a SQL Server | Recorrido automatizado con Edge: 18/18 pasos, contrastados con consultas a la base | `docs/evidencias/recorrido_ui_sqlserver.txt`, `docs/capturas_sqlserver/` |
-> | **Versión 2.1** (mejoras de receta, lote, proveedor y reposición): controlador en memoria + demostración de GitHub Pages | **68 pruebas de API aprobadas**, 15 de integración SQL omitidas (no se ejecutaron); recorrido de interfaz automatizado en memoria y en la demo | `docs/evidencias/pruebas_automatizadas_memoria.txt` |
-> | **Versión 2.1** contra **SQL Server** (17 tablas, 28 FK, `SQL-12…SQL-15`) | **NO verificada todavía.** Se verifica con `npm run db:setup`, `npm run db:check` y `npm run test:sqlserver` (83 pruebas esperadas) o con el workflow de *Actions* | — |
+> | **Versiones 2.1 y 2.2** (receta, lote, proveedor, reposición; apariencia, perfil, preferencias y eliminación de clientes): controlador en memoria + demostración de GitHub Pages | **70 pruebas de API aprobadas**, 15 de integración SQL omitidas (no se ejecutaron); recorrido de interfaz automatizado en memoria (2.2: 16/16) | `docs/evidencias/pruebas_automatizadas_memoria.txt`, `docs/evidencias/recorrido_ui_v22_capturas.txt` |
+> | **Versiones 2.1 y 2.2** contra **SQL Server** (17 tablas, 28 FK, `SQL-12…SQL-15`, `CLI-06`, `CLI-07`) | **NO verificadas todavía.** Se verifican con `npm run db:setup`, `npm run db:check` y `npm run test:sqlserver` (85 pruebas esperadas) o con el workflow de *Actions* | — |
 >
 > **Conversión a MVC (9-nov-2026):** posterior a la verificación en SQL Server de la tabla anterior. Tras la conversión se comprobaron 51 pruebas en memoria; la ejecución contra SQL Server la hace el workflow de *Actions* (`pruebas-sqlserver`) y, en su PC, `npm run test:sqlserver`.
 >
@@ -78,7 +78,7 @@ FarmaControl/
 ├── lib/                Servicios transversales: auth/ (scrypt, JWT, permisos) y http/ (enrutador, utilidades)
 ├── app.js · server.js  Aplicación HTTP (autenticación, permisos, auditoría) y punto de entrada
 ├── scripts/            db:setup, db:check, db:reset, lanzador de pruebas, modo memoria
-├── tests/              83 pruebas automatizadas (68 de API + 15 de integración con SQL Server)
+├── tests/              85 pruebas automatizadas (70 de API + 15 de integración con SQL Server)
 ├── database/           FarmaControl_Database.sql · _UsuarioAplicacion.sql · _Reset.sql
 ├── docs/               Informe, manual, arquitectura (incl. ARQUITECTURA_MVC.md), evidencias, capturas, diagramas
 ├── original/           Recursos de la entrega anterior, conservados sin modificar
@@ -131,12 +131,12 @@ En la base solo se guardan hashes scrypt. **Cambie estas contraseñas antes de c
 
 ## 8. Pruebas
 ```
-npm run test:sqlserver      # 83 pruebas contra SQL Server (68 de API + 15 de integración SQL-01…SQL-15), en serie
-npm test                    # 68 pruebas con el controlador en memoria (15 de integración omitidas)
+npm run test:sqlserver      # 85 pruebas contra SQL Server (70 de API + 15 de integración SQL-01…SQL-15), en serie
+npm test                    # 70 pruebas con el controlador en memoria (15 de integración omitidas)
 ```
 Se ejecutan en serie (`--test-concurrency=1`) porque comparten la base. `test:sqlserver` crea datos con códigos únicos y es repetible,
 pero **modifica la base configurada**; úselo solo en desarrollo. Resultado real (9-nov-2026, SQL Server 2022 Evaluation, Node v24.22.0):
-62 aprobadas, 0 fallidas, 0 omitidas en la versión 2.0 (`docs/evidencias/pruebas_automatizadas_sqlserver.txt`). La versión 2.1 agrega 21 pruebas y **no tiene aún un resultado contra SQL Server**.
+62 aprobadas, 0 fallidas, 0 omitidas en la versión 2.0 (`docs/evidencias/pruebas_automatizadas_sqlserver.txt`). Las versiones 2.1 y 2.2 agregan 23 pruebas y **no tienen aún un resultado contra SQL Server**.
 
 ## 9. Reglas de negocio garantizadas
 Venta ≤ stock disponible; no se venden lotes vencidos; compras suman y ventas restan; anulación repone el stock una sola vez
