@@ -195,3 +195,24 @@ html[data-motion="reducido"] *,html[data-motion="reducido"] *::before{animation:
 .recetaBox{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin:0 0 14px;background:var(--surface2)}
 .subTabs{display:flex;gap:6px;margin:6px 0 12px}.subTabs .btn.on{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+/* Versión 2.2b: perfil y preferencias como botones a la derecha */
+.topBtn{display:inline-flex;align-items:center;gap:8px;padding:5px 10px 5px 6px;border-radius:12px;border:1px solid transparent;color:var(--ink);text-decoration:none;min-height:44px}
+.topBtn:hover{background:var(--surface2)}.topBtn.active{border-color:var(--primary);background:var(--mint)}
+#perfilBtn{flex-direction:column;gap:2px;padding:4px 10px;text-align:center}
+#perfilBtn .topTxt{display:flex;flex-direction:column;line-height:1.15}
+#perfilBtn b{font-size:12.5px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#perfilBtn small{font-size:11px;color:var(--muted)}
+.topIco{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:9px;background:var(--surface2);color:var(--ink)}
+#prefBtn .topTxt{font-weight:700;font-size:13px}
+.avatar{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--rail);color:var(--rail-on);font-weight:800;font-size:13px;letter-spacing:.02em;flex:none}
+html[data-theme="oscuro"] .avatar{background:var(--rail-on);color:var(--rail-on-ink)}
+.avatar.big{width:72px;height:72px;border-radius:18px;font-size:26px}
+.profileCard{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.profileData{display:flex;flex-direction:column;gap:4px;flex:1 1 220px;min-width:0}
+.topbar{padding-top:8px;padding-bottom:8px}
+#logoutBtn{min-height:36px}
+/* Acceso: texto principal más arriba */
+.loginHero{justify-content:flex-start;padding-top:12vh}
+@media(max-width:860px){#prefBtn .topTxt,#logoutBtn span{display:none}}
+@media(max-width:480px){#perfilBtn .topTxt{display:none}#perfilBtn{padding:4px}}
+a.btn{text-decoration:none}

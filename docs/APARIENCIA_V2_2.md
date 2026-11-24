@@ -12,9 +12,16 @@ Estilo elegido por el equipo en el estudio de diseño (23 de noviembre de 2026),
 | Tablas | **Cuadrícula**: bordes en todas las celdas | `th`, `td`, `.tableWrap` |
 | Animación | **Deslizar**: las pantallas, el ticket y los diálogos entran deslizándose | `@keyframes fcUp/fcRight/fcModal` |
 
+## Barra superior, Perfil e inicio de sesión (ajuste del 23/11/2026)
+
+- A la derecha de la barra superior: botón de tema, **Preferencias**, **Perfil** (iniciales del usuario con su **nombre y rol debajo**) y **Salir**.
+- «Usuarios y perfiles» salió del riel y pasó a **Perfil**: todos ven sus datos, cambian su contraseña y cierran sesión; **solo el Administrador** ve debajo «Usuarios del sistema» para crear y editar cuentas (el servidor sigue comprobando el permiso `usuarios:read/write`).
+- Inicio de sesión: se quitaron el aviso de prototipo, la frase de información ficticia y el botón de tema; el texto principal está más arriba.
+- Recorrido automatizado en modo memoria (`docs/evidencias/recorrido_ui_v22_perfil.js`): el administrador ve y edita 4 usuarios; el químico ve su perfil sin la gestión de usuarios; cerrar sesión desde Perfil funciona; sin errores de JavaScript; móvil sin desplazamiento horizontal.
+
 ## Preferencias del usuario
 
-- Menú **Cuenta › Preferencias** (todos los perfiles) y botón **Oscuro/Claro** en la barra superior y en el inicio de sesión.
+- Botón **Preferencias** en la barra superior (todos los perfiles) y botón **Oscuro/Claro** junto a él.
 - Opciones: **Tema** (Claro, predeterminado · Oscuro) y **Animaciones** (Activadas · Reducidas). Si el sistema operativo pide reducir movimiento, las animaciones se desactivan siempre.
 - Se guardan en el almacenamiento local **del navegador** (`farmacontrol.tema`, `farmacontrol.animaciones`), **no en la base de datos ni en la cuenta**: en otro equipo se empieza con el tema claro. `views/js/tema.js` aplica el tema antes de pintar la página para evitar parpadeos.
 - Las fuentes se sirven desde el mismo servidor porque la política de seguridad (CSP `default-src 'self'`) no permite cargar Google Fonts.

@@ -5,7 +5,7 @@ import { h, title, table, badge, formDialog, toast, fdt } from '../ui.js';
 export const usuarios = {
   async render(el, ctx) {
     const roles = await api.get('/api/roles'); let rows = [];
-    el.innerHTML = title('Usuarios y perfiles', 'Cuentas del sistema y perfil asignado. Los permisos se verifican en el servidor en cada petición.') + `<div class="panel"><div class="actions"><span></span><button class="btn primary" id="new">+ Nuevo usuario</button></div><div id="tbl"></div></div>
+    el.innerHTML = title('Usuarios del sistema', 'Solo administradores: cree cuentas, cambie el perfil asignado, active o desactive usuarios y restablezca contraseñas. Los permisos se verifican en el servidor en cada petición.') + `<div class="panel"><div class="actions"><span></span><button class="btn primary" id="new">+ Nuevo usuario</button></div><div id="tbl"></div></div>
     <div class="panel"><h3>Matriz de permisos por perfil</h3>${table([{ label: 'Perfil', key: 'p' }, { label: 'Ventas', key: 'v' }, { label: 'Compras / lotes', key: 'c' }, { label: 'Recetas', key: 'r' }, { label: 'Reportes / usuarios', key: 'a' }], [
       { p: 'Administrador', v: 'Registrar y anular', c: 'Registrar', r: 'Registrar', a: 'Administración total' }, { p: 'Cajero', v: 'Registrar', c: '—', r: 'Consultar', a: '—' },
       { p: 'Almacenero', v: '—', c: 'Registrar', r: '—', a: 'Consulta de inventario' }, { p: 'Quimico farmaceutico', v: 'Consultar', c: '—', r: 'Registrar', a: 'Alertas y movimientos' }])}</div>`;
