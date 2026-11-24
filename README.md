@@ -61,7 +61,7 @@ GitHub Pages **no** sirve: solo publica archivos estáticos y FarmaControl neces
 ## Observaciones subsanadas (revisión del avance, 23-nov-2026)
 Observaciones del docente atendidas en el informe `docs/FarmaControl_Informe.docx` (versión 2.2). Las páginas son las del informe.
 
-1. Avance del informe hasta 5.7.1: el informe se completó hasta 5.10, con conclusiones, referencias y anexos (págs. 30–96).
+1. Avance del informe hasta 5.7.1: el informe se completó hasta 5.10, con conclusiones, referencias y anexos (págs. 30–103).
 2. Diagramas de la sección 5.6: clases, secuencia, actividades, estados, modelo de datos, componentes y despliegue (págs. 30–44).
 3. Sustento técnico de los diagramas UML: descripción de elementos, relaciones, responsabilidades y funcionamiento de cada diagrama (págs. 30–44).
 4. Modelo de datos: entidades, relaciones, claves, diccionario de las 17 tablas y restricciones de integridad (págs. 38–42).
