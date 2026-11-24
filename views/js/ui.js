@@ -69,7 +69,7 @@ export function showError(root, e) {
 
 // Diálogo de formulario: abre un modal, valida en servidor mediante onSubmit y se cierra si tiene éxito.
 export function formDialog({ title: t, fields, values = {}, submitLabel = 'Guardar', onSubmit, wide }) {
-  const m = modal({ title: t, wide, body: `<form novalidate>${formHtml(fields, values)}</form>`,
+  const m = modal({ title: t, wide, body: `<form novalidate class="formGrid">${formHtml(fields, values)}</form>`,
     footer: `<button class="btn" data-close type="button">Cancelar</button><button class="btn primary" data-submit type="button">${h(submitLabel)}</button>` });
   const form = m.el.querySelector('form'); const btn = m.el.querySelector('[data-submit]');
   const go = async () => {

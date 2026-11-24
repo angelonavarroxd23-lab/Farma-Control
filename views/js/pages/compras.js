@@ -17,8 +17,8 @@ export async function render(el, ctx) {
     const provOpts = () => provs.filter((p) => p.activo).map((p) => `<option value="${p.proveedor_id}">${h(p.razon_social)}</option>`).join('');
     view().innerHTML = `<div class="grid2"><div class="panel"><h3>Datos de la recepción</h3><div data-error></div>
       <div class="field"><label for="prov">Proveedor</label><div class="inlineRow"><select class="input" id="prov">${provOpts()}</select><button class="btn small" type="button" id="newProv">+ Nuevo proveedor</button></div></div>
-      <div class="field"><label for="doc">Documento de compra</label><input class="input" id="doc" maxlength="40" placeholder="Ej.: FAC-2026-0002"><span class="hint">Debe ser único por proveedor.</span></div>
-      <div class="field"><label for="orden">Orden de reposición (opcional)</label><select class="input" id="orden"></select><span class="hint" id="ordenHint">Al registrar la compra, la orden elegida pasa a «Recibida».</span></div>
+      <div class="grid2e"><div class="field"><label for="doc">Documento de compra</label><input class="input" id="doc" maxlength="40" placeholder="Ej.: FAC-2026-0002"><span class="hint">Debe ser único por proveedor.</span></div>
+      <div class="field"><label for="orden">Orden de reposición (opcional)</label><select class="input" id="orden"></select><span class="hint" id="ordenHint">Al registrar la compra, la orden elegida pasa a «Recibida».</span></div></div>
       <div id="ordenDet"></div>
       <h3 style="margin-top:22px">Agregar lote</h3>
       <div class="subTabs"><button class="btn small on" type="button" data-modo="existente">Lote existente</button><button class="btn small" type="button" data-modo="nuevo">Lote nuevo</button></div>

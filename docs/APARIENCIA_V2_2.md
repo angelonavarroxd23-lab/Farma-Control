@@ -19,6 +19,13 @@ Estilo elegido por el equipo en el estudio de diseño (23 de noviembre de 2026),
 - Inicio de sesión: se quitaron el aviso de prototipo, la frase de información ficticia y el botón de tema; el texto principal está más arriba.
 - Recorrido automatizado en modo memoria (`docs/evidencias/recorrido_ui_v22_perfil.js`): el administrador ve y edita 4 usuarios; el químico ve su perfil sin la gestión de usuarios; cerrar sesión desde Perfil funciona; sin errores de JavaScript; móvil sin desplazamiento horizontal.
 
+## Formularios compactos y barra superior alineada
+
+- Los formularios de los diálogos se distribuyen en **dos columnas** (una en el celular); los campos de texto largo y los avisos de error ocupan el ancho completo. Etiquetas, campos, márgenes y encabezados de diálogo son más pequeños.
+- En Compras, el documento y la orden de reposición van en la misma fila.
+- Los botones de la derecha (tema, Preferencias, Perfil y Salir) tienen el mismo formato: icono arriba y texto debajo, alineados por arriba, con un separador antes de Salir; en pantallas angostas quedan solo los iconos.
+- Revisado con capturas de los formularios de cliente, medicamento, receta, usuario, compra y venta en modo memoria (`docs/evidencias/recorrido_ui_v22_formularios.js`), sin errores de JavaScript.
+
 ## Preferencias del usuario
 
 - Botón **Preferencias** en la barra superior (todos los perfiles) y botón **Oscuro/Claro** junto a él.

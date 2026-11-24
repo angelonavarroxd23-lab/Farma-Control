@@ -108,8 +108,8 @@ function logout(silent) {
 setUnauthorizedHandler(() => { if (user) { toast('Su sesión expiró. Inicie sesión nuevamente.', 'error'); logout(true); } });
 window.addEventListener('hashchange', route);
 $('#logoutBtn').addEventListener('click', () => logout(false));
-$('#logoutBtn').innerHTML = `${icon('salir')}<span>Salir</span>`; $('#prefIco').innerHTML = icon('preferencias');
-function paintThemeBtn() { const t = window.FCPrefs.leer().tema; $('#themeBtn').innerHTML = `${icon(t === 'oscuro' ? 'sol' : 'luna')}<span>${t === 'oscuro' ? 'Claro' : 'Oscuro'}</span>`; $('#themeBtn').setAttribute('aria-label', t === 'oscuro' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'); }
+$('#logoutBtn').innerHTML = `<span class="topIco">${icon('salir')}</span><span class="topTxt"><b>Salir</b></span>`; $('#prefIco').innerHTML = icon('preferencias');
+function paintThemeBtn() { const t = window.FCPrefs.leer().tema; $('#themeBtn').innerHTML = `<span class="topIco">${icon(t === 'oscuro' ? 'sol' : 'luna')}</span><span class="topTxt"><b>${t === 'oscuro' ? 'Claro' : 'Oscuro'}</b></span>`; $('#themeBtn').setAttribute('aria-label', t === 'oscuro' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'); }
 $('#themeBtn').addEventListener('click', () => { window.FCPrefs.alternarTema(); paintThemeBtn(); if ((location.hash || '').includes('preferencias')) route(); });
 window.addEventListener('fc:tema', paintThemeBtn);
 paintThemeBtn();

@@ -188,7 +188,7 @@ html[data-motion="reducido"] *,html[data-motion="reducido"] *::before{animation:
 .grid2>*,.gridSale>*,.grid3>*,.grid2e>*{min-width:0}.panel{min-width:0}
 .tabs{overflow-x:auto;flex-wrap:nowrap}.tab{white-space:nowrap;flex:0 0 auto}
 .main,.content{min-width:0}.tabs{max-width:100%}
-@media(max-width:480px){#themeBtn span,.titleIcon{display:none}.topbar{gap:8px}.topbar h1{font-size:17px}.topmeta{gap:6px}.topmeta .btn{padding:6px 8px}}.topbar,.topmeta{min-width:0}.topbar h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:480px){.titleIcon{display:none}.topbar{gap:8px}.topbar h1{font-size:17px}.topmeta{gap:6px}.topmeta .btn{padding:6px 8px}}.topbar,.topmeta{min-width:0}.topbar h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .topleft{min-width:0;flex:1 1 auto}.topmeta{flex:0 0 auto}
 /* Versión 2.1: receta en caja, lote/proveedor en compra y reposición */
 .inlineRow{display:flex;gap:8px;align-items:center}.inlineRow .input{flex:1 1 auto;min-width:0}.inlineRow .btn{flex:0 0 auto;white-space:nowrap}
@@ -213,6 +213,42 @@ html[data-theme="oscuro"] .avatar{background:var(--rail-on);color:var(--rail-on-
 #logoutBtn{min-height:36px}
 /* Acceso: texto principal más arriba */
 .loginHero{justify-content:flex-start;padding-top:12vh}
-@media(max-width:860px){#prefBtn .topTxt,#logoutBtn span{display:none}}
+
 @media(max-width:480px){#perfilBtn .topTxt{display:none}#perfilBtn{padding:4px}}
 a.btn{text-decoration:none}
+/* Versión 2.2c: barra superior alineada y formularios compactos */
+.topmeta{gap:4px;align-items:flex-start}
+.topBtn,#perfilBtn{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;min-width:72px;min-height:0;padding:5px 8px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--ink);text-decoration:none;text-align:center;font:inherit;cursor:pointer}
+.topBtn:hover,#perfilBtn:hover{background:var(--surface2)}
+.topBtn.active,#perfilBtn.active{border-color:var(--line2);background:var(--mint)}
+.topIco,.avatar{width:30px;height:30px;border-radius:9px;display:inline-grid;place-items:center;flex:none}
+.topIco{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.topIco .ico{width:17px;height:17px}
+.topTxt{display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.topTxt b{font-size:11.5px;font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topTxt small{font-size:10.5px;color:var(--muted);white-space:nowrap}
+#perfilBtn .topTxt b{font-size:11.5px}#perfilBtn small{font-size:10.5px}
+.avatar{font-size:12px}
+.topSep{width:1px;align-self:stretch;background:var(--line);margin:4px 4px}
+#logoutBtn .topIco{color:var(--red)}
+#logoutBtn{min-height:0}
+
+/* Formularios compactos */
+.field{margin-bottom:10px;gap:4px}
+.field label{font-size:12px;letter-spacing:.01em}
+.field .hint{font-size:11.5px;line-height:1.35}
+.input{padding:7px 10px;min-height:36px;border-radius:8px}
+textarea.input{min-height:64px}
+.panel{padding:18px 20px}
+.panel h3{margin-bottom:10px}
+.grid2e{gap:0 12px}
+.formGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 14px}
+.formGrid>[data-error],.formGrid>.field:has(textarea){grid-column:1/-1}
+.formGrid>.field:has(.check){margin-bottom:4px}
+.modal header{padding:14px 20px}.modal .mbody{padding:16px 20px 8px}.modal footer{padding:12px 20px}
+.modal header h3{font-size:18px}
+.ticket .field{margin-bottom:8px}
+.subTabs{margin:4px 0 10px}
+@media(max-width:700px){.formGrid{grid-template-columns:1fr}}
+@media(max-width:860px){.topBtn,#perfilBtn{min-width:48px;padding:4px}.topBtn .topTxt{display:none}}
+@media(max-width:480px){#perfilBtn .topTxt{display:none}.topSep{display:none}}
