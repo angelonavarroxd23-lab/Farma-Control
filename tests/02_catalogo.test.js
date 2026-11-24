@@ -31,6 +31,23 @@ test('CLI-04 modificar cliente conserva la validación', async () => {
   assert.equal((await t.call('PATCH', `/api/clientes/${c.cliente_id}`, { numero_documento: '12' }, tk)).status, 400);
   assert.equal((await t.call('PATCH', '/api/clientes/999999', { telefono: '1' }, tk)).status, 404);
 });
+test('CLI-06 el administrador elimina un cliente sin historial; el cajero no puede (403)', async () => {
+  const c = await t.crearCliente(); const cajero = await t.login('cajero'); const admin = await t.login('admin');
+  assert.equal((await t.call('DELETE', `/api/clientes/${c.cliente_id}`, undefined, cajero)).status, 403);
+  assert.equal((await t.call('DELETE', `/api/clientes/${c.cliente_id}`, undefined, admin)).status, 200);
+  const q = await t.call('GET', `/api/clientes?q=${c.numero_documento}`, undefined, admin);
+  assert.equal(q.data.length, 0);
+  assert.equal((await t.call('DELETE', `/api/clientes/${c.cliente_id}`, undefined, admin)).status, 404);
+});
+test('CLI-07 no se elimina un cliente con ventas o recetas (409) y sus datos siguen intactos', async () => {
+  const admin = await t.login('admin'); const c = await t.crearCliente();
+  const hoy = new Date().toISOString().slice(0, 10); const fin = new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
+  const rec = await t.call('POST', '/api/recetas', { cliente_id: c.cliente_id, numero_receta: 'RX-DEL-' + t.digits(6), nombre_prescriptor: 'Dr. Prueba', fecha_emision: hoy, fecha_vencimiento: fin }, admin);
+  assert.equal(rec.status, 201);
+  const r = await t.call('DELETE', `/api/clientes/${c.cliente_id}`, undefined, admin);
+  assert.equal(r.status, 409); assert.match(r.data.error.message, /receta/);
+  assert.equal((await t.call('GET', `/api/clientes?q=${c.numero_documento}`, undefined, admin)).data.length, 1);
+});
 test('CLI-05 las entradas con comillas e instrucciones SQL se tratan como texto (sin inyección)', async () => {
   const tk = await t.login('cajero'); const nombre = "Robert'); DROP TABLE Cliente;--";
   const r = await t.call('POST', '/api/clientes', { tipo_documento: 'DNI', numero_documento: t.digits(8), nombre_razon_social: nombre }, tk);

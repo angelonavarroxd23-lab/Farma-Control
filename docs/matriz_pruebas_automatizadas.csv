@@ -1,84 +1,86 @@
-﻿ID,Prueba,"ms (memoria, v2.1)","Estado (memoria, v2.1)","Estado (SQL Server, v2.0)"
-AUT-01,inicio de sesión válido devuelve token y no expone el hash,167.54693,Aprobado,Aprobado
-AUT-02,contraseña incorrecta devuelve 401 con mensaje genérico,42.245161,Aprobado,Aprobado
-AUT-03,usuario inexistente recibe el mismo mensaje que contraseña errónea,42.631203,Aprobado,Aprobado
-AUT-04,una ruta protegida sin token responde 401,3.928411,Aprobado,Aprobado
-AUT-05,un token manipulado es rechazado,48.274798,Aprobado,Aprobado
-AUT-06,tras cinco intentos fallidos se bloquea el acceso temporalmente (429),218.138935,Aprobado,Aprobado
-AUT-07,matriz de permisos: operaciones fuera del perfil devuelven 403,126.684405,Aprobado,Aprobado
-AUT-08,el administrador gestiona usuarios; la lista no expone hashes,1.792664,Aprobado,Aprobado
-AUT-09,"alta de usuario: política de contraseña, correo único y desactivación inmediata",151.796639,Aprobado,Aprobado
-AUT-10,no se puede desactivar el propio perfil ni al último administrador,3.085657,Aprobado,Aprobado
-AUT-11,cambio de contraseña propio exige la actual y la política,74.313676,Aprobado,Aprobado
-AUT-12,respuestas con cabeceras de seguridad y rutas inexistentes/métodos erróneos,7.153967,Aprobado,Aprobado
-AUT-13,cuerpos inválidos: JSON roto y tipo de contenido erróneo,4.77906,Aprobado,Aprobado
-CLI-01,registrar cliente con DNI válido y recuperarlo por búsqueda,164.192083,Aprobado,Aprobado
-CLI-02,"rechaza DNI de 7 dígitos, RUC de 10 y documentos con letras",9.600579,Aprobado,Aprobado
-CLI-03,rechaza documento duplicado (409) y permite el mismo número con otro tipo,7.687069,Aprobado,Aprobado
-CLI-04,modificar cliente conserva la validación,7.603169,Aprobado,Aprobado
-CLI-05,las entradas con comillas e instrucciones SQL se tratan como texto (sin inyección),11.849118,Aprobado,Aprobado
-MED-01,crear categoría y medicamento; SKU único; precio no negativo,51.956153,Aprobado,Aprobado
-MED-02,"modificar medicamento, consultar por nombre/SKU/categoría y detalle con lotes",13.155277,Aprobado,Aprobado
-MED-03,una categoría con medicamentos no puede eliminarse (integridad referencial),6.396878,Aprobado,Aprobado
-LOT-01,un lote nuevo inicia en cero y no acepta fijar stock ni fechas vencidas,7.517508,Aprobado,Aprobado
-LOT-02,código de lote duplicado para el mismo medicamento → 409; stock no editable por PATCH,51.969549,Aprobado,Aprobado
-REC-01,registrar receta; fechas coherentes; número único; almacenero sin permiso; cajero registra pero no modifica,48.77049,Aprobado,Aprobado
-COM-01,"una compra incrementa el stock, calcula el total y registra ENTRADA_COMPRA con trazabilidad",222.13199,Aprobado,Aprobado
-COM-02,una compra con varios lotes actualiza cada uno,17.545473,Aprobado,Aprobado
-COM-03,documento repetido del mismo proveedor se rechaza sin alterar el stock,17.095732,Aprobado,Aprobado
-COM-04,"validaciones: cantidad cero, costo negativo, lotes repetidos o inexistentes, proveedor inactivo",16.268841,Aprobado,Aprobado
-COM-05,no se ingresa stock a un lote vencido,8.144327,Aprobado,Aprobado
-VEN-01,"una venta descuenta stock, usa el precio del catálogo y numera la boleta",55.419527,Aprobado,Aprobado
-VEN-02,una venta no puede superar las existencias y no deja rastro (atomicidad),13.156238,Aprobado,Aprobado
-VEN-03,una venta con dos lotes donde uno falla revierte todo,16.451422,Aprobado,Aprobado
-VEN-04,no se venden lotes vencidos,12.265477,Aprobado,Aprobado
-VEN-05,"cantidades inválidas, lote repetido y lote inexistente",16.932621,Aprobado,Aprobado
-VEN-06,un medicamento inactivo no puede venderse,12.71353,Aprobado,Aprobado
-VEN-07,"medicamentos con receta: exige receta vigente, válida y del mismo cliente",74.760269,Aprobado,Aprobado
-VEN-08,la factura exige un cliente con RUC,18.78623,Aprobado,Aprobado
-ANU-01,anular repone el stock una sola vez y conserva el historial,20.231886,Aprobado,Aprobado
-ANU-02,la anulación exige motivo y la venta debe existir,3.778026,Aprobado,Aprobado
-CON-01,dos ventas simultáneas sobre las últimas unidades: solo una prospera y el stock nunca es negativo,16.804241,Aprobado,Aprobado
-CON-02,dos anulaciones simultáneas de la misma venta: se repone una sola vez,18.317896,Aprobado,Aprobado
-TRZ-01,el stock de cada lote coincide con entradas + reversos − salidas del historial,23.306603,Aprobado,Aprobado
-PER-01,los datos son visibles desde una segunda instancia del servidor sobre la misma base (persistencia),61.746967,Aprobado,Aprobado
-ALE-01,"las alertas reflejan el estado real: agotado, stock bajo, por vencer y vencido",258.972014,Aprobado,Aprobado
-ALE-02,una venta que agota o baja el stock actualiza la alerta; una compra la retira,89.077829,Aprobado,Aprobado
-ALE-03,el conteo de alertas coincide con la lista,1.977969,Aprobado,Aprobado
-REP-01,el reporte excluye ventas anuladas y calcula ticket promedio y unidades,60.276766,Aprobado,Aprobado
-REP-02,un periodo invertido o mal formado se rechaza,2.377279,Aprobado,Aprobado
-REP-03,"exportación CSV: tipo de contenido, BOM y neutralización de fórmulas",13.253606,Aprobado,Aprobado
-AUD-01,la auditoría registra accesos y operaciones y solo la consulta el administrador,56.795939,Aprobado,Aprobado
-PAN-01,"el panel de resumen incluye alertas y, según el perfil, las ventas del día",2.595196,Aprobado,Aprobado
-SQL-01,"la API trabaja sobre SQL Server real (motor, base y usuario)",0.786038,Omitida,Aprobado
-SQL-02,"una compra deja Compra, DetalleCompra, MovimientoStock, Lote y Auditoría guardados en la base",0.144861,Omitida,Aprobado
-SQL-03,una venta descuenta el stock en la base y registra SALIDA_VENTA,0.109183,Omitida,Aprobado
-SQL-04,"la anulación repone el stock una sola vez y guarda motivo, usuario y reverso",0.073901,Omitida,Aprobado
-SQL-05,el índice único filtrado de la base impide duplicar un movimiento,0.081199,Omitida,Aprobado
-SQL-06,la restricción CHECK de la base impide stock negativo,0.068535,Omitida,Aprobado
-SQL-07,sp_AnularVenta invocado directamente rechaza la segunda anulación sin alterar el stock,0.210179,Omitida,Aprobado
-SQL-08,integridad global: stock = suma de movimientos y sin movimientos duplicados,0.240637,Omitida,Aprobado
-SQL-09,"contraseñas: solo hashes scrypt en la base, nunca texto plano",0.219752,Omitida,Aprobado
-SQL-10,vistas de reporte responden con datos reales,0.156292,Omitida,Aprobado
-SQL-11,"sin conmutación silenciosa: si SQL Server no está disponible, el servidor no arranca",0.053508,Omitida,Aprobado
-SQL-12,el detalle de la receta queda en dbo.DetalleReceta y la base impide duplicados y cantidades no positivas,0.068433,Omitida,No ejecutada
-SQL-13,"la compra con lote nuevo guarda el lote, su proveedor y el movimiento de entrada en la base",0.041408,Omitida,No ejecutada
-SQL-14,"la orden de reposición se guarda, pasa a RECIBIDA con su compra y la base impide RECIBIDA sin compra",0.034381,Omitida,No ejecutada
-SQL-15,el modelo físico tiene 17 tablas y 28 claves foráneas,0.0341,Omitida,No ejecutada
-REC-02,la receta se registra con su detalle y muestra saldo pendiente por medicamento,251.050321,Aprobado,No ejecutada
-REC-03,"detalle inválido: cantidad no positiva, medicamento inexistente o repetido → 400 y no se guarda la receta",15.314559,Aprobado,No ejecutada
-REC-04,una receta sin detalle (registro antiguo) sigue aceptándose,7.745836,Aprobado,No ejecutada
-VEN-09,la venta respeta el detalle: medicamento no prescrito y exceso de saldo se rechazan sin tocar el stock,75.412631,Aprobado,No ejecutada
-VEN-10,anular la venta devuelve el saldo a la receta; los productos sin receta no consumen saldo,20.962995,Aprobado,No ejecutada
-VEN-11,"con receta de detalle, la receta de otro cliente o sin receta se sigue rechazando",12.237306,Aprobado,No ejecutada
-VEN-12,una receta sin detalle conserva la regla anterior (basta que esté vigente y sea del cliente),11.486896,Aprobado,No ejecutada
-FEF-01,los lotes vendibles salen ordenados por vencimiento y se sugiere el que vence primero,25.017269,Aprobado,No ejecutada
-COM-09,"la compra crea el lote nuevo, le ingresa las unidades y registra su proveedor",8.460269,Aprobado,No ejecutada
-COM-10,una compra puede mezclar lotes existentes y nuevos; el proveedor del lote existente se actualiza,9.477631,Aprobado,No ejecutada
-COM-06,"lote nuevo inválido (vencido, repetido, medicamento inexistente) → rechazo y sin lotes huérfanos",10.895149,Aprobado,No ejecutada
-COM-07,si la compra falla (documento repetido) el lote nuevo creado en la operación se elimina,9.070734,Aprobado,No ejecutada
-COM-08,el proveedor se puede crear y asignar como habitual del medicamento,6.486282,Aprobado,No ejecutada
-ORD-01,sugerencias: aparecen los medicamentos agotados o bajo mínimo y no los abastecidos; proveedor habitual,24.036484,Aprobado,No ejecutada
-ORD-02,"crear, listar y consultar una orden; validaciones y permisos",11.307823,Aprobado,No ejecutada
-ORD-03,al registrar la compra asociada la orden pasa a RECIBIDA con su compra; no se reutiliza ni se anula,15.293728,Aprobado,No ejecutada
-ORD-04,anular una orden pendiente; una orden anulada no se puede recibir,9.621929,Aprobado,No ejecutada
+﻿ID,Prueba,ms (memoria),Estado (memoria),"Estado (SQL Server, v2.0)"
+AUT-01,inicio de sesión válido devuelve token y no expone el hash,107.842473,Aprobado,Aprobado
+AUT-02,contraseña incorrecta devuelve 401 con mensaje genérico,26.865624,Aprobado,Aprobado
+AUT-03,usuario inexistente recibe el mismo mensaje que contraseña errónea,26.119386,Aprobado,Aprobado
+AUT-04,una ruta protegida sin token responde 401,2.176168,Aprobado,Aprobado
+AUT-05,un token manipulado es rechazado,29.525425,Aprobado,Aprobado
+AUT-06,tras cinco intentos fallidos se bloquea el acceso temporalmente (429),127.830005,Aprobado,Aprobado
+AUT-07,matriz de permisos: operaciones fuera del perfil devuelven 403,93.347529,Aprobado,Aprobado
+AUT-08,el administrador gestiona usuarios; la lista no expone hashes,1.718848,Aprobado,Aprobado
+AUT-09,"alta de usuario: política de contraseña, correo único y desactivación inmediata",105.427034,Aprobado,Aprobado
+AUT-10,no se puede desactivar el propio perfil ni al último administrador,1.912961,Aprobado,Aprobado
+AUT-11,cambio de contraseña propio exige la actual y la política,48.988941,Aprobado,Aprobado
+AUT-12,respuestas con cabeceras de seguridad y rutas inexistentes/métodos erróneos,3.988186,Aprobado,Aprobado
+AUT-13,cuerpos inválidos: JSON roto y tipo de contenido erróneo,3.140706,Aprobado,Aprobado
+CLI-01,registrar cliente con DNI válido y recuperarlo por búsqueda,114.005248,Aprobado,Aprobado
+CLI-02,"rechaza DNI de 7 dígitos, RUC de 10 y documentos con letras",7.04547,Aprobado,Aprobado
+CLI-03,rechaza documento duplicado (409) y permite el mismo número con otro tipo,5.445916,Aprobado,Aprobado
+CLI-04,modificar cliente conserva la validación,5.960733,Aprobado,Aprobado
+CLI-06,el administrador elimina un cliente sin historial; el cajero no puede (403),39.3974,Aprobado,No ejecutada
+CLI-07,no se elimina un cliente con ventas o recetas (409) y sus datos siguen intactos,9.730068,Aprobado,No ejecutada
+CLI-05,las entradas con comillas e instrucciones SQL se tratan como texto (sin inyección),5.721181,Aprobado,Aprobado
+MED-01,crear categoría y medicamento; SKU único; precio no negativo,40.580169,Aprobado,Aprobado
+MED-02,"modificar medicamento, consultar por nombre/SKU/categoría y detalle con lotes",8.560649,Aprobado,Aprobado
+MED-03,una categoría con medicamentos no puede eliminarse (integridad referencial),5.312291,Aprobado,Aprobado
+LOT-01,un lote nuevo inicia en cero y no acepta fijar stock ni fechas vencidas,4.186092,Aprobado,Aprobado
+LOT-02,código de lote duplicado para el mismo medicamento → 409; stock no editable por PATCH,6.493471,Aprobado,Aprobado
+REC-01,registrar receta; fechas coherentes; número único; almacenero sin permiso; cajero registra pero no modifica,32.352826,Aprobado,Aprobado
+COM-01,"una compra incrementa el stock, calcula el total y registra ENTRADA_COMPRA con trazabilidad",177.858468,Aprobado,Aprobado
+COM-02,una compra con varios lotes actualiza cada uno,14.688209,Aprobado,Aprobado
+COM-03,documento repetido del mismo proveedor se rechaza sin alterar el stock,10.675203,Aprobado,Aprobado
+COM-04,"validaciones: cantidad cero, costo negativo, lotes repetidos o inexistentes, proveedor inactivo",17.1395,Aprobado,Aprobado
+COM-05,no se ingresa stock a un lote vencido,8.245589,Aprobado,Aprobado
+VEN-01,"una venta descuenta stock, usa el precio del catálogo y numera la boleta",48.403196,Aprobado,Aprobado
+VEN-02,una venta no puede superar las existencias y no deja rastro (atomicidad),12.865233,Aprobado,Aprobado
+VEN-03,una venta con dos lotes donde uno falla revierte todo,15.346224,Aprobado,Aprobado
+VEN-04,no se venden lotes vencidos,11.796252,Aprobado,Aprobado
+VEN-05,"cantidades inválidas, lote repetido y lote inexistente",16.155977,Aprobado,Aprobado
+VEN-06,un medicamento inactivo no puede venderse,12.701749,Aprobado,Aprobado
+VEN-07,"medicamentos con receta: exige receta vigente, válida y del mismo cliente",62.642571,Aprobado,Aprobado
+VEN-08,la factura exige un cliente con RUC,18.105657,Aprobado,Aprobado
+ANU-01,anular repone el stock una sola vez y conserva el historial,17.150544,Aprobado,Aprobado
+ANU-02,la anulación exige motivo y la venta debe existir,3.078714,Aprobado,Aprobado
+CON-01,dos ventas simultáneas sobre las últimas unidades: solo una prospera y el stock nunca es negativo,13.445213,Aprobado,Aprobado
+CON-02,dos anulaciones simultáneas de la misma venta: se repone una sola vez,15.218355,Aprobado,Aprobado
+TRZ-01,el stock de cada lote coincide con entradas + reversos − salidas del historial,16.968083,Aprobado,Aprobado
+PER-01,los datos son visibles desde una segunda instancia del servidor sobre la misma base (persistencia),38.016052,Aprobado,Aprobado
+ALE-01,"las alertas reflejan el estado real: agotado, stock bajo, por vencer y vencido",226.187395,Aprobado,Aprobado
+ALE-02,una venta que agota o baja el stock actualiza la alerta; una compra la retira,53.682999,Aprobado,Aprobado
+ALE-03,el conteo de alertas coincide con la lista,1.376346,Aprobado,Aprobado
+REP-01,el reporte excluye ventas anuladas y calcula ticket promedio y unidades,51.195735,Aprobado,Aprobado
+REP-02,un periodo invertido o mal formado se rechaza,2.306217,Aprobado,Aprobado
+REP-03,"exportación CSV: tipo de contenido, BOM y neutralización de fórmulas",13.570927,Aprobado,Aprobado
+AUD-01,la auditoría registra accesos y operaciones y solo la consulta el administrador,47.19423,Aprobado,Aprobado
+PAN-01,"el panel de resumen incluye alertas y, según el perfil, las ventas del día",2.536058,Aprobado,Aprobado
+SQL-01,"la API trabaja sobre SQL Server real (motor, base y usuario)",0.725681,Omitida,Aprobado
+SQL-02,"una compra deja Compra, DetalleCompra, MovimientoStock, Lote y Auditoría guardados en la base",0.122946,Omitida,Aprobado
+SQL-03,una venta descuenta el stock en la base y registra SALIDA_VENTA,0.061864,Omitida,Aprobado
+SQL-04,"la anulación repone el stock una sola vez y guarda motivo, usuario y reverso",0.057946,Omitida,Aprobado
+SQL-05,el índice único filtrado de la base impide duplicar un movimiento,0.070193,Omitida,Aprobado
+SQL-06,la restricción CHECK de la base impide stock negativo,0.094206,Omitida,Aprobado
+SQL-07,sp_AnularVenta invocado directamente rechaza la segunda anulación sin alterar el stock,0.098605,Omitida,Aprobado
+SQL-08,integridad global: stock = suma de movimientos y sin movimientos duplicados,0.134246,Omitida,Aprobado
+SQL-09,"contraseñas: solo hashes scrypt en la base, nunca texto plano",0.196835,Omitida,Aprobado
+SQL-10,vistas de reporte responden con datos reales,0.152885,Omitida,Aprobado
+SQL-11,"sin conmutación silenciosa: si SQL Server no está disponible, el servidor no arranca",0.041265,Omitida,Aprobado
+SQL-12,el detalle de la receta queda en dbo.DetalleReceta y la base impide duplicados y cantidades no positivas,0.031842,Omitida,No ejecutada
+SQL-13,"la compra con lote nuevo guarda el lote, su proveedor y el movimiento de entrada en la base",0.02616,Omitida,No ejecutada
+SQL-14,"la orden de reposición se guarda, pasa a RECIBIDA con su compra y la base impide RECIBIDA sin compra",0.025152,Omitida,No ejecutada
+SQL-15,el modelo físico tiene 17 tablas y 28 claves foráneas,0.0252,Omitida,No ejecutada
+REC-02,la receta se registra con su detalle y muestra saldo pendiente por medicamento,215.817245,Aprobado,No ejecutada
+REC-03,"detalle inválido: cantidad no positiva, medicamento inexistente o repetido → 400 y no se guarda la receta",22.796841,Aprobado,No ejecutada
+REC-04,una receta sin detalle (registro antiguo) sigue aceptándose,6.023215,Aprobado,No ejecutada
+VEN-09,la venta respeta el detalle: medicamento no prescrito y exceso de saldo se rechazan sin tocar el stock,76.687906,Aprobado,No ejecutada
+VEN-10,anular la venta devuelve el saldo a la receta; los productos sin receta no consumen saldo,25.78575,Aprobado,No ejecutada
+VEN-11,"con receta de detalle, la receta de otro cliente o sin receta se sigue rechazando",12.739661,Aprobado,No ejecutada
+VEN-12,una receta sin detalle conserva la regla anterior (basta que esté vigente y sea del cliente),11.78272,Aprobado,No ejecutada
+FEF-01,los lotes vendibles salen ordenados por vencimiento y se sugiere el que vence primero,26.337975,Aprobado,No ejecutada
+COM-09,"la compra crea el lote nuevo, le ingresa las unidades y registra su proveedor",9.571621,Aprobado,No ejecutada
+COM-10,una compra puede mezclar lotes existentes y nuevos; el proveedor del lote existente se actualiza,10.891641,Aprobado,No ejecutada
+COM-06,"lote nuevo inválido (vencido, repetido, medicamento inexistente) → rechazo y sin lotes huérfanos",13.394289,Aprobado,No ejecutada
+COM-07,si la compra falla (documento repetido) el lote nuevo creado en la operación se elimina,9.650084,Aprobado,No ejecutada
+COM-08,el proveedor se puede crear y asignar como habitual del medicamento,5.486536,Aprobado,No ejecutada
+ORD-01,sugerencias: aparecen los medicamentos agotados o bajo mínimo y no los abastecidos; proveedor habitual,25.776765,Aprobado,No ejecutada
+ORD-02,"crear, listar y consultar una orden; validaciones y permisos",13.255806,Aprobado,No ejecutada
+ORD-03,al registrar la compra asociada la orden pasa a RECIBIDA con su compra; no se reutiliza ni se anula,19.535438,Aprobado,No ejecutada
+ORD-04,anular una orden pendiente; una orden anulada no se puede recibir,12.247621,Aprobado,No ejecutada

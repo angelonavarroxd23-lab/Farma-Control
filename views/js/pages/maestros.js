@@ -1,19 +1,24 @@
 import { api, qs } from '../api.js';
-import { h, title, table, badge, formDialog, modal, toast, debounce, fdate, today } from '../ui.js';
+import { h, title, table, badge, formDialog, confirmDialog, modal, toast, debounce, fdate, today } from '../ui.js';
 import { nuevaReceta } from './recetaForm.js';
 
 // Fábrica de pantallas de mantenimiento (listado + búsqueda + alta/edición en diálogo).
-function maestro({ titulo, sub, endpoint, searchable, cols, fields, canWrite, newLabel, okNew, okEdit, extra, idKey }) {
+function maestro({ titulo, sub, endpoint, searchable, cols, fields, canWrite, canDelete, delName, newLabel, okNew, okEdit, extra, idKey }) {
   return {
     async render(el, ctx) {
-      const w = ctx.can(canWrite);
+      const w = ctx.can(canWrite); const d = !!canDelete && ctx.can(canDelete);
       el.innerHTML = title(titulo, sub) + `<div class="panel"><div class="actions">${searchable ? '<input class="input" id="q" placeholder="Buscar…" aria-label="Buscar">' : '<span></span>'}${w ? `<button class="btn primary" id="new">${newLabel}</button>` : ''}</div><div id="tbl"></div></div>`;
       const $ = (s) => el.querySelector(s); let rows = [];
       const load = async () => { rows = await api.get(endpoint + (searchable ? qs({ q: $('#q').value }) : ''));
-        $('#tbl').innerHTML = table([...cols(ctx), ...(w ? [{ label: '', html: (r) => `<button class="btn small" data-edit="${r[idKey]}">Editar</button>` }] : [])], rows, 'Sin registros.'); };
+        $('#tbl').innerHTML = table([...cols(ctx), ...(w || d ? [{ label: '', html: (r) => `<div class="rowButtons">${w ? `<button class="btn small" data-edit="${r[idKey]}">Editar</button>` : ''}${d ? `<button class="btn small danger" data-del="${r[idKey]}" aria-label="Eliminar ${h(delName ? delName(r) : '')}">Eliminar</button>` : ''}</div>` }] : [])], rows, 'Sin registros.'); };
       $('#q')?.addEventListener('input', debounce(load));
       $('#new')?.addEventListener('click', async () => formDialog({ title: newLabel.replace('+ ', ''), fields: await fields(false), wide: true, values: { activo: true }, onSubmit: async (v) => { await api.post(endpoint, v); toast(okNew); await load(); } }));
-      $('#tbl').addEventListener('click', async (e) => { const b = e.target.closest('[data-edit]'); if (!b) return; const r = rows.find((x) => x[idKey] === Number(b.dataset.edit));
+      $('#tbl').addEventListener('click', async (e) => {
+        const x = e.target.closest('[data-del]');
+        if (x) { const r = rows.find((y) => y[idKey] === Number(x.dataset.del));
+          return confirmDialog({ title: 'Eliminar registro', danger: true, confirmLabel: 'Eliminar', message: `¿Eliminar a ${delName ? delName(r) : 'este registro'}? Esta acción no se puede deshacer. Si tiene ventas o recetas registradas, el sistema no lo eliminará para conservar el historial.`,
+            onConfirm: async () => { await api.del(`${endpoint}/${r[idKey]}`); toast('Registro eliminado.'); await load(); } }); }
+        const b = e.target.closest('[data-edit]'); if (!b) return; const r = rows.find((x) => x[idKey] === Number(b.dataset.edit));
         formDialog({ title: 'Editar registro', fields: await fields(true), values: r, wide: true, onSubmit: async (v) => { await api.patch(`${endpoint}/${r[idKey]}`, v); toast(okEdit); await load(); } }); });
       await load();
     },
@@ -25,7 +30,7 @@ const DOC = [{ value: 'DNI', label: 'DNI' }, { value: 'CE', label: 'Carné de ex
 // CU-02 Gestionar clientes
 export const clientes = maestro({
   titulo: 'Clientes', sub: 'Registro y consulta de compradores. El documento es único por tipo.', endpoint: '/api/clientes', searchable: true, idKey: 'cliente_id',
-  canWrite: 'clientes:write', newLabel: '+ Nuevo cliente', okNew: 'Cliente registrado.', okEdit: 'Cliente actualizado.',
+  canWrite: 'clientes:write', canDelete: 'clientes:delete', delName: (c) => c.nombre_razon_social, newLabel: '+ Nuevo cliente', okNew: 'Cliente registrado.', okEdit: 'Cliente actualizado.',
   cols: () => [{ label: 'Documento', html: (c) => `${badge(c.tipo_documento, 'info')} ${h(c.numero_documento)}` }, { label: 'Nombre / razón social', html: (c) => `<b>${h(c.nombre_razon_social)}</b>` }, { label: 'Teléfono', key: 'telefono' }],
   fields: async () => [{ name: 'tipo_documento', label: 'Tipo de documento', type: 'select', req: true, options: DOC }, { name: 'numero_documento', label: 'Número de documento', req: true, max: 15, hint: 'DNI: 8 dígitos · RUC: 11 dígitos.' },
     { name: 'nombre_razon_social', label: 'Nombre o razón social', req: true, max: 160 }, { name: 'telefono', label: 'Teléfono (opcional)', max: 20 }],

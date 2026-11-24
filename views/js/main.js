@@ -16,7 +16,7 @@ import { icon } from './iconos.js';
 
 // Permisos de la interfaz: solo controlan qué se muestra. La autorización real la aplica el servidor.
 const PERMS = {
-  'clientes:write': ['Administrador', 'Cajero'], 'proveedores:read': ['Administrador', 'Almacenero'], 'catalogo:write': ['Administrador', 'Almacenero'],
+  'clientes:write': ['Administrador', 'Cajero'], 'clientes:delete': ['Administrador'], 'proveedores:read': ['Administrador', 'Almacenero'], 'catalogo:write': ['Administrador', 'Almacenero'],
   'recetas:read': ['Administrador', 'Cajero', 'Quimico farmaceutico'], 'recetas:create': ['Administrador', 'Cajero', 'Quimico farmaceutico'], 'recetas:write': ['Administrador', 'Quimico farmaceutico'], 'reposicion:read': ['Administrador', 'Almacenero'],
   'ventas:read': ['Administrador', 'Cajero', 'Quimico farmaceutico'], 'ventas:create': ['Administrador', 'Cajero'], 'ventas:anular': ['Administrador'],
   'compras:read': ['Administrador', 'Almacenero'], 'movimientos:read': ['Administrador', 'Almacenero', 'Quimico farmaceutico'],

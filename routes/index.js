@@ -37,6 +37,7 @@ function buildRouter() {
   get('/api/clientes', 'clientes:read', clientes.listarClientes);
   post('/api/clientes', 'clientes:write', clientes.crearClientes);
   patch('/api/clientes/:id', 'clientes:write', clientes.actualizarClientes);
+  del('/api/clientes/:id', 'clientes:delete', clientes.eliminarClientes);
   // ---------------- Proveedores ----------------
   get('/api/proveedores', 'proveedores:read', proveedores.listarProveedores);
   post('/api/proveedores', 'proveedores:write', proveedores.crearProveedores);
