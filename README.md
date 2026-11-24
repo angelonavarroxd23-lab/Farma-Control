@@ -7,6 +7,20 @@
 Proyecto académico (UPN · Diseño y Arquitectura de Software · 2026-2). Todos los datos son ficticios.
 Arquitectura de tres capas: **vista** (SPA en JavaScript) → **API REST** (Node.js) → **SQL Server**.
 
+## Observaciones subsanadas (revisión del avance, Grupo 3)
+Atendidas en el informe `docs/FarmaControl_Informe.docx` / `.pdf` (versión 2.2, 23-nov-2026). Las páginas corresponden al PDF.
+
+1. **Avance del informe hasta 5.7.1:** el informe se completó hasta 5.10, con conclusiones, referencias y anexos (5.6 a 5.7.1 en págs. 30–60).
+2. **Diagramas de la sección 5.6:** clases (págs. 30–33), secuencia (34–35), actividades (36), estados (37–38), modelo de datos (38–42), componentes (43) y despliegue (44–45).
+3. **Sustento técnico de los diagramas UML:** descripción de elementos, relaciones, responsabilidades y funcionamiento de cada diagrama (págs. 32–33, 35, 36, 38, 41, 43 y 45).
+4. **Modelo de datos:** entidades, relaciones, claves y restricciones de integridad, con diccionario de las 17 tablas (5.6.5, págs. 38–42).
+5. **Prototipos en 5.7.1:** pantallas P-01 a P-12 relacionadas con sus requisitos funcionales y casos de uso (págs. 48–60).
+6. **Trazabilidad ampliada:** requisito ↔ caso de uso ↔ diagramas ↔ tablas ↔ prototipo ↔ pruebas (págs. 22–23 y 60–61).
+7. **Arquitectura implementada frente a propuesta:** entrega anterior con almacenamiento local, arquitectura implementada (SPA, API REST y SQL Server) y arquitectura propuesta para producción (5.6.8, págs. 45–46).
+8. **Criterio de participación al 100 %:** explicado en la portada (pág. 1).
+9. **Evidencias de validación:** escenarios, condiciones de ejecución y resultados (5.7.2, págs. 61–65; registro de evidencias en págs. 64–65; relación de las 85 pruebas en el Anexo 1, págs. 100–102).
+10. **Índices, figuras, referencias y numeración:** índices general, de tablas, de figuras y de anexos (págs. 2–7), referencias en APA 7 (pág. 99) y matriz de atención de observaciones (Anexo 2, pág. 102).
+
 ## 🌐 Demostración en línea (GitHub Pages)
 **https://angelonavarroxd23-lab.github.io/desarrollo-de-software/** — usuario `admin@farmacontrol.local`, contraseña `Admin#2026Fc`.
 
