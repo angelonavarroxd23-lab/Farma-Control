@@ -21,8 +21,7 @@ export async function render(el, ctx) {
       <div id="recDet"></div>
       <div id="cart"></div>
       <div class="totals"><span>Total</span><span id="total">${money(0)}</span></div>
-      <button class="btn primary" id="confirm" style="margin-top:16px;width:100%">Confirmar venta</button>
-      <p class="muted" style="font-size:12px;line-height:1.5">Se registra la venta, se descuenta el stock del lote y se genera una constancia interna. La verificación de receta comprueba registro, vigencia, titular y que la cantidad no supere lo prescrito pendiente; no evalúa su contenido clínico.</p></section>
+      <button class="btn primary" id="confirm" style="margin-top:16px;width:100%">Confirmar venta</button></section>
   </div>`;
   const $ = (s) => el.querySelector(s);
 

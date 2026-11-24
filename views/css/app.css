@@ -252,3 +252,31 @@ textarea.input{min-height:64px}
 @media(max-width:700px){.formGrid{grid-template-columns:1fr}}
 @media(max-width:860px){.topBtn,#perfilBtn{min-width:48px;padding:4px}.topBtn .topTxt{display:none}}
 @media(max-width:480px){#perfilBtn .topTxt{display:none}.topSep{display:none}}
+/* Versión 2.2d: barra superior compacta, selecciones circulares, logo enlazado y diálogos dentro del módulo */
+:root{--top-h:56px}
+.topbar{height:var(--top-h);min-height:var(--top-h);padding-top:0;padding-bottom:0;align-items:center;border-bottom:1px solid var(--line2);box-shadow:none}
+.topmeta{align-items:center;height:100%}
+.topBtn,#perfilBtn{padding:3px 6px;gap:2px;min-width:64px;justify-content:center;border-radius:10px}
+.topIco,.avatar{width:24px;height:24px;border-radius:7px}
+.topIco .ico{width:15px;height:15px}
+.avatar{font-size:10.5px}
+.topTxt b{font-size:10.5px}
+.topTxt small,#perfilBtn small{font-size:9.5px;line-height:1.05}
+#perfilBtn .topTxt b{font-size:10.5px}
+.topSep{margin:10px 4px}
+.topbar h1{font-size:19px}
+.titleIcon{width:30px;height:30px}
+a.logoBar{text-decoration:none;color:inherit;border-radius:12px}
+a.logoBar:hover .logoMark{filter:brightness(1.08)}
+/* Casillas de selección circulares */
+input[type="checkbox"]{appearance:none;-webkit-appearance:none;width:18px;height:18px;margin:0;border:2px solid var(--line2);border-radius:50%;background:var(--input);display:inline-grid;place-content:center;cursor:pointer;flex:none;vertical-align:middle;transition:background .12s,border-color .12s}
+input[type="checkbox"]::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--on-primary);transform:scale(0);transition:transform .12s}
+input[type="checkbox"]:checked{background:var(--primary);border-color:var(--primary)}
+input[type="checkbox"]:checked::before{transform:scale(1)}
+input[type="checkbox"]:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+input[type="checkbox"]:disabled{opacity:.5;cursor:not-allowed}
+/* Diálogos dentro del área del módulo: no cubren la barra superior ni el riel */
+@media(min-width:861px){
+  .overlay{top:var(--top-h);left:var(--rail-w);padding:28px 24px}
+}
+@media(max-width:860px){.overlay{top:var(--top-h);padding-top:16px}}

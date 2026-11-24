@@ -3,7 +3,7 @@ direction TB
 class Vista {
 <<views/ · SPA>>
 +pages/venta, compras, reposicion
-+pages/recetaForm
++pages/recetaForm, perfil, preferencias
 +api.js (cliente HTTP + token)
 }
 class App {
@@ -16,10 +16,11 @@ class Router {
 }
 class Rutas {
 <<routes/index.js>>
-+buildRouter() 50 rutas
++buildRouter() 51 rutas
 }
 class Controladores {
 <<controllers/>>
++clientesController
 +comprasController
 +ventasController
 +recetasController

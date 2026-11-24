@@ -1,13 +1,13 @@
 sequenceDiagram
 autonumber
 actor A as Administrador
-participant UI as Frontend (SPA)
-participant API as API REST
+participant UI as Vista (SPA)
+participant API as ventasController
 participant SP as sp_AnularVenta
 participant DB as SQL Server
 A->>UI: Anular venta e indicar el motivo
 UI->>API: POST /api/ventas/{id}/anular
-API->>API: Verifica permiso ventas:anular (solo Administrador)
+API->>API: Verifica token, usuario activo y permiso ventas:anular (solo Administrador)
 API->>SP: EXEC (venta, usuario, motivo)
 SP->>DB: BEGIN TRAN, bloquea la venta (UPDLOCK)
 alt La venta ya está ANULADA o no existe
@@ -19,5 +19,5 @@ SP->>DB: UPDATE Lote (+cantidad por cada detalle)
 SP->>DB: INSERT MovimientoStock REVERSO_VENTA (índice único filtrado)
 SP->>DB: INSERT AuditoriaOperacion, COMMIT
 API-->>UI: 200 OK
-UI-->>A: Venta anulada y existencias repuestas
+UI-->>A: Venta anulada, existencias repuestas y saldo de receta liberado
 end

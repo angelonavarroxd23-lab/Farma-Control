@@ -79,7 +79,7 @@ function startApp() {
     if (p.top || (p.perm && !can(user, p.perm))) return '';
     return `<a class="nav" href="#/${p.id}" data-page="${p.id}" aria-label="${h(p.label)}"><span class="icobox">${icon(p.id)}</span><span class="nlabel" aria-hidden="true">${h(p.label)}</span></a>`;
   }).join('').replace(/<div class="navGroup">[^<]*<\/div>(?=<div class="navGroup">|$)/g, '');
-  $('#sidebar').innerHTML = `<div class="logoBar"><div class="logoMark">✚</div><span>FarmaControl</span></div>${nav}<div class="sideNote"><span class="dotState" id="driverDot" role="img" aria-label="Verificando conexión" title="Verificando conexión…"></span><span class="muted" style="font-size:11px">v2.2</span></div>`;
+  $('#sidebar').innerHTML = `<a class="logoBar" href="#/inicio" aria-label="FarmaControl: ir al Resumen" title="Ir al Resumen"><div class="logoMark">✚</div><span>FarmaControl</span></a>${nav}<div class="sideNote"><span class="dotState" id="driverDot" role="img" aria-label="Verificando conexión" title="Verificando conexión…"></span><span class="muted" style="font-size:11px">v2.2</span></div>`;
   api.get('/api/health').then((x) => { const n = document.getElementById('driverDot'); if (!n) return; const t = x.driver === 'mssql' ? 'Datos en SQL Server mediante API REST' : 'Modo demostración: datos en memoria (sin SQL Server)'; n.classList.add(x.driver === 'mssql' ? 'ok' : 'mem'); n.title = t; n.setAttribute('aria-label', t); }).catch(() => {});
   route();
 }

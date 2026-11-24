@@ -1,0 +1,21 @@
+Recorrido de interfaz FarmaControl 2.2 con capturas para el Informe
+Fecha: 23 de noviembre de 2026 · Equipo: Linux (contenedor), Node.js v22.23.4, Chromium (Playwright) 1440x900
+Servidor: node scripts/start-memory.js (modo demostración, datos en memoria, SIN SQL Server)
+Script: docs/evidencias/recorrido_ui_v22_capturas.js · Capturas: docs/capturas_v22/sistema/
+
+OK    credenciales incorrectas muestran un mensaje
+OK    ingreso como administrador; nombre y rol bajo el perfil
+OK    cliente registrado
+OK    un cliente con ventas o recetas no se elimina
+OK    compra registrada
+OK    el carrito rechaza más unidades que el stock
+OK    venta confirmada y constancia abierta
+OK    venta anulada en el historial
+OK    movimientos muestra el reverso
+OK    el administrador gestiona usuarios desde Perfil
+OK    auditoría registra la anulación
+OK    el tema oscuro se aplica
+OK    el menú del cajero no incluye Reportes ni Auditoría
+OK    el saldo de la receta se agrega al ticket
+OK    compra con lote nuevo asociada a la orden
+OK    sin errores de JavaScript inesperados
