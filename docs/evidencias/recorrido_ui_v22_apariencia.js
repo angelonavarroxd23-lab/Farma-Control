@@ -1,0 +1,43 @@
+const { chromium } = require('playwright');
+(async () => {
+  const B = process.argv[2], OUT = process.argv[3];
+  const b = await chromium.launch(); const errs = [];
+  const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  const p = await ctx.newPage(); p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); }); p.on('pageerror', e => errs.push(String(e)));
+  await p.goto(B); await p.waitForSelector('#loginForm');
+  console.log('tema inicial:', await p.evaluate(() => document.documentElement.dataset.theme));
+  await p.waitForTimeout(700); await p.screenshot({ path: OUT + '/01_login_claro.png' });
+  await p.fill('#correo', 'cajero@farmacontrol.local'); await p.fill('#contrasena', 'Cajero#2026Fc'); await p.click('#loginForm button[type=submit]');
+  await p.waitForSelector('.sidebar .nav'); await p.goto(B + '#/venta'); await p.waitForSelector('[data-add]');
+  await p.locator('[data-add]').first().click(); await p.locator('[data-add]').nth(2).click(); await p.waitForTimeout(800);
+  const fam = await p.evaluate(() => [getComputedStyle(document.body).fontFamily, getComputedStyle(document.querySelector('.content h2')).fontFamily, document.fonts.check('600 20px Fraunces'), document.fonts.check('16px Inter')]);
+  console.log('fuentes:', fam);
+  console.log('tabla borde td:', await p.evaluate(() => getComputedStyle(document.querySelector('td')).borderLeftWidth));
+  await p.screenshot({ path: OUT + '/02_venta_claro.png' });
+  await p.hover('.nav[data-page="compras"], .nav[data-page="ventas"]'); await p.waitForTimeout(200); await p.screenshot({ path: OUT + '/03_tooltip.png', clip: { x: 0, y: 0, width: 400, height: 500 } });
+  await p.click('#themeBtn'); await p.waitForTimeout(300);
+  console.log('tras botón:', await p.evaluate(() => [document.documentElement.dataset.theme, localStorage.getItem('farmacontrol.tema')]));
+  await p.screenshot({ path: OUT + '/04_venta_oscuro.png' });
+  await p.goto(B + '#/preferencias'); await p.waitForSelector('.themeCard'); await p.waitForTimeout(600); await p.screenshot({ path: OUT + '/05_preferencias_oscuro.png' });
+  await p.click('[data-tema="claro"]'); await p.waitForTimeout(400);
+  console.log('tras preferencias:', await p.evaluate(() => [document.documentElement.dataset.theme, document.querySelector('[data-tema=claro]').getAttribute('aria-pressed'), document.querySelector('#themeBtn').textContent]));
+  await p.click('[data-mov="reducido"]'); console.log('mov:', await p.evaluate(() => document.documentElement.dataset.motion)); await p.click('[data-mov="normal"]');
+  await p.screenshot({ path: OUT + '/06_preferencias_claro.png' });
+  await p.reload(); await p.waitForSelector('.sidebar .nav'); console.log('persistencia tras recarga:', await p.evaluate(() => document.documentElement.dataset.theme));
+  for (const id of ['inicio', 'medicamentos', 'alertas', 'clientes', 'recetas']) { await p.goto(B + '#/' + id); await p.waitForTimeout(500); }
+  await p.screenshot({ path: OUT + '/07_recetas_claro.png' });
+  // confirmar una venta para ver la constancia
+  await p.goto(B + '#/venta'); await p.waitForSelector('[data-add]'); await p.locator('[data-add]').nth(2).click(); await p.click('#confirm'); await p.waitForTimeout(900);
+  console.log('constancia:', await p.locator('.receipt').count());
+  await p.screenshot({ path: OUT + '/08_constancia.png' });
+  const m = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 }); const q = await m.newPage(); q.on('pageerror', e => errs.push(String(e)));
+  await q.goto(B); await q.evaluate(() => localStorage.setItem('farmacontrol.tema', 'oscuro')); await q.reload(); await q.waitForSelector('#loginForm'); await q.waitForTimeout(500);
+  await q.screenshot({ path: OUT + '/09_movil_login_oscuro.png' });
+  await q.fill('#correo', 'admin@farmacontrol.local'); await q.fill('#contrasena', 'Admin#2026Fc'); await q.click('#loginForm button[type=submit]');
+  await q.waitForSelector('.sidebar .nav'); await q.goto(B + '#/venta'); await q.waitForSelector('[data-add]'); await q.waitForTimeout(600);
+  console.log('scroll horizontal móvil:', await q.evaluate(() => document.documentElement.scrollWidth > innerWidth));
+  await q.screenshot({ path: OUT + '/10_movil_venta.png', fullPage: false });
+  await q.click('#menuBtn'); await q.waitForTimeout(400); await q.screenshot({ path: OUT + '/11_movil_menu.png' });
+  console.log('errores consola:', errs.length ? errs : 'ninguno');
+  await b.close();
+})();

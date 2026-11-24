@@ -10,6 +10,8 @@ import * as inventario from './pages/inventario.js';
 import * as reportes from './pages/reportes.js';
 import * as admin from './pages/admin.js';
 import * as reposicion from './pages/reposicion.js';
+import * as preferencias from './pages/preferencias.js';
+import { icon } from './iconos.js';
 
 // Permisos de la interfaz: solo controlan qué se muestra. La autorización real la aplica el servidor.
 const PERMS = {
@@ -40,6 +42,8 @@ const PAGES = [
   { id: 'reportes', label: 'Reportes', icon: '▥', perm: 'reportes:read', mod: reportes },
   { id: 'usuarios', label: 'Usuarios y perfiles', icon: '⚙', perm: 'usuarios:read', mod: admin.usuarios },
   { id: 'auditoria', label: 'Auditoría', icon: '✎', perm: 'auditoria:read', mod: admin.auditoria },
+  ['Cuenta'],
+  { id: 'preferencias', label: 'Preferencias', icon: '⚙', mod: preferencias },
 ];
 
 const $ = (s) => document.querySelector(s);
@@ -48,12 +52,15 @@ let current = null;
 
 function renderLogin() {
   $('#app').classList.add('hidden'); const el = $('#login'); el.classList.remove('hidden');
-  el.innerHTML = `<div class="loginHero"><div class="logoBar"><div class="logoMark">✚</div><span>FarmaControl</span></div><h1>Tu farmacia,<br>bajo control.</h1><p>Sistema de gestión de ventas, compras e inventario por lotes. Entorno académico con información ficticia.</p><div>● Ventas por lote &nbsp; ● Alertas de vencimiento &nbsp; ● Reportes</div></div>
+  el.innerHTML = `<div class="loginHero"><span class="shape s1" aria-hidden="true"></span><span class="shape s2" aria-hidden="true"></span><span class="shape s3" aria-hidden="true"></span><div class="logoBar"><div class="logoMark">✚</div><span>FarmaControl</span></div><h1>Tu farmacia,<br>bajo control.</h1><p>Sistema de gestión de ventas, compras e inventario por lotes. Entorno académico con información ficticia.</p><div>● Ventas por lote &nbsp; ● Alertas de vencimiento &nbsp; ● Reportes</div></div>
   <form class="loginForm" id="loginForm" novalidate><h2>Iniciar sesión</h2><p>Ingrese con la cuenta asignada a su perfil.</p><div data-error></div>
   <div class="field"><label for="correo">Correo</label><input class="input" id="correo" name="correo" type="email" autocomplete="username" required></div>
   <div class="field"><label for="contrasena">Contraseña</label><input class="input" id="contrasena" name="contrasena" type="password" autocomplete="current-password" required></div>
   <button class="btn primary" type="submit">Ingresar →</button>
-  <div class="notice warning" style="margin-top:18px">Prototipo académico. Los comprobantes son constancias internas, no documentos tributarios.</div></form>`;
+  <div class="notice warning" style="margin-top:18px">Prototipo académico. Los comprobantes son constancias internas, no documentos tributarios.</div>
+  <button class="btn small loginTheme" type="button" id="loginTheme"></button></form>`;
+  const lt = el.querySelector('#loginTheme'); const pint = () => { const t = window.FCPrefs.leer().tema; lt.innerHTML = `${icon(t === 'oscuro' ? 'sol' : 'luna')} ${t === 'oscuro' ? 'Usar tema claro' : 'Usar tema oscuro'}`; };
+  pint(); lt.addEventListener('click', () => { window.FCPrefs.alternarTema(); pint(); paintThemeBtn(); });
   $('#loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = e.target; const box = f.querySelector('[data-error]'); box.innerHTML = '';
@@ -71,10 +78,10 @@ function startApp() {
   const nav = PAGES.map((p) => {
     if (Array.isArray(p)) return `<div class="navGroup">${h(p[0])}</div>`;
     if (p.perm && !can(user, p.perm)) return '';
-    return `<a class="nav" href="#/${p.id}" data-page="${p.id}"><span class="nicon" aria-hidden="true">${p.icon}</span><span>${h(p.label)}</span></a>`;
+    return `<a class="nav" href="#/${p.id}" data-page="${p.id}" aria-label="${h(p.label)}"><span class="icobox">${icon(p.id)}</span><span class="nlabel" aria-hidden="true">${h(p.label)}</span></a>`;
   }).join('').replace(/<div class="navGroup">[^<]*<\/div>(?=<div class="navGroup">|$)/g, '');
-  $('#sidebar').innerHTML = `<div class="logoBar"><div class="logoMark">✚</div><span>FarmaControl</span></div>${nav}<div class="sideNote">Versión académica 2.1<br><span id="driverNote">Verificando conexión…</span></div>`;
-  api.get('/api/health').then((x) => { const n = document.getElementById('driverNote'); if (n) n.textContent = x.driver === 'mssql' ? 'Datos en SQL Server mediante API REST' : 'Modo demostración: datos en memoria (sin SQL Server)'; }).catch(() => {});
+  $('#sidebar').innerHTML = `<div class="logoBar"><div class="logoMark">✚</div><span>FarmaControl</span></div>${nav}<div class="sideNote"><span class="dotState" id="driverDot" role="img" aria-label="Verificando conexión" title="Verificando conexión…"></span><span class="muted" style="font-size:11px">v2.2</span></div>`;
+  api.get('/api/health').then((x) => { const n = document.getElementById('driverDot'); if (!n) return; const t = x.driver === 'mssql' ? 'Datos en SQL Server mediante API REST' : 'Modo demostración: datos en memoria (sin SQL Server)'; n.classList.add(x.driver === 'mssql' ? 'ok' : 'mem'); n.title = t; n.setAttribute('aria-label', t); }).catch(() => {});
   route();
 }
 
@@ -84,7 +91,7 @@ async function route() {
   let page = PAGES.find((p) => !Array.isArray(p) && p.id === id && (!p.perm || can(user, p.perm)));
   if (!page) { page = PAGES.find((p) => p.id === 'inicio'); if (id !== 'inicio') location.hash = '#/inicio'; }
   document.querySelectorAll('.nav[data-page]').forEach((a) => a.classList.toggle('active', a.dataset.page === page.id));
-  $('#topTitle').textContent = page.label; $('#sidebar').classList.remove('open');
+  $('#topTitle').textContent = page.label; $('#topIcon').innerHTML = icon(page.id); $('#sidebar').classList.remove('open');
   const content = $('#content'); const token = (current = Symbol());
   content.innerHTML = ''; const host = document.createElement('div'); host.innerHTML = '<p class="muted">Cargando…</p>'; content.appendChild(host); // contenedor nuevo: evita acumular listeners
   try { await page.mod.render(host, { user, can: (p) => can(user, p), go: (hash) => { location.hash = hash; }, isCurrent: () => current === token }); }
@@ -108,6 +115,10 @@ setUnauthorizedHandler(() => { if (user) { toast('Su sesión expiró. Inicie ses
 window.addEventListener('hashchange', route);
 $('#logoutBtn').addEventListener('click', () => logout(false));
 $('#pwdBtn').addEventListener('click', changePassword);
+function paintThemeBtn() { const t = window.FCPrefs.leer().tema; $('#themeBtn').innerHTML = `${icon(t === 'oscuro' ? 'sol' : 'luna')}<span>${t === 'oscuro' ? 'Claro' : 'Oscuro'}</span>`; $('#themeBtn').setAttribute('aria-label', t === 'oscuro' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'); }
+$('#themeBtn').addEventListener('click', () => { window.FCPrefs.alternarTema(); paintThemeBtn(); if ((location.hash || '').includes('preferencias')) route(); });
+window.addEventListener('fc:tema', paintThemeBtn);
+paintThemeBtn();
 $('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
 
 (async function boot() {

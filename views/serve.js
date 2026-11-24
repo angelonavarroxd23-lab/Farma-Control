@@ -2,7 +2,7 @@
 // Servidor estático opcional para ejecutar el frontend por separado (puerto 5173).
 // Requiere que el backend tenga CORS_ORIGIN=http://localhost:5173 y que js/config.js apunte a la API.
 const http = require('node:http'); const fs = require('node:fs'); const path = require('node:path');
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.woff': 'font/woff', '.woff2': 'font/woff2' };
 const port = Number(process.env.FRONTEND_PORT || 5173);
 http.createServer((req, res) => {
   let rel = decodeURIComponent(new URL(req.url, 'http://x').pathname); if (rel === '/') rel = '/index.html';

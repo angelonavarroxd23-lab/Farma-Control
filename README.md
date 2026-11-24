@@ -1,4 +1,6 @@
-# FarmaControl 2.1 — Sistema de gestión de ventas de farmacia
+# FarmaControl 2.2 — Sistema de gestión de ventas de farmacia
+
+> **Novedad 2.2 (apariencia):** menú en riel de iconos, caja con ticket impreso, tipografía Fraunces + Inter, tablas en cuadrícula, animaciones y **Preferencias** con tema claro (predeterminado) u oscuro. Detalle en [`docs/APARIENCIA_V2_2.md`](docs/APARIENCIA_V2_2.md).
 
 Proyecto académico (UPN · Diseño y Arquitectura de Software · 2026-2). Todos los datos son ficticios.
 Arquitectura de tres capas: **vista** (SPA en JavaScript) → **API REST** (Node.js) → **SQL Server**.

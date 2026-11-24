@@ -12,7 +12,7 @@ export async function render(el, ctx) {
     <div class="panel"><h3>Productos disponibles</h3>
       <div class="actions"><input class="input" id="q" placeholder="Buscar medicamento, SKU o lote…" aria-label="Buscar producto"></div>
       <div id="lotes"></div></div>
-    <div class="panel"><h3>Detalle de venta</h3><div data-error></div>
+    <section class="ticket" aria-label="Ticket de venta"><h3>Ticket de venta</h3><div class="ticketHead">FarmaControl · Caja<br>Constancia interna, sin valor tributario</div><div data-error></div>
       <div class="field"><label for="cli">Cliente</label><select class="input" id="cli">${clientes.map((c) => `<option value="${c.cliente_id}" data-tipo="${h(c.tipo_documento)}">${h(c.nombre_razon_social)} · ${h(c.tipo_documento)} ${h(c.numero_documento)}</option>`).join('')}</select></div>
       <div class="field"><label for="tipo">Comprobante</label><select class="input" id="tipo"><option>BOLETA</option><option>FACTURA</option></select><span class="hint">La factura requiere un cliente con RUC.</span></div>
       <div class="field" id="recetaBox"><label for="rec">Receta registrada</label>
@@ -22,7 +22,7 @@ export async function render(el, ctx) {
       <div id="cart"></div>
       <div class="totals"><span>Total</span><span id="total">${money(0)}</span></div>
       <button class="btn primary" id="confirm" style="margin-top:16px;width:100%">Confirmar venta</button>
-      <p class="muted" style="font-size:12px;line-height:1.5">Se registra la venta, se descuenta el stock del lote y se genera una constancia interna. La verificación de receta comprueba registro, vigencia, titular y que la cantidad no supere lo prescrito pendiente; no evalúa su contenido clínico.</p></div>
+      <p class="muted" style="font-size:12px;line-height:1.5">Se registra la venta, se descuenta el stock del lote y se genera una constancia interna. La verificación de receta comprueba registro, vigencia, titular y que la cantidad no supere lo prescrito pendiente; no evalúa su contenido clínico.</p></section>
   </div>`;
   const $ = (s) => el.querySelector(s);
 
