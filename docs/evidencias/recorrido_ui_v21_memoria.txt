@@ -1,0 +1,13 @@
+Recorrido de interfaz v2.1 - controlador en memoria (NO SQL Server) - 23 de noviembre de 2026
+Comando: PORT=3111 node scripts/start-memory.js ; node recorrido_ui_v21_memoria.js http://localhost:3111
+OK    badge FEFO visible en la lista de lotes
+OK    botón "+ Nueva receta" en la pantalla de venta (cajero)
+OK    la receta creada queda seleccionada en la venta
+OK    se muestra el detalle de la receta con saldo
+OK    el saldo pendiente se agregó al carrito por FEFO
+OK    se abre la constancia de la venta
+OK    hay sugerencias de reposición
+OK    las órdenes generadas aparecen en el listado
+OK    se listan las órdenes pendientes del proveedor
+OK    compra con lote nuevo registrada: Compra #2 registrada: existencias actualizadas (1 lote(s) nuevo(s)); orden #1 recibida.
+OK    sin errores de consola/página

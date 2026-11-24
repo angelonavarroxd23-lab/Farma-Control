@@ -34,7 +34,7 @@ test('REC-04 una receta sin detalle (registro antiguo) sigue aceptándose', asyn
 });
 
 // ---------- Venta contra el detalle de la receta ----------
-test('VEN-R1 la venta respeta el detalle: medicamento no prescrito y exceso de saldo se rechazan sin tocar el stock', async () => {
+test('VEN-09 la venta respeta el detalle: medicamento no prescrito y exceso de saldo se rechazan sin tocar el stock', async () => {
   const med = await t.crearMedicamento({ receta: true }), otro = await t.crearMedicamento({ receta: true });
   const l = await t.crearLote(med, { stock: 20 }), lo = await t.crearLote(otro, { stock: 20 });
   const cli = await t.crearCliente(); const rec = await receta(cli, [{ medicamento_id: med.medicamento_id, cantidad: 3 }]);
@@ -50,7 +50,7 @@ test('VEN-R1 la venta respeta el detalle: medicamento no prescrito y exceso de s
   assert.equal((await detalle(id)).detalle[0].pendiente, 0);
   assert.equal(await t.stockDe(l), 17);
 });
-test('VEN-R2 anular la venta devuelve el saldo a la receta; los productos sin receta no consumen saldo', async () => {
+test('VEN-10 anular la venta devuelve el saldo a la receta; los productos sin receta no consumen saldo', async () => {
   const med = await t.crearMedicamento({ receta: true }), libre = await t.crearMedicamento();
   const l = await t.crearLote(med, { stock: 10 }), ll = await t.crearLote(libre, { stock: 10 });
   const cli = await t.crearCliente(); const id = (await receta(cli, [{ medicamento_id: med.medicamento_id, cantidad: 2 }])).data.receta_id;
@@ -59,14 +59,14 @@ test('VEN-R2 anular la venta devuelve el saldo a la receta; los productos sin re
   assert.equal((await t.call('POST', `/api/ventas/${v.data.venta_id}/anular`, { motivo: 'prueba' }, await t.login('admin'))).status, 200);
   assert.equal((await detalle(id)).detalle[0].pendiente, 2);
 });
-test('VEN-R3 con receta de detalle, la receta de otro cliente o sin receta se sigue rechazando', async () => {
+test('VEN-11 con receta de detalle, la receta de otro cliente o sin receta se sigue rechazando', async () => {
   const med = await t.crearMedicamento({ receta: true }); const l = await t.crearLote(med, { stock: 5 });
   const a = await t.crearCliente(), b = await t.crearCliente(); const id = (await receta(a, [{ medicamento_id: med.medicamento_id, cantidad: 2 }])).data.receta_id;
   assert.equal((await venta(b, [{ lote_id: l.lote_id, cantidad: 1 }], { receta_id: id })).status, 422);
   assert.equal((await venta(a, [{ lote_id: l.lote_id, cantidad: 1 }])).status, 422);
   assert.equal(await t.stockDe(l), 5);
 });
-test('VEN-R4 una receta sin detalle conserva la regla anterior (basta que esté vigente y sea del cliente)', async () => {
+test('VEN-12 una receta sin detalle conserva la regla anterior (basta que esté vigente y sea del cliente)', async () => {
   const med = await t.crearMedicamento({ receta: true }); const l = await t.crearLote(med, { stock: 5 });
   const cli = await t.crearCliente(); const id = (await receta(cli, undefined)).data.receta_id;
   assert.equal((await venta(cli, [{ lote_id: l.lote_id, cantidad: 3 }], { receta_id: id })).status, 201);
@@ -81,7 +81,7 @@ test('FEF-01 los lotes vendibles salen ordenados por vencimiento y se sugiere el
 });
 
 // ---------- Lote y proveedor desde la compra ----------
-test('COM-04 la compra crea el lote nuevo, le ingresa las unidades y registra su proveedor', async () => {
+test('COM-09 la compra crea el lote nuevo, le ingresa las unidades y registra su proveedor', async () => {
   const m = await t.crearMedicamento(); const p = await t.proveedor(); const tk = await t.login('almacen'); const codigo = t.uid('NL');
   const r = await t.call('POST', '/api/compras', { proveedor_id: p.proveedor_id, numero_documento: t.uid('F'), items: [{ nuevo_lote: { medicamento_id: m.medicamento_id, codigo_lote: codigo, fecha_vencimiento: t.addDays(200), stock_minimo: 7 }, cantidad: 25, costo_unitario: 2 }] }, tk);
   assert.equal(r.status, 201); assert.equal(r.data.lotes_creados.length, 1); assert.deepEqual(r.data.advertencias, []);
@@ -91,7 +91,7 @@ test('COM-04 la compra crea el lote nuevo, le ingresa las unidades y registra su
   const aud = (await t.call('GET', '/api/auditoria?limit=200', undefined, await t.login('admin'))).data;
   assert.ok((aud.rows || aud).some((a) => a.accion === 'LOTE_CREADO' && String(a.detalle).includes(codigo)));
 });
-test('COM-05 una compra puede mezclar lotes existentes y nuevos; el proveedor del lote existente se actualiza', async () => {
+test('COM-10 una compra puede mezclar lotes existentes y nuevos; el proveedor del lote existente se actualiza', async () => {
   const m = await t.crearMedicamento(); const viejo = await t.crearLote(m, { stock: 3 }); const p = await t.proveedor(); const tk = await t.login('almacen');
   const r = await t.call('POST', '/api/compras', { proveedor_id: p.proveedor_id, numero_documento: t.uid('F'), items: [{ lote_id: viejo.lote_id, cantidad: 10, costo_unitario: 1 }, { nuevo_lote: { medicamento_id: m.medicamento_id, codigo_lote: t.uid('NL'), fecha_vencimiento: t.addDays(100) }, cantidad: 4, costo_unitario: 1.5 }] }, tk);
   assert.equal(r.status, 201);

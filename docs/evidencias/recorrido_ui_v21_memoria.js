@@ -1,0 +1,53 @@
+const { chromium } = require('playwright');
+const OUT = '/tmp/claude-0/-home-claude/1b0d348c-4851-5be0-858c-ab29235b6ced/scratchpad/shots/';
+const base = process.argv[2] || 'http://localhost:3111';
+let n = 0; const results = [];
+const ok = (c, m) => { results.push(`${c ? 'OK   ' : 'FALLA'} ${m}`); };
+(async () => {
+  const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1400, height: 900 } }); const p = await ctx.newPage();
+  const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
+  const shot = async (name) => p.screenshot({ path: OUT + String(++n).padStart(2, '0') + '_' + name + '.png' });
+  async function login(c, pw) { await p.goto(base + '/'); await p.waitForSelector('#correo'); await p.fill('#correo', c); await p.fill('#contrasena', pw); await p.click('#loginForm button[type=submit]'); await p.waitForSelector('#sidebar .nav'); }
+  // ---- Cajero: receta en caja
+  await login('cajero@farmacontrol.local', 'Cajero#2026Fc');
+  await p.goto(base + '/#/venta'); await p.waitForSelector('#lotes table');
+  ok(await p.locator('.badge:has-text("FEFO")').count() > 0, 'badge FEFO visible en la lista de lotes');
+  await p.selectOption('#cli', { label: /Luis Paredes/ }.toString() ? undefined : undefined).catch(() => {});
+  const optLuis = await p.locator('#cli option', { hasText: 'Luis Paredes' }).getAttribute('value'); await p.selectOption('#cli', optLuis);
+  await p.waitForTimeout(400);
+  ok(await p.locator('#newRec').count() === 1, 'botón "+ Nueva receta" en la pantalla de venta (cajero)');
+  await p.click('#newRec'); await p.waitForSelector('#rf_num');
+  await p.fill('#rf_num', 'REC-UI-001'); await p.fill('#rf_pre', 'Dr. Interfaz'); const d = new Date(); d.setDate(d.getDate() + 15);
+  await p.fill('#rf_vc', d.toISOString().slice(0, 10));
+  await p.selectOption('#rf_med', { index: 1 }); await p.fill('#rf_cant', '2'); await p.fill('#rf_ind', '1 cada 8 horas'); await p.click('#rf_add');
+  await shot('receta_modal');
+  await p.click('[data-save]'); await p.waitForTimeout(600);
+  ok((await p.locator('#rec option:checked').textContent()).includes('REC-UI-001'), 'la receta creada queda seleccionada en la venta');
+  ok(await p.locator('#recDet .detailLine').count() === 1, 'se muestra el detalle de la receta con saldo');
+  await shot('venta_con_receta');
+  await p.click('[data-fefo]'); await p.waitForTimeout(500);
+  ok(await p.locator('#cart .detailLine').count() >= 1, 'el saldo pendiente se agregó al carrito por FEFO');
+  await p.click('#confirm'); await p.waitForTimeout(900); await shot('venta_confirmada');
+  ok(await p.locator('.modal').count() > 0, 'se abre la constancia de la venta');
+  await p.keyboard.press('Escape');
+  // ---- Almacén: compra con lote nuevo + orden
+  await p.click('#logoutBtn'); await login('almacen@farmacontrol.local', 'Almacen#2026Fc');
+  await p.goto(base + '/#/reposicion'); await p.waitForSelector('#tbl table'); await shot('reposicion_sugerencias');
+  ok(await p.locator('tr[data-med]').count() >= 2, 'hay sugerencias de reposición');
+  await p.click('#gen'); await p.waitForTimeout(800);
+  await p.click('[data-tab=ord]'); await p.waitForSelector('#tbl table'); await shot('reposicion_ordenes');
+  ok(await p.locator('#tbl tbody tr').count() >= 2, 'las órdenes generadas aparecen en el listado');
+  await p.goto(base + '/#/compras'); await p.waitForSelector('#prov');
+  const prov1 = await p.locator('#prov option').first().getAttribute('value'); await p.selectOption('#prov', prov1); await p.waitForTimeout(200);
+  ok(await p.locator('#orden option').count() >= 2, 'se listan las órdenes pendientes del proveedor');
+  await p.selectOption('#orden', { index: 1 }); await p.waitForTimeout(400);
+  await p.click('[data-pre]'); await p.fill('#ncod', 'UI-NL-01'); const f = new Date(); f.setDate(f.getDate() + 200); await p.fill('#nven', f.toISOString().slice(0, 10));
+  await p.fill('#doc', 'FAC-UI-0001'); await p.click('#add'); await shot('compra_lote_nuevo');
+  await p.click('#save'); await p.waitForTimeout(900);
+  ok((await p.locator('#toast').textContent()).includes('registrada'), 'compra con lote nuevo registrada: ' + (await p.locator('#toast').textContent()));
+  await p.click('#logoutBtn'); await login('admin@farmacontrol.local', 'Admin#2026Fc');
+  await p.goto(base + '/#/medicamentos'); await p.waitForSelector('#tbl table'); await shot('medicamentos_proveedor');
+  await p.goto(base + '/#/recetas'); await p.waitForSelector('#tbl table'); await p.click('[data-ver]'); await p.waitForTimeout(400); await shot('receta_detalle');
+  ok(errs.length === 0, 'sin errores de consola/página' + (errs.length ? ': ' + errs.join(' | ') : ''));
+  console.log(results.join('\n')); await b.close();
+})().catch((e) => { console.log(results.join('\n')); console.error('ERROR', e.message); process.exit(1); });

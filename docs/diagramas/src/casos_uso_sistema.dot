@@ -1,0 +1,35 @@
+digraph G {
+graph [bgcolor="white",pad="0.33",nodesep="0.34",ranksep="1.0",splines=polyline,fontname="Arial"];
+node [fontname="Arial",fontsize=11];
+edge [fontname="Arial",fontsize=10,color="#475569",penwidth=1.2];
+rankdir=LR;
+node [shape=plaintext,style="",fontcolor="#23374D",fontsize=11];
+cajero [label="«actor»\nCajero"];
+quimico [label="«actor»\nQuímico\nfarmacéutico"];
+alm [label="«actor»\nAlmacenero"];
+admin [label="«actor»\nAdministrador"];
+subgraph cluster_app { label="FARMACONTROL | SISTEMA (versión 2.1)";fontname="Arial";fontsize=16;fontcolor="#0B6956";color="#84CCB0";style=rounded;margin=20;
+node [shape=ellipse,style=filled,fillcolor="#F2FBF7",color="#14946C",fontsize=10,fontcolor="#23374D"];
+u1 [label="CU-01\nIngresar al sistema"];
+u2 [label="CU-02\nGestionar clientes"];
+u3 [label="CU-03\nConsultar medicamentos"];
+u4 [label="CU-04\nRegistrar receta\n(detalle y saldo)"];
+u5 [label="CU-05\nRegistrar venta"];
+u6 [label="CU-06\nGenerar constancia interna"];
+u7 [label="CU-07\nRegistrar compra"];
+u8 [label="CU-08\nGestionar medicamentos y lotes"];
+u9 [label="CU-09\nConsultar alertas"];
+u10 [label="CU-10\nGenerar reportes"];
+u11 [label="CU-11\nAdministrar perfiles"];
+u12 [label="CU-12\nAnular venta"];
+u13 [label="CU-13\nGestionar la reposición" fillcolor="#FFF4DC" color="#B7791F"];
+}
+cajero -> u2 [dir=none];cajero -> u3 [dir=none];cajero -> u4 [dir=none];cajero -> u5 [dir=none];cajero -> u6 [dir=none];cajero -> u9 [dir=none];
+quimico -> u4 [dir=none];quimico -> u3 [dir=none];quimico -> u9 [dir=none];
+alm -> u7 [dir=none];alm -> u8 [dir=none];alm -> u9 [dir=none];alm -> u13 [dir=none];
+admin -> u10 [dir=none];admin -> u11 [dir=none];admin -> u12 [dir=none];admin -> u13 [dir=none];admin -> u7 [dir=none];
+u5 -> u3 [style=dashed,arrowhead=open,label="«include»",constraint=false];
+u5 -> u6 [style=dashed,arrowhead=open,label="«include»",constraint=false];
+u4 -> u5 [style=dashed,arrowhead=open,label="«extend»\n(si el medicamento\nrequiere receta)",constraint=false];
+u13 -> u7 [style=dashed,arrowhead=open,label="«extend»\n(compra asociada)",constraint=false];
+}

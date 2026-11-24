@@ -1,4 +1,4 @@
-# FarmaControl 2.0 — Sistema de gestión de ventas de farmacia
+# FarmaControl 2.1 — Sistema de gestión de ventas de farmacia
 
 Proyecto académico (UPN · Diseño y Arquitectura de Software · 2026-2). Todos los datos son ficticios.
 Arquitectura de tres capas: **vista** (SPA en JavaScript) → **API REST** (Node.js) → **SQL Server**.
