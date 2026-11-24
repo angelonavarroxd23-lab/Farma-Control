@@ -58,6 +58,22 @@ GitHub Pages **no** sirve: solo publica archivos estáticos y FarmaControl neces
 > `DB_AUTH=sql` **no se han ejecutado**. Pendientes del equipo: aprobación con usuarios, pruebas de usabilidad con participantes,
 > video, repositorio público y prueba de impresión física de la constancia.
 
+## Observaciones subsanadas (revisión del avance, 23-nov-2026)
+Observaciones del docente atendidas en el informe `docs/FarmaControl_Informe.docx` (versión 2.2). Las páginas son las del informe.
+
+1. Avance del informe hasta 5.7.1: el informe se completó hasta 5.10, con conclusiones, referencias y anexos (págs. 30–96).
+2. Diagramas de la sección 5.6: clases, secuencia, actividades, estados, modelo de datos, componentes y despliegue (págs. 30–44).
+3. Sustento técnico de los diagramas UML: descripción de elementos, relaciones, responsabilidades y funcionamiento de cada diagrama (págs. 30–44).
+4. Modelo de datos: entidades, relaciones, claves, diccionario de las 17 tablas y restricciones de integridad (págs. 38–42).
+5. Prototipos de 5.7.1: pantallas P-01 a P-12 relacionadas con sus requisitos y casos de uso (págs. 48–60).
+6. Trazabilidad extendida: requisitos, casos de uso, diagramas, tablas, prototipos y pruebas (pág. 60).
+7. Arquitectura implementada frente a la propuesta: entrega anterior, sistema implementado y propuesta para producción (págs. 45–46).
+8. Criterio de participación del 100 % de cada integrante: explicado en la portada (pág. 1).
+9. Evidencias de validación: escenarios, condiciones de ejecución y resultados (págs. 64–65) y relación completa de las 85 pruebas (Anexo 1, págs. 100–101).
+10. Índices y referencias: índice general, de tablas, de figuras y de anexos regenerados (págs. 2–7) y referencias en formato APA 7 (pág. 99).
+
+La relación de cada observación con la sección del informe que la atiende está también en el Anexo 2 (pág. 102).
+
 ## Novedades de la versión 2.1 (23-nov-2026)
 Incorporan las observaciones recibidas del docente (recetas, lote, proveedor). Detalle y límites en `docs/MEJORAS_V2_1.md`.
 - **Receta en caja:** en *Nueva venta* el botón **+ Nueva receta** registra la receta del cliente (con los medicamentos prescritos) sin salir de la pantalla; la receta queda seleccionada y su saldo pendiente se carga al carrito. El cajero puede registrarla; anularla sigue siendo del químico o el administrador.
